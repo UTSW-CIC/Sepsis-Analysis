@@ -1,0 +1,5 @@
+*.pyc
+*.csv
+.ipynb_checkpoints
+*.xlsx
+*.parquet
