@@ -89,3 +89,16 @@ Our analysis confirms that the high volume of **NPOA-3 (Severe Hospital-Acquired
 ### Recommendations for the PI
 1.  **Clinical Alert:** Educate staff that **Afebrile Sepsis** is the leading cause of NPOA-3, particularly in patients presenting with Chest Pain or Falls.
 2.  **Tech Intervention:** Implement an automated EMR alert for **Acute Kidney Injury (Creatinine spike)** or **Thrombocytopenia**, as these "Silent" signals are consistently missed for >24 hours compared to hypotension.
+
+------------
+# Notes from Dr. Glazer 02/13/2026
+- Some are not supposed to be coded as sepsis. Antibiotics does not mean sepsis.
+- Impact of reclassifying sepsis, NPOA is 15% and POA 85%. If in reality NPOA < 10%, then the problem becomes easier, as we will focus on improving POA diagnosis at ED.
+- Logic: Pulmonary Dysfunction: OPT flow, bi.., vent support flag, vent support grouper
+- Logic: Neurological damage: revise Lactate >= 2.0
+- Troponin?? Don?t include
+- NLP cariology notes would be interesting
+- Focus on NPOA vs POA in calculated vs billed
+- Improve classification of POA, and NPOA. Might yield VPA to alert provider to focus on Sepsis.
+- For those who are supposed to be POA, but the ED doctor never considered ED (no blood culture, no antibiotics), is there a way to detect that?
+- Post surgical IV antibiotics (1 hr before and 24 hours after, who ordered the antibiotic? Surgery or anesthesia? Both wont order for sepsis), and remove anomalies from vitals

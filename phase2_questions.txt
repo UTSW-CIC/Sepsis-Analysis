@@ -1,0 +1,10 @@
+For each sepsis category (include unknown presence on admission):
+What is the % of correctly categorized "Present on Admission" (defined by hours from admission to sepsis 1 < 48 = Present)?
+% of encounters with no "Suspected Infection" action?
+What is the average/median time from admission to infection suspicion?
+What percent have a Sepsis 1 time/Sepsis 2 time/Sepsis 3 time?
+What is the average/median time from admission to Sepsis 1/Sepsis 2/Sepsis 3?
+What is the average/median time from Sepsis 1 to Sepsis 2/Sepsis 3?
+What is the average/median time from Sepsis 2 to Sepsis 3?
+ 
+Analyze factors (columns) contributing to the values above. 
