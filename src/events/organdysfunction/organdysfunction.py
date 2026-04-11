@@ -63,10 +63,10 @@ class OrganDysfunctionCalculator:
     def _pulmonary_dysfunction_flag(self) -> pl.DataFrame:
         logger.info("Calculating pulmonary dysfunction flag.")
         # Fill vent status forward, and fill remaining nulls with "Vent off" status before calculating pulmonary dysfunction flag
-        self.df_agg = self.df_agg.with_columns(
-                    pl.col(self.organdysfunction_config.pulmonary.vent_col).fill_null(strategy="forward")
-                    .over(self.organdysfunction_config.encounter_col).fill_null(self.organdysfunction_config.pulmonary.vent_off_status)
-                )
+        # self.df_agg = self.df_agg.with_columns(
+        #             pl.col(self.organdysfunction_config.pulmonary.vent_col).fill_null(strategy="forward")
+        #             .over(self.organdysfunction_config.encounter_col).fill_null(self.organdysfunction_config.pulmonary.vent_off_status)
+        #         )
         return PulmonaryDysfunctionCalculator(self.df_agg, self.organdysfunction_config.pulmonary).calculate_pulmonary_dysfunction_flag()
 
 
@@ -136,6 +136,28 @@ class OrganDysfunctionCalculator:
                 df_comb = df_comb.drop(right_cols)
 
         return df_comb
+    
+    def _test_matching_flag_frames(self, list_of_flag_dfs):
+        # Test for length of frames
+        l = len(list_of_flag_dfs[0])
+        for df in list_of_flag_dfs:
+            assert len(df) == l, "Organdysfunction flags Frames are not the same length"
+        
+        # Test for matching indices
+        df_index = list_of_flag_dfs[0].select(self.organdysfunction_config.encounter_col, self.organdysfunction_config.event_dt_col)
+        for df in list_of_flag_dfs:
+            assert df_index.equals(df.select(self.organdysfunction_config.encounter_col, self.organdysfunction_config.event_dt_col)), "Organdysfunction flags Frames are not the same length"
+         
+        logger.info("All flag frames are the same length and have the same indices.")
+        
+    def _concatenate_flag_dfs(self, list_of_flag_dfs: List[pl.DataFrame])-> pl.DataFrame:
+        original_cols = set(list_of_flag_dfs[0].columns)        
+        df = list_of_flag_dfs[0]
+        for df_flag in list_of_flag_dfs[1:]:
+            extra_cols = set(df_flag.columns)-original_cols
+            df = pl.concat([df, df_flag.select(extra_cols)], how='horizontal')
+        
+        return df
 
     def calculate(self):
         df_pulmonary = self._pulmonary_dysfunction_flag()
@@ -153,7 +175,15 @@ class OrganDysfunctionCalculator:
 
         logger.info("Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.")
         list_of_flag_dfs = [df_cardiovascular, df_coagulation, df_pulmonary, df_renal, df_hepatic, df_neuro]
-        self.df_organdysfunction = self._join_tables(self.df_agg, list_of_flag_dfs, on_cols=[self.organdysfunction_config.encounter_col, self.organdysfunction_config.event_dt_col], how="left")
+        for i in range(len(list_of_flag_dfs)):
+            list_of_flag_dfs[i] = list_of_flag_dfs[i].sort(by=[self.organdysfunction_config.encounter_col, self.organdysfunction_config.event_dt_col])
+            
+        self._test_matching_flag_frames(list_of_flag_dfs)
+
+        self.df_organdysfunction = self._concatenate_flag_dfs(list_of_flag_dfs)
+        
+
+        # self.df_organdysfunction = self._join_tables(self.df_agg, list_of_flag_dfs, on_cols=[self.organdysfunction_config.encounter_col, self.organdysfunction_config.event_dt_col], how="left")
 
         logger.info("----------------------------------------------------------------------------------")
         logger.info("Calculating total organ dysfunction flag by summing individual organ dysfunction flags.")

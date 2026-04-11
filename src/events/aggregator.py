@@ -1,14 +1,15 @@
 import polars as pl
 from src.utils.utils import extract_systolic_bp, rolling_agg
-from src.config import feature_config, FeatureConfig, AggregatorConfig, agg_config
+# from src.config import feature_config, FeatureConfig, AggregatorConfig, agg_config
+from src.configs.aggregator import FeatureConfig, AggregatorConfig 
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 class EventAggregator():
     def __init__(self, df_all: pl.DataFrame,
-                  data_config: AggregatorConfig=agg_config,
-                  feature_config: FeatureConfig=feature_config):
+                  data_config: AggregatorConfig,
+                  feature_config: FeatureConfig):
         self.df_all = df_all
         self.data_config = data_config
         self.feature_config = feature_config
@@ -18,7 +19,7 @@ class EventAggregator():
             return extract_systolic_bp(self.df_all, self.data_config).select(
             pl.col(self.data_config.encounter_col),
             pl.col(self.data_config.event_dt_col).alias(self.data_config.evt_dt_col),
-            pl.col(self.data_config.sys_col).alias(self.data_config.evt_val_col)
+            pl.col(self.data_config.blood_pressure_config.sys_col).alias(self.data_config.evt_val_col)
         )
 
         return (

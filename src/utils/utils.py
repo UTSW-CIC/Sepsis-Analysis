@@ -3,6 +3,7 @@ import duckdb
 from typing import List
 from datetime import timedelta
 from src.config import AggregatorConfig
+import os
 
 
 def join_baselines_2_agg(df_agg: pl.DataFrame, df_all: pl.DataFrame,
@@ -92,9 +93,9 @@ def extract_systolic_bp(df_all: pl.DataFrame,
         encounter_col = config.encounter_col
         event_dt_col = config.event_dt_col
         event_grouper_col = config.grouper_col
-        bp_grouper_val = config.bp_grouper_val
-        sys_col_name = config.sys_col
-        val_col = config.bp_val_col
+        bp_grouper_val = config.blood_pressure_config.bp_grouper_val
+        sys_col_name = config.blood_pressure_config.sys_col
+        val_col = config.blood_pressure_config.bp_val_col
 
     df_sys = df_all.filter(pl.col(event_grouper_col) == bp_grouper_val).with_columns(
             pl.col(val_col).str.split('/').list.first().cast(pl.Int64).alias(sys_col_name)
@@ -118,3 +119,13 @@ def load_df( input_path: str, file_name: str, logger=None):
         logger.info(f"Loading dataframe from {input_path}/{file_name}") 
     input_file = f"{input_path}/{file_name}"
     return pl.read_parquet(input_file)
+
+def load_output_folder(output_path: str, logger=None) -> dict[str, pl.DataFrame]:
+    if logger:
+        logger.info(f"Loading dataframes from {output_path}") 
+    df_dict = {}
+    for file in os.listdir(output_path):
+        if file.endswith(".parquet"):
+            fname = file.split(".")[0]
+            df_dict[fname] = pl.read_parquet(os.path.join(output_path, file))
+    return df_dict

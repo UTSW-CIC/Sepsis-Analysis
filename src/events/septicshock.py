@@ -1,6 +1,7 @@
 import polars as pl
-from src.config import SepticShockConfig, septicshock_config
-from src.logger import get_logger
+# from src.config import SepticShockConfig, septicshock_config
+from src.utils.logger import get_logger
+from src.configs.septicshock import SepticShockConfig
 
 logger = get_logger(__name__)
 

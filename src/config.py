@@ -6,10 +6,19 @@ from pathlib import Path
 #==============================================================================================================================
 # Input/Output Configurations
 #==============================================================================================================================
+class InputFileNames(BaseModel):
+    ENCOUNTER_BASELINE_SCORES: str = "Encounters - Mar 2025 - Feb 2026 - 3.31.26.csv"
+    FLOWSHEETS: str = "Flowsheet Events Feb 2025 - Mar 2026 - 3.31.26.csv"
+    LABS: str = "Lab Results - 3.9.26.csv"
+    MEDS: str = "Med Admin - 3.9.26.csv"
+    PROCEDURES: str = "Procedure Orders - 3.9.26.csv"
+    DIAGNOSIS: str = "Diagnoses - 3.9.26.csv"
+
 class DataInputOutputConfig(BaseModel):
     data_path: str = Field(..., description="Path to the data directory")
     output_path: str = Field("", description="Path to the output directory")
     logger_dir: str = Field("./logs", description="Directory to write logs to")
+    input_file_names: InputFileNames = InputFileNames()
 
     @model_validator(mode="after")
     def set_output_path(self) -> "DataInputOutputConfig":
@@ -20,6 +29,15 @@ class DataInputOutputConfig(BaseModel):
             self.output_path = f"{str(parent_dir)}/output/{phase_experiment_id}"
         Path(self.output_path).mkdir(parents=True, exist_ok=True)
         return self
+
+    @model_validator(mode="after")
+    def ensure_files_exist(self) -> "DataInputOutputConfig":
+        for filename in self.input_file_names.model_dump().values():
+            file_path = Path(self.data_path) / filename
+            if not file_path.is_file():
+                raise FileNotFoundError(f"Required input file '{filename}' not found in '{self.data_path}'")
+        return self
+
 
 #==============================================================================================================================
 # General Data Configurations
@@ -111,6 +129,8 @@ class FeatureColumn(str, Enum):
 
     # Pulmonary
     VENT_STATUS_FLAG        = "vent_status_flag"
+    O2_DELIVERY_FLAG        = "max_o2_delivery_flag"
+
 
 class BaselineColumn(str, Enum):
     BASELINE_CREATININE     = "Baseline_Creatinine"
@@ -166,6 +186,7 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
         agg="max",
         lookback_period=15
     ),
+
     FeatureColumn.MAX_MAP_15M: FeatureDefinition(
         event_grouper="Arterial Blood Pressure Mean",
         alias=FeatureColumn.MAX_MAP_15M,
@@ -306,10 +327,19 @@ class AggregatorConfig(DataConfig):
 class VentConfig(DataConfig):
     vent_on_status: str = "Vent on Documentation"
     vent_off_status: str = "Vent off Documentation"
+
+    o2_grouper_val: str = "O2 Delivery High-Flow"
+
     evt_val_col: str = "evt_vent"
     evt_dt_col: str = "evt_dt"
     # alias: str = "Last_Vent_Status"
-    alias: str = FeatureColumn.VENT_STATUS_FLAG
+    vent_alias: str = FeatureColumn.VENT_STATUS_FLAG
+    o2_alias: str = FeatureColumn.O2_DELIVERY_FLAG
+
+# class O2DeliveryConfig(DataConfig):
+#     o2_val_col: str = "Value"
+#     evt_dt_col: str = "Event_DateTime"
+#     alias: str = "max_o2_delivery_24h"
 
 #==============================================================================================================================
 # Organ Dysfunction Configurations

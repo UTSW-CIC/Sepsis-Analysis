@@ -3,12 +3,13 @@ import duckdb
 import os
 from pathlib import Path
 from src.utils.logger import get_logger
+from src.config import input_output_config, DataInputOutputConfig
 
 logger = get_logger(__name__)
 
 class DataLoader:
-    def __init__(self, data_dir: Path | str):
-        self.data_dir = data_dir
+    def __init__(self, input_output_dataconfig: DataInputOutputConfig):
+        self.input_output_dataconfig = input_output_dataconfig
         self.df_all = None
 
     def cast_cols(self,df: pl.DataFrame):
@@ -69,6 +70,19 @@ class DataLoader:
         return df.with_columns(
             cast_expr
         )
+    
+    def _load_labs(self) -> pl.DataFrame:
+        return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.LABS), infer_schema=False, null_values=['Null', "NULL", 'null'])
+    def _load_encounters(self) -> pl.DataFrame:
+        return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.ENCOUNTER_BASELINE_SCORES), infer_schema=False, null_values=['Null', "NULL", 'null'])
+    def _load_meds(self) -> pl.DataFrame:
+        return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.MEDS), infer_schema=False, null_values=['Null', "NULL", 'null'])
+    def _load_procedures(self) -> pl.DataFrame:
+        return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.PROCEDURES), infer_schema=False, null_values=['Null', "NULL", 'null'])
+    def _load_diagnoses(self) -> pl.DataFrame:
+        return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.DIAGNOSIS), infer_schema=False, null_values=['Null', "NULL", 'null'])
+    def _load_flowsheets(self) -> pl.DataFrame:
+        return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.FLOWSHEETS), infer_schema=False, null_values=['Null', "NULL", 'null'])
 
     def load_data(self) -> pl.DataFrame:
         """
@@ -79,13 +93,22 @@ class DataLoader:
         Returns:
             pl.DataFrame: A Polars DataFrame containing the loaded data.
         """
-        logger.info(f"Loading data from {self.data_dir}")
-        lab_res = pl.read_csv(self.data_dir/Path("Lab Results - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
-        flowsheets = pl.read_csv(self.data_dir/Path("Flowsheet - 3.24.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
-        med_admin = pl.read_csv(self.data_dir/Path("Med Admin - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
-        procedures = pl.read_csv(self.data_dir/Path("Procedure Orders - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
-        baseline = pl.read_csv(self.data_dir/Path("Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 3.25.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
-        diagnosis = pl.read_csv(self.data_dir/Path("Diagnoses - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
+        logger.info(f"Loading data from {self.input_output_dataconfig.data_path}")
+        # lab_res = pl.read_csv(self.data_dir/Path("Lab Results - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
+        # flowsheets = pl.read_csv(self.data_dir/Path("Flowsheet - 3.24.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
+        # flowsheets = pl.read_csv(self.data_dir/Path("Flowsheet Events Feb 2025 - Mar 2026 - 3.31.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
+        # med_admin = pl.read_csv(self.data_dir/Path("Med Admin - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
+        # procedures = pl.read_csv(self.data_dir/Path("Procedure Orders - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
+        # baseline = pl.read_csv(self.data_dir/Path("Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 3.25.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
+        # diagnosis = pl.read_csv(self.data_dir/Path("Diagnoses - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
+
+        lab_res = self._load_labs()
+        flowsheets = self._load_flowsheets()
+        med_admin = self._load_meds()
+        procedures = self._load_procedures()
+        baseline = self._load_encounters()
+        diagnosis = self._load_diagnoses()
+
         logger.info(f"Data loaded. Shapes: lab_res={lab_res.shape}, flowsheets={flowsheets.shape}, med_admin={med_admin.shape}, procedures={procedures.shape}, baseline={baseline.shape}, diagnosis={diagnosis.shape}")
         logger.info("--------------------------------------------------------------------------------")
         lab_res = self.cast_cols(lab_res)

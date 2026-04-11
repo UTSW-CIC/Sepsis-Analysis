@@ -94,8 +94,8 @@ class SIRSCalculator:
                                                   how='left')
 
         df_all_abnormal_flags = df_all_abnormal_flags.with_columns(
-            sirs_score=pl.col(self.cfg.wbc_flag_col)+pl.col(self.cfg.temp_flag_col)+
-            pl.col(self.cfg.resp_flag_col)+pl.col(self.cfg.hr_flag_col)
+            (pl.col(self.cfg.wbc_flag_col)+pl.col(self.cfg.temp_flag_col)+
+            pl.col(self.cfg.resp_flag_col)+pl.col(self.cfg.hr_flag_col)).alias(self.cfg.sirs_score_col)
         )
         
         return df_all_abnormal_flags

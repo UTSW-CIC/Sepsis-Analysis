@@ -1,6 +1,6 @@
 import polars as pl
 
-from src.config import PulmonaryConfig
+from src.configs.organdysfunction import PulmonaryConfig
 
 """
 
@@ -17,5 +17,8 @@ class PulmonaryDysfunctionCalculator:
 
     def calculate_pulmonary_dysfunction_flag(self) -> pl.DataFrame:
         return self.df_agg.with_columns(
-            (pl.col(self.pulmonary_config.vent_col) == self.pulmonary_config.vent_on_status).cast(pl.Int64).alias(self.pulmonary_config.flag_col)
+            (
+                (pl.col(self.pulmonary_config.vent_col) == self.pulmonary_config.vent_on_status)|
+                (pl.col(self.pulmonary_config.vent_col) == self.pulmonary_config.vent_config.o2_grouper_val)
+            ).cast(pl.Int64).alias(self.pulmonary_config.flag_col)
         )
