@@ -17,8 +17,8 @@ class SIRSConfig(DataConfig):
     # Thresholds for abnormal flags
     temp_lower_threshold: float=96.8
     temp_upper_threshold: float=100.4
-    hr_lower_threshold: float=90
-    resp_lower_threshold: float=20
+    hr_upper_threshold: float=90
+    resp_upper_threshold: float=20
     wbc_lower_threshold: float=4
     wbc_upper_threshold: float=12
 

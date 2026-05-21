@@ -1,6 +1,6 @@
 import polars as pl
 
-from src.config import NeurologicalConfig
+from src.configs.organdysfunction import NeurologicalConfig
 
 """
 

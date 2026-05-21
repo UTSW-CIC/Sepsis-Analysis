@@ -17,7 +17,7 @@ class AntibioticBloodCultureConfig(DataConfig):
     forward_tolerance: str = Field(default="24h", description="Forward tolerance for antibiotic and blood culture events")
     backward_tolerance: str = Field(default="72h", description="Backward tolerance for antibiotic and blood culture events")
 
-    flag_val: str = Field(default="antibiotic_lactate", description="Value to flag suspected infection based on antibiotic and blood culture events")
+    flag_val: str = Field(default="antibiotic_culture", description="Value to flag suspected infection based on antibiotic and blood culture events")
     flag_col: str = Field(default="ev_type_iv_culture", description="Column name to flag suspected infection based on antibiotic and blood culture events")
 
 class LactateBloodCultureConfig(DataConfig):
@@ -63,6 +63,15 @@ class SuspectedInfectionConfig(DataConfig):
     earliest_infection_time_col: str = Field(default="infection_time", description="Column name for earliest infection time detected among all criteria")
     earliest_infection_type_col: str = Field(default="first_ev_type", description="Column name for infection event type indicating which criteria were the earliest for suspected infection detection")
     infection_type_col: str = Field(default="infection_ev_type", description="Column name for infection event type indicating which criteria were met for suspected infection detection")
+
+    variable_name_col: str = Field(default="criterion", description="Column name for infection event type indicating which criteria were met for suspected infection detection")
+    value_name_dt_col :str = Field(default="infect_dt", description="Column name for infection event datetime")
+    value_type_col: str = Field(default="suspicion_infection_type", description="Column name for infection event type indicating which criteria were met for suspected infection detection")
+
+    antibiotic_culture_longval: str = Field(default="IV+Culture", description="Long value for antibiotic and blood culture infection detection criteria")
+    lactate_culture_longval: str = Field(default="LACTATE+CULTURE", description="Long value for lactate and blood culture infection detection criteria")
+    codesepsis_longval: str = Field(default="CODE_SEPSIS_ORDER", description="Long value for sepsis diagnosis code infection detection criteria")
+    flowsheet_longval: str = Field(default="FLOWSHEET_SUSPECTED_INFECTION", description="Long value for suspected infection flowsheet infection detection criteria")
 
     @property
     def dt_columns(self):

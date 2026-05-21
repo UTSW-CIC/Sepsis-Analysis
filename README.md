@@ -102,3 +102,6 @@ Our analysis confirms that the high volume of **NPOA-3 (Severe Hospital-Acquired
 - Improve classification of POA, and NPOA. Might yield VPA to alert provider to focus on Sepsis.
 - For those who are supposed to be POA, but the ED doctor never considered ED (no blood culture, no antibiotics), is there a way to detect that?
 - Post surgical IV antibiotics (1 hr before and 24 hours after, who ordered the antibiotic? Surgery or anesthesia? Both wont order for sepsis), and remove anomalies from vitals
+--------
+
+# Check docs/WhatNext.md to know the current tasks

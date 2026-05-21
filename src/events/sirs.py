@@ -27,7 +27,7 @@ class SIRSCalculator:
         df_pulse_abnormal = self.df_all.filter(
             (pl.col(self.cfg.grouper_col) == self.cfg.hr_grouper_val)&
             (
-                (pl.col(self.cfg.val_col) > self.cfg.hr_lower_threshold)
+                (pl.col(self.cfg.val_col) > self.cfg.hr_upper_threshold)
             )
         ).select(
             self.cfg.selected_cols
@@ -40,7 +40,7 @@ class SIRSCalculator:
         df_resp_abnormal = self.df_all.filter(
             (pl.col(self.cfg.grouper_col) == self.cfg.resp_grouper_val)&
             (
-                (pl.col(self.cfg.val_col) < self.cfg.resp_lower_threshold)
+                (pl.col(self.cfg.val_col) > self.cfg.resp_upper_threshold)
             )
         ).select(
             self.cfg.selected_cols
@@ -75,10 +75,10 @@ class SIRSCalculator:
                 how=how
             ).drop([f"{self.cfg.val_col}_right"])
 
-        df_all = df_all.sort(by=[self.cfg.encounter_col, self.cfg.event_dt_col]).with_columns(
-        # TODO: Fix the Literal search for columns ending with Abnormal_Flag or High_Flag
-        [pl.col(c).fill_null(strategy="forward").over(self.cfg.encounter_col).fill_null(0) for c in df_all.columns if c.endswith("Abnormal_Flag") or c.endswith("High_Flag")]
-        )
+        # df_all = df_all.sort(by=[self.cfg.encounter_col, self.cfg.event_dt_col]).with_columns(
+        # # TODO: Fix the Literal search for columns ending with Abnormal_Flag or High_Flag
+        # [pl.col(c).fill_null(strategy="forward").over(self.cfg.encounter_col).fill_null(0) for c in df_all.columns if c.endswith("Abnormal_Flag") or c.endswith("High_Flag")]
+        # )
 
         return df_all
     
@@ -93,9 +93,23 @@ class SIRSCalculator:
                                                   on_cols=[self.cfg.encounter_col, self.cfg.event_dt_col, self.cfg.event_name_col],
                                                   how='left')
 
+
+        # Propagate nulls
+        # df_all_abnormal_flags = df_all_abnormal_flags.with_columns(
+        #     (pl.col(self.cfg.wbc_flag_col)+pl.col(self.cfg.temp_flag_col)+
+        #     pl.col(self.cfg.resp_flag_col)+pl.col(self.cfg.hr_flag_col)).alias(self.cfg.sirs_score_col)
+        # )
+
+        # Treat nulls as zeros
         df_all_abnormal_flags = df_all_abnormal_flags.with_columns(
-            (pl.col(self.cfg.wbc_flag_col)+pl.col(self.cfg.temp_flag_col)+
-            pl.col(self.cfg.resp_flag_col)+pl.col(self.cfg.hr_flag_col)).alias(self.cfg.sirs_score_col)
+            pl.sum_horizontal(
+                [
+                    pl.col(self.cfg.wbc_flag_col),
+                    pl.col(self.cfg.temp_flag_col),
+                    pl.col(self.cfg.resp_flag_col),
+                    pl.col(self.cfg.hr_flag_col)
+                ]
+            ).alias(self.cfg.sirs_score_col)
         )
         
         return df_all_abnormal_flags

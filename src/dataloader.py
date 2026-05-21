@@ -3,13 +3,15 @@ import duckdb
 import os
 from pathlib import Path
 from src.utils.logger import get_logger
-from src.config import input_output_config, DataInputOutputConfig
+from src.configs.dataconfig import input_output_config, DataInputOutputConfig, VasopressorsConfig
+from src.utils.utils import convert_bp_to_sbp_in_numerivalue_col
 
 logger = get_logger(__name__)
 
 class DataLoader:
-    def __init__(self, input_output_dataconfig: DataInputOutputConfig):
+    def __init__(self, input_output_dataconfig: DataInputOutputConfig, vasopressors_config: VasopressorsConfig):
         self.input_output_dataconfig = input_output_dataconfig
+        self.vasopressors_config = vasopressors_config
         self.df_all = None
 
     def cast_cols(self,df: pl.DataFrame):
@@ -84,6 +86,21 @@ class DataLoader:
     def _load_flowsheets(self) -> pl.DataFrame:
         return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.FLOWSHEETS), infer_schema=False, null_values=['Null', "NULL", 'null'])
 
+    # def _set_vasopressors_flags(self, df: pl.DataFrame) -> pl.DataFrame:
+    #     expr = pl.col(self.vasopressors_config.flag_col)
+    #     df = df.with_columns(
+    #         pl.when(
+    #             (pl.col(self.vasopressors_config.grouper_col).is_in(self.vasopressors_config.grouper_vals))&
+    #             (pl.col(self.vasopressors_config.raw_val_col) == 'Yes')
+    #         ).then(pl.lit(1))
+    #         .when(
+    #             (pl.col(self.vasopressors_config.grouper_col).is_in(self.vasopressors_config.grouper_vals))&
+    #             (pl.col(self.vasopressors_config.raw_val_col) == 'No')
+    #         ).then(pl.lit(0))
+    #         .otherwise(expr).alias(f"NumericValue_with_vaso")
+    #     )
+    #     return df
+
     def load_data(self) -> pl.DataFrame:
         """
         Load data from the specified directory.
@@ -117,6 +134,18 @@ class DataLoader:
         procedures = self.cast_cols(procedures)
         baseline = self.cast_cols(baseline)
         diagnosis = self.cast_cols(diagnosis)
+        
+        if self.input_output_dataconfig.convert_bp_to_sbp:
+            logger.info("Converting blood pressure values to systolic blood pressure in flowsheets data.")
+            flowsheets = convert_bp_to_sbp_in_numerivalue_col(
+                flowsheets,
+                type_col="Type",
+                type_val="Flowsheet",
+                grouper_col="Event_Grouper",
+                grouper_val="Blood Pressure",
+                raw_val_col="Value",
+                val_col="NumericValue"
+            )
 
         logger.info("Data type casting completed.")
         df_all = pl.concat([
@@ -139,6 +168,8 @@ class DataLoader:
             pl.col("EncounterEpicCsn").is_not_null() & pl.col("Event_DateTime").is_not_null()
         )
         logger.info(f"After filtering, df_all has shape {self.df_all.shape}")
+        
+        # self.df_all = self._set_vasopressors_flags(self.df_all)
         return self.df_all
     
     def save_csv(self, output_dir: Path | str, filename: str = "infection_detection_result.csv"):

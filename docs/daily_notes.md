@@ -1,0 +1,2 @@
+### Sepsis 1: SIRS analysis
+- At some timepoint, there are multiple events logged. They elevates the SIRS score to 3. However, based on the arbitrary sorting of those events, it can seem like SIRS score is 1, then 3 and then 2. Which is wrong, because SIRS score should have been 3 all along. it is the just the arbitrary sorting of the same time instante that yield to have 2 (last) SIRS value instead of 3

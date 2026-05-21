@@ -1,5 +1,5 @@
 import polars as pl
-from src.config import CardiovascularConfig
+from src.configs.organdysfunction import CardiovascularConfig
 
 """
 Cardiac Dysfunction Criteria:

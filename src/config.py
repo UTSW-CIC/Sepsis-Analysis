@@ -317,6 +317,8 @@ class BloodPressureConfig(BaseModel):
     bp_grouper_val: str = "Blood Pressure"
     bp_val_col: str = "Value"
     sys_col: str = "sys"
+    dia_col: str = "dia"
+    map_col: str = "map"
 
 class AggregatorConfig(DataConfig):
     evt_val_col: str = "evt_val"
