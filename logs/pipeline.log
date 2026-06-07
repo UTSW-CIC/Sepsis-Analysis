@@ -3601,3 +3601,910 @@
 2026-05-21 01:00:44 | INFO     | __main__ | Sepsis 1 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sepsis1.parquet
 2026-05-21 01:00:44 | INFO     | __main__ | Sepsis 2 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sepsis2.parquet
 2026-05-21 01:00:44 | INFO     | __main__ | Sepsis 3 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sepsis3.parquet
+2026-05-21 14:29:51 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-05-21 14:29:53 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-05-21 14:29:53 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-05-21 14:35:10 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-05-21 14:35:11 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-05-21 14:35:11 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-05-21 17:28:37 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-05-21 17:54:13 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-05-21 17:54:14 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-05-21 17:54:14 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-05-21 17:54:19 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-05-21 17:54:19 | INFO     | src.dataloader | Data type casting completed.
+2026-05-21 17:54:21 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-05-21 17:54:24 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-05-21 17:54:24 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-05-21 17:54:24 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-05-21 17:54:24 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all_layer1.parquet
+2026-05-21 17:54:25 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-05-21 17:54:25 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sirs_filled.parquet
+2026-05-21 17:54:26 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-05-21 18:17:49 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all_layer1.parquet
+2026-05-21 18:17:50 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-05-21 18:17:50 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sirs_filled.parquet
+2026-05-21 18:17:50 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-05-28 12:06:36 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-05-28 12:06:37 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-05-28 12:06:37 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-05-28 12:06:38 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-05-28 12:06:38 | INFO     | src.dataloader | Data type casting completed.
+2026-05-28 12:06:39 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-05-28 12:06:41 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-05-28 12:06:41 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-05-28 12:06:41 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-05-28 12:06:41 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all_layer1.parquet
+2026-05-28 12:06:44 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-05-28 12:06:47 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sirs_filled.parquet
+2026-05-28 12:06:47 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-05-28 12:52:32 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all_layer1.parquet
+2026-05-28 12:52:33 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-05-28 12:52:33 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sirs_filled.parquet
+2026-05-28 12:52:33 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-05-28 12:52:54 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all_layer1.parquet
+2026-05-28 12:52:54 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-05-28 12:52:54 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sirs_filled.parquet
+2026-05-28 12:52:55 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-05-28 13:38:01 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-05-28 13:38:01 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-05-28 13:38:01 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-05-28 13:38:02 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-05-28 13:38:02 | INFO     | src.dataloader | Data type casting completed.
+2026-05-28 13:38:03 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-05-28 13:38:05 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-05-28 13:38:05 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-05-28 13:38:05 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-05-28 13:38:05 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all_layer1.parquet
+2026-05-28 13:38:06 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-05-28 13:38:06 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sirs_filled.parquet
+2026-05-28 13:38:06 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-05-28 13:38:06 | INFO     | src.events.ventprocessor | Computing Vent Status
+2026-05-28 13:38:06 | INFO     | src.events.ventprocessor | Joining vent events to the aggregated table from EventAggregator
+2026-06-02 14:15:02 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 14:15:04 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 14:15:04 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 14:15:04 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 14:15:04 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 14:15:05 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 14:15:07 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 14:15:07 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 14:15:07 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 14:27:44 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 14:27:45 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 14:27:45 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 14:27:45 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 14:27:45 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 14:27:46 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 14:27:48 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 14:27:48 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 14:27:48 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 14:27:48 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 14:27:49 | INFO     | __main__ | =================================================================================
+2026-06-02 14:27:49 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Temperature            ┆ 98    │
+│ Respirations           ┆ 5646  │
+│ Pulse                  ┆ 682   │
+│ Blood Pressure         ┆ 83    │
+└────────────────────────┴───────┘
+2026-06-02 14:27:49 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 14:27:51 | INFO     | __main__ | =================================================================================
+2026-06-02 17:40:18 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 17:40:20 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 17:40:20 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 17:40:20 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 17:40:20 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 17:40:21 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 17:40:23 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 17:40:23 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 17:40:23 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 17:40:24 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 17:40:25 | INFO     | __main__ | =================================================================================
+2026-06-02 17:40:25 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Temperature            ┆ 98    │
+│ Pulse                  ┆ 682   │
+└────────────────────────┴───────┘
+2026-06-02 17:40:25 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 17:40:26 | INFO     | __main__ | =================================================================================
+2026-06-02 17:40:48 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 17:40:49 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 17:40:49 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 17:40:49 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 17:40:49 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 17:40:50 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 17:40:52 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 17:40:52 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 17:40:52 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 17:40:52 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 17:40:53 | INFO     | __main__ | =================================================================================
+2026-06-02 17:40:53 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Blood Pressure         ┆ 83    │
+│ Respirations           ┆ 5646  │
+│ Temperature            ┆ 98    │
+│ Pulse                  ┆ 682   │
+└────────────────────────┴───────┘
+2026-06-02 17:40:53 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 17:40:55 | INFO     | __main__ | =================================================================================
+2026-06-02 17:43:22 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 17:43:23 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 17:43:23 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 17:43:23 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 17:43:23 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 17:43:24 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 17:43:26 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 17:43:26 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 17:43:26 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 17:43:26 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 17:43:28 | INFO     | __main__ | =================================================================================
+2026-06-02 17:43:28 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+│ Respirations           ┆ 5646  │
+│ Temperature            ┆ 98    │
+└────────────────────────┴───────┘
+2026-06-02 17:43:28 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 17:43:29 | INFO     | __main__ | =================================================================================
+2026-06-02 17:43:44 | INFO     | __main__ | SIRS flags calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs.parquet
+2026-06-02 17:45:40 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 17:45:41 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 17:45:41 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 17:45:41 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 17:45:41 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 17:45:42 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 17:45:44 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 17:45:44 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 17:45:44 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 17:45:44 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 17:45:46 | INFO     | __main__ | =================================================================================
+2026-06-02 17:45:46 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Temperature            ┆ 98    │
+│ Blood Pressure         ┆ 83    │
+│ Respirations           ┆ 5646  │
+│ Pulse                  ┆ 682   │
+└────────────────────────┴───────┘
+2026-06-02 17:45:46 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 17:45:47 | INFO     | __main__ | =================================================================================
+2026-06-02 17:45:50 | INFO     | __main__ | SIRS flags calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs.parquet
+2026-06-02 17:47:54 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 17:47:54 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 17:47:54 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 17:47:54 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 17:47:54 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 17:47:56 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 17:47:58 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 17:47:58 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 17:47:58 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 17:47:58 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 17:47:59 | INFO     | __main__ | =================================================================================
+2026-06-02 17:47:59 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Pulse                  ┆ 682   │
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Temperature            ┆ 98    │
+└────────────────────────┴───────┘
+2026-06-02 17:47:59 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 17:48:00 | INFO     | __main__ | =================================================================================
+2026-06-02 17:48:03 | INFO     | __main__ | SIRS flags calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs.parquet
+2026-06-02 17:48:05 | INFO     | __main__ | SIRS flags after filling nulls calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_sirs_filled.parquet
+2026-06-02 17:51:06 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 17:51:06 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 17:51:06 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 17:51:07 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 17:51:07 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 17:51:08 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 17:51:10 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 17:51:10 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 17:51:10 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 17:51:10 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 17:51:11 | INFO     | __main__ | =================================================================================
+2026-06-02 17:51:11 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Temperature            ┆ 98    │
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+│ Respirations           ┆ 5646  │
+└────────────────────────┴───────┘
+2026-06-02 17:51:11 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 17:51:12 | INFO     | __main__ | =================================================================================
+2026-06-02 17:51:15 | INFO     | __main__ | SIRS flags calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs.parquet
+2026-06-02 17:51:28 | INFO     | __main__ | SIRS flags after filling nulls calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs_filled.parquet
+2026-06-02 20:24:06 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 20:24:09 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 20:24:09 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 20:24:10 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 20:24:10 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 20:24:12 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 20:24:15 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 20:24:15 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 20:24:15 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 20:24:15 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 20:24:17 | INFO     | __main__ | =================================================================================
+2026-06-02 20:24:17 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Pulse                  ┆ 682   │
+│ Respirations           ┆ 5646  │
+│ Temperature            ┆ 98    │
+│ Blood Pressure         ┆ 83    │
+└────────────────────────┴───────┘
+2026-06-02 20:24:17 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 20:24:19 | INFO     | __main__ | =================================================================================
+2026-06-02 20:24:19 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-06-02 20:24:19 | INFO     | src.events.infectiondetection | Detected 7378 infections with antibiotic and culture criteria
+2026-06-02 20:24:19 | INFO     | src.events.infectiondetection | Detecting infection with lactate and culture criteria
+2026-06-02 20:24:20 | INFO     | src.events.infectiondetection | Detected 6646 infections with lactate and culture criteria
+2026-06-02 20:24:20 | INFO     | src.events.infectiondetection | Detecting infection with code sepsis order criteria
+2026-06-02 20:24:20 | INFO     | src.events.infectiondetection | Detected 1682 infections with code sepsis order criteria
+2026-06-02 20:24:20 | INFO     | src.events.infectiondetection | Detecting infection with suspected infection criteria
+2026-06-02 20:24:20 | INFO     | src.events.infectiondetection | Detected 901 infections with suspected infection criteria
+2026-06-02 20:24:20 | INFO     | src.events.infectiondetection | --------------------------------------------------------------------------------
+2026-06-02 20:24:20 | INFO     | src.events.infectiondetection | Combining infection detection results from all criteria
+2026-06-02 20:24:20 | INFO     | src.events.infectiondetection | Combined infection detection results has 16607 rows and columns: ['EncounterEpicCsn', 'criterion', 'infect_dt', 'suspicion_infection_type']
+2026-06-02 20:24:20 | INFO     | __main__ | Infection data detected. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_infect_long.parquet
+2026-06-02 20:24:20 | INFO     | __main__ | =================================================================================
+2026-06-02 20:24:24 | INFO     | __main__ | SIRS flags calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs.parquet
+2026-06-02 20:24:57 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-02 20:24:58 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-02 20:24:58 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-02 20:24:58 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-02 20:24:58 | INFO     | src.dataloader | Data type casting completed.
+2026-06-02 20:25:00 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-02 20:25:03 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-02 20:25:03 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-02 20:25:03 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-02 20:25:03 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-02 20:25:05 | INFO     | __main__ | =================================================================================
+2026-06-02 20:25:05 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Respirations           ┆ 5646  │
+│ Pulse                  ┆ 682   │
+│ Temperature            ┆ 98    │
+│ Blood Pressure         ┆ 83    │
+└────────────────────────┴───────┘
+2026-06-02 20:25:05 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 20:25:07 | INFO     | __main__ | =================================================================================
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Detected 7382 infections with antibiotic and culture criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Detecting infection with lactate and culture criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Detected 6646 infections with lactate and culture criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Detecting infection with code sepsis order criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Detected 1682 infections with code sepsis order criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Detecting infection with suspected infection criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Detected 901 infections with suspected infection criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | --------------------------------------------------------------------------------
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Combining infection detection results from all criteria
+2026-06-02 20:25:07 | INFO     | src.events.infectiondetection | Combined infection detection results has 16611 rows and columns: ['EncounterEpicCsn', 'criterion', 'infect_dt', 'suspicion_infection_type']
+2026-06-02 20:25:07 | INFO     | __main__ | Infection data detected. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_infect_long.parquet
+2026-06-02 20:25:07 | INFO     | __main__ | =================================================================================
+2026-06-02 20:25:11 | INFO     | __main__ | SIRS flags calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs.parquet
+2026-06-02 20:25:26 | INFO     | __main__ | SIRS flags after filling nulls calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs_filled.parquet
+2026-06-02 20:32:07 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-02 20:32:11 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Pulse                  ┆ 682   │
+│ Blood Pressure         ┆ 83    │
+│ Temperature            ┆ 98    │
+│ Respirations           ┆ 5646  │
+└────────────────────────┴───────┘
+2026-06-02 20:32:11 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-02 20:32:12 | INFO     | __main__ | =================================================================================
+2026-06-02 20:32:13 | INFO     | src.events.aggregator | Created reference table with 2536039 rows based on unique combinations of EncounterEpicCsn and Event_DateTime
+2026-06-02 20:32:13 | INFO     | src.events.aggregator | Aggregating feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-06-02 20:32:16 | INFO     | src.events.aggregator | Joining aggregated feature last_temp_8h back to reference table
+2026-06-02 20:32:16 | INFO     | src.events.aggregator | Feature last_temp_8h aggregated and joined. Current reference table now has 2536039 rows and 3 columns.
+2026-06-02 20:32:16 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:32:16 | INFO     | src.events.aggregator | Aggregating feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-06-02 20:32:32 | INFO     | src.events.aggregator | Joining aggregated feature last_pulse_8h back to reference table
+2026-06-02 20:32:32 | INFO     | src.events.aggregator | Feature last_pulse_8h aggregated and joined. Current reference table now has 2536039 rows and 4 columns.
+2026-06-02 20:32:32 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:32:32 | INFO     | src.events.aggregator | Aggregating feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-06-02 20:32:45 | INFO     | src.events.aggregator | Joining aggregated feature last_resp_8h back to reference table
+2026-06-02 20:32:45 | INFO     | src.events.aggregator | Feature last_resp_8h aggregated and joined. Current reference table now has 2536039 rows and 5 columns.
+2026-06-02 20:32:45 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:32:45 | INFO     | src.events.aggregator | Aggregating feature last_sbp_8h using last over last 480.0 minutes for events in Systolic Blood Pressure
+2026-06-02 20:32:52 | INFO     | src.events.aggregator | Joining aggregated feature last_sbp_8h back to reference table
+2026-06-02 20:32:52 | INFO     | src.events.aggregator | Feature last_sbp_8h aggregated and joined. Current reference table now has 2536039 rows and 6 columns.
+2026-06-02 20:32:52 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:32:52 | INFO     | src.events.aggregator | Aggregating feature last_map_8h using last over last 480.0 minutes for events in Arterial Blood Pressure Mean
+2026-06-02 20:32:58 | INFO     | src.events.aggregator | Joining aggregated feature last_map_8h back to reference table
+2026-06-02 20:32:58 | INFO     | src.events.aggregator | Feature last_map_8h aggregated and joined. Current reference table now has 2536039 rows and 7 columns.
+2026-06-02 20:32:58 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:32:58 | INFO     | src.events.aggregator | Aggregating feature last_wbc_12h using last over last 720.0 minutes for events in WBC
+2026-06-02 20:32:59 | INFO     | src.events.aggregator | Joining aggregated feature last_wbc_12h back to reference table
+2026-06-02 20:32:59 | INFO     | src.events.aggregator | Feature last_wbc_12h aggregated and joined. Current reference table now has 2536039 rows and 8 columns.
+2026-06-02 20:32:59 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:32:59 | INFO     | src.events.aggregator | Aggregating feature last_creatinine_12h using last over last 720.0 minutes for events in Creatinine
+2026-06-02 20:33:01 | INFO     | src.events.aggregator | Joining aggregated feature last_creatinine_12h back to reference table
+2026-06-02 20:33:01 | INFO     | src.events.aggregator | Feature last_creatinine_12h aggregated and joined. Current reference table now has 2536039 rows and 9 columns.
+2026-06-02 20:33:01 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:01 | INFO     | src.events.aggregator | Aggregating feature last_egfr_12h using last over last 720.0 minutes for events in eGFR
+2026-06-02 20:33:02 | INFO     | src.events.aggregator | Joining aggregated feature last_egfr_12h back to reference table
+2026-06-02 20:33:02 | INFO     | src.events.aggregator | Feature last_egfr_12h aggregated and joined. Current reference table now has 2536039 rows and 10 columns.
+2026-06-02 20:33:02 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:02 | INFO     | src.events.aggregator | Aggregating feature last_bilirubin_12h using last over last 720.0 minutes for events in Bilirubin
+2026-06-02 20:33:03 | INFO     | src.events.aggregator | Joining aggregated feature last_bilirubin_12h back to reference table
+2026-06-02 20:33:03 | INFO     | src.events.aggregator | Feature last_bilirubin_12h aggregated and joined. Current reference table now has 2536039 rows and 11 columns.
+2026-06-02 20:33:03 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:03 | INFO     | src.events.aggregator | Aggregating feature last_lactate_6h using last over last 360.0 minutes for events in Lactate
+2026-06-02 20:33:04 | INFO     | src.events.aggregator | Joining aggregated feature last_lactate_6h back to reference table
+2026-06-02 20:33:04 | INFO     | src.events.aggregator | Feature last_lactate_6h aggregated and joined. Current reference table now has 2536039 rows and 12 columns.
+2026-06-02 20:33:04 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:04 | INFO     | src.events.aggregator | Aggregating feature last_platelets_24h using last over last 1440.0 minutes for events in Platelets
+2026-06-02 20:33:05 | INFO     | src.events.aggregator | Joining aggregated feature last_platelets_24h back to reference table
+2026-06-02 20:33:05 | INFO     | src.events.aggregator | Feature last_platelets_24h aggregated and joined. Current reference table now has 2536039 rows and 13 columns.
+2026-06-02 20:33:05 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:05 | INFO     | src.events.aggregator | Aggregating feature last_inr_12h using last over last 720.0 minutes for events in INR
+2026-06-02 20:33:06 | INFO     | src.events.aggregator | Joining aggregated feature last_inr_12h back to reference table
+2026-06-02 20:33:06 | INFO     | src.events.aggregator | Feature last_inr_12h aggregated and joined. Current reference table now has 2536039 rows and 14 columns.
+2026-06-02 20:33:06 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:06 | INFO     | src.events.aggregator | Aggregating feature last_aptt_24h using last over last 1440.0 minutes for events in APTT
+2026-06-02 20:33:06 | WARNING  | src.events.aggregator | Only 0 events found for feature last_aptt_24h. Check if the event_grouper value is correct and if there are enough events in the data.
+2026-06-02 20:33:07 | INFO     | src.events.aggregator | Joining aggregated feature last_aptt_24h back to reference table
+2026-06-02 20:33:07 | INFO     | src.events.aggregator | Feature last_aptt_24h aggregated and joined. Current reference table now has 2536039 rows and 15 columns.
+2026-06-02 20:33:07 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:07 | INFO     | src.events.aggregator | Aggregating feature last_gcs_12h using last over last 720.0 minutes for events in Glasgow Coma Score
+2026-06-02 20:33:09 | INFO     | src.events.aggregator | Joining aggregated feature last_gcs_12h back to reference table
+2026-06-02 20:33:09 | INFO     | src.events.aggregator | Feature last_gcs_12h aggregated and joined. Current reference table now has 2536039 rows and 16 columns.
+2026-06-02 20:33:09 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:09 | INFO     | src.events.aggregator | Aggregating feature last_vasopressin_24h using last over last 1440.0 minutes for events in Vasopressin
+2026-06-02 20:33:10 | INFO     | src.events.aggregator | Joining aggregated feature last_vasopressin_24h back to reference table
+2026-06-02 20:33:10 | INFO     | src.events.aggregator | Feature last_vasopressin_24h aggregated and joined. Current reference table now has 2536039 rows and 17 columns.
+2026-06-02 20:33:10 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:10 | INFO     | src.events.aggregator | Aggregating feature last_phenylephrine_24h using last over last 1440.0 minutes for events in Phenylephrine
+2026-06-02 20:33:10 | WARNING  | src.events.aggregator | Only 522 events found for feature last_phenylephrine_24h. Check if the event_grouper value is correct and if there are enough events in the data.
+2026-06-02 20:33:10 | INFO     | src.events.aggregator | Joining aggregated feature last_phenylephrine_24h back to reference table
+2026-06-02 20:33:10 | INFO     | src.events.aggregator | Feature last_phenylephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 18 columns.
+2026-06-02 20:33:10 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:10 | INFO     | src.events.aggregator | Aggregating feature last_norepinephrine_24h using last over last 1440.0 minutes for events in Norepinephrine
+2026-06-02 20:33:11 | INFO     | src.events.aggregator | Joining aggregated feature last_norepinephrine_24h back to reference table
+2026-06-02 20:33:11 | INFO     | src.events.aggregator | Feature last_norepinephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 19 columns.
+2026-06-02 20:33:11 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:11 | INFO     | src.events.aggregator | Aggregating feature last_epinephrine_24h using last over last 1440.0 minutes for events in Epinephrine
+2026-06-02 20:33:12 | INFO     | src.events.aggregator | Joining aggregated feature last_epinephrine_24h back to reference table
+2026-06-02 20:33:12 | INFO     | src.events.aggregator | Feature last_epinephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 20 columns.
+2026-06-02 20:33:12 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-02 20:33:12 | INFO     | src.events.aggregator | All features aggregated and joined back to reference table.
+2026-06-02 20:33:12 | INFO     | __main__ | Aggregated features saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-02 20:33:12 | INFO     | __main__ | =================================================================================
+2026-06-03 01:04:49 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-03 01:04:52 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+│ Temperature            ┆ 98    │
+└────────────────────────┴───────┘
+2026-06-03 01:04:52 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-03 01:04:53 | INFO     | __main__ | =================================================================================
+2026-06-03 01:04:53 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-03 01:06:17 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-03 01:06:18 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+│ Temperature            ┆ 98    │
+└────────────────────────┴───────┘
+2026-06-03 01:06:18 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-03 01:06:19 | INFO     | __main__ | =================================================================================
+2026-06-03 01:06:19 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-03 01:16:55 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-03 01:16:56 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Pulse                  ┆ 682   │
+│ Respirations           ┆ 5646  │
+│ Temperature            ┆ 98    │
+│ Blood Pressure         ┆ 83    │
+└────────────────────────┴───────┘
+2026-06-03 01:16:56 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-03 01:16:57 | INFO     | __main__ | =================================================================================
+2026-06-03 01:16:57 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-03 01:18:21 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-03 01:18:22 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Temperature            ┆ 98    │
+│ Pulse                  ┆ 682   │
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+└────────────────────────┴───────┘
+2026-06-03 01:18:22 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-03 01:18:23 | INFO     | __main__ | =================================================================================
+2026-06-03 01:18:23 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-03 01:30:26 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-03 01:30:27 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Temperature            ┆ 98    │
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+└────────────────────────┴───────┘
+2026-06-03 01:30:27 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-03 01:30:29 | INFO     | __main__ | =================================================================================
+2026-06-03 01:30:29 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-03 01:30:34 | INFO     | __main__ | SIRS flags calculated after aggregation. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sirs_postagg.parquet
+2026-06-03 01:30:35 | INFO     | __main__ | =================================================================================
+2026-06-04 13:21:50 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 13:21:53 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Temperature            ┆ 98    │
+│ Pulse                  ┆ 682   │
+└────────────────────────┴───────┘
+2026-06-04 13:21:53 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 13:21:53 | INFO     | __main__ | =================================================================================
+2026-06-04 13:21:53 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 13:23:30 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 13:23:31 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 13:23:32 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 13:24:02 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 13:24:03 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 13:24:03 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 13:25:05 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 13:25:06 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 13:25:06 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 13:25:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 13:25:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 13:25:46 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 13:35:22 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 13:35:22 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 13:35:23 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 13:55:14 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 13:55:15 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 13:55:15 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 15:25:31 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 15:25:32 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 15:25:32 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 15:56:44 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 15:56:44 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 15:56:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 15:57:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 15:57:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 15:57:46 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 17:00:33 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 17:00:33 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 17:00:33 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 17:18:53 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 17:18:56 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 17:18:57 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 18:40:49 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 18:40:50 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 18:40:50 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 18:41:15 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 18:41:15 | INFO     | __main__ | =================================================================================
+2026-06-04 18:41:15 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:41:17 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 18:41:18 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 18:46:01 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 18:46:02 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 18:46:02 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 18:46:17 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 18:46:18 | INFO     | __main__ | =================================================================================
+2026-06-04 18:46:18 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 18:46:20 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 18:46:43 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 18:46:43 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 18:46:44 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 18:46:45 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 18:46:46 | INFO     | __main__ | =================================================================================
+2026-06-04 18:46:46 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 18:46:47 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:54:29 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 18:54:29 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 18:54:29 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 18:54:31 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 18:54:32 | INFO     | __main__ | =================================================================================
+2026-06-04 18:54:32 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 18:54:33 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:55:33 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 18:55:33 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 18:56:48 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 18:56:49 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 18:56:49 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 18:56:50 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 18:56:51 | INFO     | __main__ | =================================================================================
+2026-06-04 18:56:51 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 18:56:52 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 18:56:52 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:56:52 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 18:56:52 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:56:52 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 18:56:52 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:56:53 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 18:56:53 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:56:53 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 18:56:53 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:57:12 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 18:57:21 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 18:59:18 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 18:59:18 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 18:59:19 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 18:59:20 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 18:59:21 | INFO     | __main__ | =================================================================================
+2026-06-04 18:59:21 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 18:59:23 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:59:29 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 18:59:30 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 18:59:55 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 18:59:55 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-04 19:00:40 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 19:00:41 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 19:00:41 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 19:00:43 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 19:00:43 | INFO     | __main__ | =================================================================================
+2026-06-04 19:00:43 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:00:45 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-04 19:00:45 | INFO     | __main__ | Organ dysfunction labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_organdysfunction.parquet
+2026-06-04 19:00:45 | INFO     | __main__ | =================================================================================
+2026-06-04 19:28:08 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 19:28:12 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 19:28:13 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 19:28:16 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 19:28:17 | INFO     | __main__ | =================================================================================
+2026-06-04 19:28:17 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:28:20 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 19:28:21 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 19:28:21 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 19:28:21 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-04 19:28:21 | INFO     | __main__ | Organ dysfunction labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_organdysfunction.parquet
+2026-06-04 19:28:21 | INFO     | __main__ | =================================================================================
+2026-06-04 20:00:44 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 20:00:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 20:00:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 20:00:48 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 20:00:49 | INFO     | __main__ | =================================================================================
+2026-06-04 20:00:49 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:00:52 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 20:00:53 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 20:00:53 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:00:53 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-04 20:00:53 | INFO     | __main__ | Organ dysfunction labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_organdysfunction.parquet
+2026-06-04 20:00:53 | INFO     | __main__ | =================================================================================
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | Calculating septic shock criteria.
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | Calculating SBP<90 flag for septic shock criteria.
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | Calculating SBP delta>40 flag for septic shock criteria.
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | Calculating MAP<65 flag for septic shock criteria.
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | Calculating lactate>4 flag for septic shock criteria.
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | Calculating vasopressor flag for septic shock criteria.
+2026-06-04 20:00:53 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:01:40 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 20:01:41 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 20:01:41 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 20:01:44 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 20:01:45 | INFO     | __main__ | =================================================================================
+2026-06-04 20:01:45 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:01:48 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 20:01:49 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 20:01:49 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:01:49 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-04 20:01:49 | INFO     | __main__ | Organ dysfunction labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_organdysfunction.parquet
+2026-06-04 20:01:49 | INFO     | __main__ | =================================================================================
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | Calculating septic shock criteria.
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | Calculating SBP<90 flag for septic shock criteria.
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | Calculating SBP delta>40 flag for septic shock criteria.
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | Calculating MAP<65 flag for septic shock criteria.
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | Calculating lactate>4 flag for septic shock criteria.
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | Calculating vasopressor flag for septic shock criteria.
+2026-06-04 20:01:49 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:04:22 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-04 20:04:23 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-04 20:04:24 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-04 20:04:26 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-04 20:04:28 | INFO     | __main__ | =================================================================================
+2026-06-04 20:04:28 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:04:30 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-04 20:04:31 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-04 20:04:31 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-04 20:04:31 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-04 20:04:31 | INFO     | __main__ | Organ dysfunction labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_organdysfunction.parquet
+2026-06-04 20:04:32 | INFO     | __main__ | =================================================================================
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | Calculating septic shock criteria.
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | Calculating SBP<90 flag for septic shock criteria.
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | Calculating SBP delta>40 flag for septic shock criteria.
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | Calculating MAP<65 flag for septic shock criteria.
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | Calculating lactate>4 flag for septic shock criteria.
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | Calculating vasopressor flag for septic shock criteria.
+2026-06-04 20:04:32 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-05 12:41:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_all.parquet
+2026-06-05 12:41:48 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-05 12:41:54 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase2_v2/df_agg.parquet
+2026-06-05 12:41:56 | INFO     | __main__ | Vent  Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_o2vent.parquet
+2026-06-05 12:41:56 | INFO     | __main__ | =================================================================================
+2026-06-05 12:41:56 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-05 12:41:58 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-05 12:41:59 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-05 12:41:59 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-05 12:41:59 | INFO     | __main__ | Organ dysfunction labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_organdysfunction.parquet
+2026-06-05 12:41:59 | INFO     | __main__ | =================================================================================
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | Calculating septic shock criteria.
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | Calculating SBP<90 flag for septic shock criteria.
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | Calculating SBP delta>40 flag for septic shock criteria.
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | Calculating MAP<65 flag for septic shock criteria.
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | Calculating lactate>4 flag for septic shock criteria.
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | Calculating vasopressor flag for septic shock criteria.
+2026-06-05 12:41:59 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-05 12:41:59 | INFO     | __main__ | Septic shock labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_septicshock.parquet
+2026-06-05 12:42:05 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 12:43:58 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 12:44:24 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 13:00:58 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 13:04:22 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 16:30:08 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 16:33:26 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 16:37:11 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 16:39:57 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 16:43:24 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 17:22:09 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 17:26:44 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 17:49:34 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-05 18:08:40 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-06 15:07:32 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-06 15:29:06 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-06 19:48:20 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 11:41:00 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 11:52:49 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 11:56:35 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 12:00:44 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 12:02:21 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 12:09:42 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 12:13:38 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 12:51:34 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-07 12:51:36 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-07 12:51:36 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-07 12:51:36 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-07 12:51:36 | INFO     | src.dataloader | Data type casting completed.
+2026-06-07 12:51:37 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-07 12:51:39 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-07 12:51:39 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-07 12:51:39 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-07 12:51:39 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-07 12:51:41 | INFO     | __main__ | =================================================================================
+2026-06-07 12:51:41 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Temperature            ┆ 98    │
+│ Pulse                  ┆ 682   │
+│ Blood Pressure         ┆ 83    │
+│ Respirations           ┆ 5646  │
+└────────────────────────┴───────┘
+2026-06-07 12:51:41 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-06-07 12:51:42 | INFO     | __main__ | =================================================================================
+2026-06-07 12:51:42 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-06-07 12:51:42 | INFO     | src.events.infectiondetection | Detected 7392 infections with antibiotic and culture criteria
+2026-06-07 12:51:42 | INFO     | src.events.infectiondetection | Detecting infection with lactate and culture criteria
+2026-06-07 12:51:42 | INFO     | src.events.infectiondetection | Detected 6646 infections with lactate and culture criteria
+2026-06-07 12:51:42 | INFO     | src.events.infectiondetection | Detecting infection with code sepsis order criteria
+2026-06-07 12:51:42 | INFO     | src.events.infectiondetection | Detected 1682 infections with code sepsis order criteria
+2026-06-07 12:51:42 | INFO     | src.events.infectiondetection | Detecting infection with suspected infection criteria
+2026-06-07 12:51:43 | INFO     | src.events.infectiondetection | Detected 901 infections with suspected infection criteria
+2026-06-07 12:51:43 | INFO     | src.events.infectiondetection | --------------------------------------------------------------------------------
+2026-06-07 12:51:43 | INFO     | src.events.infectiondetection | Combining infection detection results from all criteria
+2026-06-07 12:51:43 | INFO     | src.events.infectiondetection | Combined infection detection results has 16621 rows and columns: ['EncounterEpicCsn', 'criterion', 'infect_dt', 'suspicion_infection_type']
+2026-06-07 12:51:43 | INFO     | __main__ | Infection data detected. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_infect_long.parquet
+2026-06-07 12:51:43 | INFO     | __main__ | =================================================================================
+2026-06-07 12:51:43 | INFO     | src.events.aggregator | Created reference table with 2536039 rows based on unique combinations of EncounterEpicCsn and Event_DateTime
+2026-06-07 12:51:43 | INFO     | src.events.aggregator | Aggregating feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-06-07 12:51:45 | INFO     | src.events.aggregator | Joining aggregated feature last_temp_8h back to reference table
+2026-06-07 12:51:45 | INFO     | src.events.aggregator | Feature last_temp_8h aggregated and joined. Current reference table now has 2536039 rows and 3 columns.
+2026-06-07 12:51:45 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-07 12:51:45 | INFO     | src.events.aggregator | Aggregating feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-06-07 12:51:53 | INFO     | src.events.aggregator | Joining aggregated feature last_pulse_8h back to reference table
+2026-06-07 12:51:53 | INFO     | src.events.aggregator | Feature last_pulse_8h aggregated and joined. Current reference table now has 2536039 rows and 4 columns.
+2026-06-07 12:51:53 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-07 12:51:53 | INFO     | src.events.aggregator | Aggregating feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-06-07 12:52:00 | INFO     | src.events.aggregator | Joining aggregated feature last_resp_8h back to reference table
+2026-06-07 12:52:00 | INFO     | src.events.aggregator | Feature last_resp_8h aggregated and joined. Current reference table now has 2536039 rows and 5 columns.
+2026-06-07 12:52:00 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-07 12:52:00 | INFO     | src.events.aggregator | Aggregating feature last_sbp_8h using last over last 480.0 minutes for events in Systolic Blood Pressure
+2026-06-07 12:52:04 | INFO     | src.events.aggregator | Joining aggregated feature last_sbp_8h back to reference table
+2026-06-07 12:52:04 | INFO     | src.events.aggregator | Feature last_sbp_8h aggregated and joined. Current reference table now has 2536039 rows and 6 columns.
+2026-06-07 12:52:04 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-07 12:52:04 | INFO     | src.events.aggregator | Aggregating feature last_map_8h using last over last 480.0 minutes for events in Arterial Blood Pressure Mean
+2026-06-07 12:52:27 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 12:56:29 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 13:11:11 | INFO     | __main__ | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 13:11:15 | INFO     | __main__ | Sepsis 1 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sepsis1.parquet
+2026-06-07 13:11:15 | INFO     | __main__ | Sepsis 2 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sepsis2.parquet
+2026-06-07 13:11:15 | INFO     | __main__ | Sepsis 3 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_sepsis3.parquet
+2026-06-07 13:11:15 | INFO     | __main__ | =================================================================================
+2026-06-07 15:07:54 | INFO     | src.events.analysis | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 15:42:23 | INFO     | src.events.analysis | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-07 15:48:14 | INFO     | src.events.analysis | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2

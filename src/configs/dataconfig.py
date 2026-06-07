@@ -80,6 +80,10 @@ class VasopressorsConfig(DataConfig):
 input_output_config = DataInputOutputConfig(
     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase2_v2"
 )
+input_output_config_2 = DataInputOutputConfig(
+    data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase2_v2",
+    output_path=f'{env_settings.DATA_ABS_PATH}/data/output_data_phase2_v2_iteration2'
+)
 data_config = DataConfig()
 
 bp_config = BloodPressureConfig()

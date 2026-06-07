@@ -9,9 +9,10 @@ from src.utils.utils import convert_bp_to_sbp_in_numerivalue_col
 logger = get_logger(__name__)
 
 class DataLoader:
-    def __init__(self, input_output_dataconfig: DataInputOutputConfig, vasopressors_config: VasopressorsConfig):
+    def __init__(self, input_output_dataconfig: DataInputOutputConfig):
+        #, vasopressors_config: VasopressorsConfig):
         self.input_output_dataconfig = input_output_dataconfig
-        self.vasopressors_config = vasopressors_config
+        # self.vasopressors_config = vasopressors_config
         self.df_all = None
 
     def cast_cols(self,df: pl.DataFrame):

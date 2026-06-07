@@ -32,8 +32,22 @@ class BasicAnalysis:
     def _detect_POA1(self):
         df_enc = self._get_dfenc()
         df_sepsis1 = self.df_dict['df_sepsis1']
+
+        enc_id =self.basic_analyusis_config.encounter_col,
+        earliest_sepsis1_instance = self.basic_analyusis_config.severitysepsisconfig.earliest_sepsis1_instance
+        # arrival_instant = self.basic_analyusis_config.poa_config.period_constraints['Arrival_Instant']
+        # admission_instant = self.basic_analyusis_config.poa_config.period_constraints['InpatientAdmissionInstant']
+
+        # Get first sepsis instance
+        df_sepsis1_enc = df_sepsis1.group_by(
+            enc_id
+        ).agg(
+            pl.col(earliest_sepsis1_instance).min()
+        )
+
+
         df_joined = df_enc.join(
-            df_sepsis1,
+            df_sepsis1_enc,
             on = self.basic_analyusis_config.encounter_col
         )
 
@@ -52,8 +66,19 @@ class BasicAnalysis:
     def _detect_POA2(self):
         df_enc = self._get_dfenc()
         df_sepsis2 = self.df_dict['df_sepsis2']
+
+        enc_id =self.basic_analyusis_config.encounter_col,
+        earliest_sepsis2_instance = self.basic_analyusis_config.severitysepsisconfig.earliest_sepsis2_instance
+
+        # Get first sepsis instance
+        df_sepsis2_enc = df_sepsis2.group_by(
+            enc_id
+        ).agg(
+            pl.col(earliest_sepsis2_instance).min()
+        )
+
         df_joined = df_enc.join(
-            df_sepsis2,
+            df_sepsis2_enc,
             on = self.basic_analyusis_config.encounter_col
         )
         df_joined = df_joined.with_columns(
@@ -70,8 +95,20 @@ class BasicAnalysis:
     def _detect_POA3(self):
         df_enc = self._get_dfenc()
         df_sepsis3 = self.df_dict['df_sepsis3']
+
+        enc_id =self.basic_analyusis_config.encounter_col,
+        earliest_sepsis3_instance = self.basic_analyusis_config.severitysepsisconfig.earliest_sepsis3_instance
+
+        # Get first sepsis instance
+        df_sepsis3_enc = df_sepsis3.group_by(
+            enc_id
+        ).agg(
+            pl.col(earliest_sepsis3_instance).min()
+        )
+
+
         df_joined = df_enc.join(
-            df_sepsis3,
+            df_sepsis3_enc,
             on = self.basic_analyusis_config.encounter_col
         )
         df_joined = df_joined.with_columns(
@@ -2201,14 +2238,14 @@ class BasicAnalysis:
         # df_poa2 = self._filter_cofounding_factors(df_poa2)
         # df_poa3 = self._filter_cofounding_factors(df_poa3)
 
-        df_analyze = self._analyze_factor_simple(df_poa1, df_poa2, df_poa3, factor_col=self.basic_analyusis_config.categorical_factors[0],
-                                                  criterion_col=f"POA_Criteria_{self.basic_analyusis_config.poa_config.time_columns[0]}")
+        # df_analyze = self._analyze_factor_simple(df_poa1, df_poa2, df_poa3, factor_col=self.basic_analyusis_config.categorical_factors[0],
+        #                                           criterion_col=f"POA_Criteria_{self.basic_analyusis_config.poa_config.time_columns[0]}")
 
-        df_analyze_match = self._analyze_factor_match_simple(df_poa1, df_poa2, df_poa3, factor_col=self.basic_analyusis_config.categorical_factors[0],
-                                                  criterion_col=f"POA_Criteria_{self.basic_analyusis_config.poa_config.time_columns[0]}")
+        # df_analyze_match = self._analyze_factor_match_simple(df_poa1, df_poa2, df_poa3, factor_col=self.basic_analyusis_config.categorical_factors[0],
+        #                                           criterion_col=f"POA_Criteria_{self.basic_analyusis_config.poa_config.time_columns[0]}")
 
-        df_poa = self._poa_rate_by_factor(df_poa1, df_poa2, df_poa3, factor_col=self.basic_analyusis_config.categorical_factors[0], top_n=10)
-        fig = self.plot_poa_rate_by_factor(df_poa, factor_col="AdmissionOrigin")
+        # df_poa = self._poa_rate_by_factor(df_poa1, df_poa2, df_poa3, factor_col=self.basic_analyusis_config.categorical_factors[0], top_n=10)
+        # fig = self.plot_poa_rate_by_factor(df_poa, factor_col="AdmissionOrigin")
         # fig.show()
 
         results_display, results_raw = self._analyze_billing_vs_calculated(df_poa1, df_poa2, df_poa3)

@@ -60,6 +60,7 @@ class OrganDysfunctionCalculator:
         return CoagulationDysfunctionCalculator(self.df_agg_baselines, self.organdysfunction_config.coagulation).calculate_coagulation_dysfunction_flag()
 
 
+    # TODO: Remove that method. Pulmonary dysfunction has its own class now
     def _pulmonary_dysfunction_flag(self) -> pl.DataFrame:
         logger.info("Calculating pulmonary dysfunction flag.")
         # Fill vent status forward, and fill remaining nulls with "Vent off" status before calculating pulmonary dysfunction flag
@@ -151,17 +152,19 @@ class OrganDysfunctionCalculator:
         logger.info("All flag frames are the same length and have the same indices.")
         
     def _concatenate_flag_dfs(self, list_of_flag_dfs: List[pl.DataFrame])-> pl.DataFrame:
-        original_cols = set(list_of_flag_dfs[0].columns)        
+        curr_cols = set(list_of_flag_dfs[0].columns)        
         df = list_of_flag_dfs[0]
         for df_flag in list_of_flag_dfs[1:]:
-            extra_cols = set(df_flag.columns)-original_cols
+            extra_cols = set(df_flag.columns)-curr_cols
+            assert (df[self.organdysfunction_config.encounter_col].equals(df_flag[self.organdysfunction_config.encounter_col])) & (df[self.organdysfunction_config.event_dt_col].equals(df_flag[self.organdysfunction_config.event_dt_col])), "Dataframes are not aligned on encounter and event datetime columns"
             df = pl.concat([df, df_flag.select(extra_cols)], how='horizontal')
+            curr_cols = set(df.columns)
         
         return df
 
     def calculate(self):
-        df_pulmonary = self._pulmonary_dysfunction_flag()
-        logger.info("----------------------------------------------------------------------------------")
+        # df_pulmonary = self._pulmonary_dysfunction_flag()
+        # logger.info("----------------------------------------------------------------------------------")
         df_coagulation = self._coagulation_dysfunction_flag()
         logger.info("----------------------------------------------------------------------------------")
         df_cardiovascular = self._cardiovascular_dysfunction_flag()
@@ -174,7 +177,8 @@ class OrganDysfunctionCalculator:
         logger.info("----------------------------------------------------------------------------------")
 
         logger.info("Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.")
-        list_of_flag_dfs = [df_cardiovascular, df_coagulation, df_pulmonary, df_renal, df_hepatic, df_neuro]
+        # list_of_flag_dfs = [df_cardiovascular, df_coagulation, df_pulmonary, df_renal, df_hepatic, df_neuro]
+        list_of_flag_dfs = [df_cardiovascular, df_coagulation, df_renal, df_hepatic, df_neuro]
         for i in range(len(list_of_flag_dfs)):
             list_of_flag_dfs[i] = list_of_flag_dfs[i].sort(by=[self.organdysfunction_config.encounter_col, self.organdysfunction_config.event_dt_col])
             
@@ -190,14 +194,14 @@ class OrganDysfunctionCalculator:
         self.df_organdysfunction = self.df_organdysfunction.with_columns(
             pl.col(self.organdysfunction_config.cardiovascular.flag_col).fill_null(0),
             pl.col(self.organdysfunction_config.coagulation.flag_col).fill_null(0),
-            pl.col(self.organdysfunction_config.pulmonary.flag_col).fill_null(0),
+            # pl.col(self.organdysfunction_config.pulmonary.flag_col).fill_null(0),
             pl.col(self.organdysfunction_config.renal.flag_col).fill_null(0),
             pl.col(self.organdysfunction_config.hepatic.flag_col).fill_null(0),
             pl.col(self.organdysfunction_config.neurological.flag_col).fill_null(0)
         ).with_columns(
            ( pl.col(self.organdysfunction_config.cardiovascular.flag_col)
             + pl.col(self.organdysfunction_config.coagulation.flag_col)
-            + pl.col(self.organdysfunction_config.pulmonary.flag_col)
+            # + pl.col(self.organdysfunction_config.pulmonary.flag_col)
             + pl.col(self.organdysfunction_config.renal.flag_col)
             + pl.col(self.organdysfunction_config.hepatic.flag_col)
             + pl.col(self.organdysfunction_config.neurological.flag_col)).alias(self.organdysfunction_config.flag_col)

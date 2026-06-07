@@ -48,6 +48,8 @@ class NeurologicalConfig(BaseModel):
     gcs_threshold: float            = 15.0
     flag_col: str = "neurological_failure_flag"
 
+#TODO: Remove that class. Pulmonary dysfunction has its own class now
+# PulmonaryDysfunction has its own class and config now
 class PulmonaryConfig(BaseModel):
     vent_config: VentConfig = vent_config
     vent_col: FeatureColumn         = FeatureColumn.VENT_STATUS_FLAG
@@ -86,7 +88,7 @@ class OrganDysfunctionConfig(DataConfig):
     hepatic: HepaticConfig                  = HepaticConfig()
     coagulation: CoagulationConfig          = CoagulationConfig()
     neurological: NeurologicalConfig        = NeurologicalConfig()
-    pulmonary: PulmonaryConfig              = PulmonaryConfig()
+    # pulmonary: PulmonaryConfig              = PulmonaryConfig() # Pulmonary dysfunction has its own class now
     baseline: BaselineConfig                = BaselineConfig()
     flag_col: str = "organ_dysfunction_total"
 

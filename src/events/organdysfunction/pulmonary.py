@@ -1,6 +1,7 @@
 import polars as pl
 
 from src.configs.organdysfunction import PulmonaryConfig
+from src.configs.pulmonarydysfunction import PulmonaryDysfunctionConfig
 
 """
 
@@ -22,3 +23,6 @@ class PulmonaryDysfunctionCalculator:
                 (pl.col(self.pulmonary_config.vent_col) == self.pulmonary_config.vent_config.o2_grouper_val)
             ).cast(pl.Int64).alias(self.pulmonary_config.flag_col)
         )
+
+
+# class 

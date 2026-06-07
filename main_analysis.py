@@ -44,7 +44,7 @@ def combine_sepsis123(df_s1, df_s2, df_s3):
 #                         vent_config, septicshock_config)
 
 
-from src.configs.dataconfig import input_output_config, vasopressors_config
+from src.configs.dataconfig import input_output_config, input_output_config_2
 from src.configs.suspected_infection import suspected_infection_config
 from src.configs.sirscalculator import sirs_config
 from src.configs.aggregator import feature_config, vent_config, AggregatorConfig, agg_config
@@ -60,10 +60,15 @@ from src.utils.logger import get_logger, setup_root_logger
 from src.utils.utils import save_df, load_df, join_baselines_2_agg, load_output_folder, compare_column_between_two_dfs
 from src.utils.fillnull import NullsFiller
 
+from src.analysis.basic import BasicAnalysis
+from src.analysis.core import CoreAnalysis
+
 import os
 import polars as pl
 os.environ["NUMEXPR_MAX_THREADS"] = "64"  
 
 
 if __name__ == "__main__":
-    
+    # b = BasicAnalysis(input_output_config_2.output_path, basic_analysis_config) 
+    b = CoreAnalysis(input_output_config_2.output_path, "./core_analysis_output", basic_analysis_config) 
+    b.analyze()

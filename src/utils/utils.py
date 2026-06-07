@@ -2,6 +2,7 @@ import polars as pl
 import duckdb
 from typing import List
 from datetime import timedelta
+import datetime as dt
 from src.config import AggregatorConfig
 import os
 import re
@@ -281,6 +282,79 @@ def save_df(df: pl.DataFrame, output_path: str, file_name: str, logger=None, mes
         logger.info(f"Saving dataframe to {output_path}/{file_name}") if message == "" else logger.info(message+f" Saving dataframe to {output_path}/{file_name}")
     output_file = f"{output_path}/{file_name}"
     df.write_parquet(output_file)
+
+
+def combine_dfs_using_backbone(df1: pl.DataFrame,
+                               df2: pl.DataFrame,
+                               on_cols: List[str],
+                               how: str = "left",
+                               suffix_1: str = "_df1",
+                               suffix_2: str = "_df2") -> pl.DataFrame:
+    """
+    Combines two dataframes using specified columns. Handles duplicate columns by suffixing with _df1 and _df2.
+    """
+    backbone_1 = df1.select(on_cols)
+    backbone_2 = df2.select(on_cols)
+    backbone = pl.concat([backbone_1, backbone_2], how='vertical').unique()
+    combined = backbone.join(df1, on=on_cols, how=how, suffix=suffix_1).join(df2, on=on_cols, how=how, suffix=suffix_2)
+    return combined
+
+
+def explore_encounter_around_datetime(
+    df: pl.DataFrame,
+    enc_col: str,
+    dt_col: str,
+    enc_id: int,
+    center_dt: dt.datetime | str = None,
+    n_back_hours: int = None,
+    n_forward_hours: int = None
+) -> pl.DataFrame:
+    """
+    Filters a Polars DataFrame for a specific encounter ID and then
+    further filters records within a specified time window around a center datetime.
+
+    Args:
+        df (pl.DataFrame): The input Polars DataFrame.
+        enc_col (str): The name of the column containing encounter IDs.
+        dt_col (str): The name of the datetime column to filter by.
+        enc_id (int): The specific encounter ID to filter for.
+        center_dt (dt.datetime | str, optional): The central datetime for the window.
+                                                 Can be a datetime object or a string
+                                                 in "YYYY-MM-DD HH:MM:SS" format.
+                                                 Defaults to None, in which case no
+                                                 time-based filtering is applied.
+        n_back_hours (int, optional): Number of hours to look back from center_dt.
+                                      Defaults to 0 if center_dt is provided.
+        n_forward_hours (int, optional): Number of hours to look forward from center_dt.
+                                         Defaults to 0 if center_dt is provided.
+
+    Returns:
+        pl.DataFrame: A new DataFrame containing records for the specified encounter
+                      within the defined time window, sorted by the datetime column.
+    """
+    df_enc = df.filter(pl.col(enc_col) == enc_id)
+
+    if center_dt is not None:
+        if isinstance(center_dt, str):
+            # Corrected strptime format for seconds (%S)
+            center_dt = dt.datetime.strptime(center_dt, "%Y-%m-%d %H:%M:%S")
+
+        # Set default hours if not provided
+        if n_back_hours is None:
+            n_back_hours = 0
+        if n_forward_hours is None:
+            n_forward_hours = 0
+
+        # Calculate time window boundaries, explicitly using 'hours' for timedelta
+        start_dt = center_dt - timedelta(hours=n_back_hours)
+        end_dt = center_dt + timedelta(hours=n_forward_hours)
+
+        df_enc = df_enc.filter(
+            (pl.col(dt_col) >= start_dt) &
+            (pl.col(dt_col) <= end_dt)
+        )
+
+    return df_enc.sort(by=dt_col)
 
 
 def load_df( input_path: str, file_name: str, logger=None):

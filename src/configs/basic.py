@@ -10,7 +10,7 @@ class POAvsNPOAConfig(BaseModel):
     period_constraints: dict[str, int] = Field(
         default_factory=lambda: {
             "Arrival_Instant": 48,
-            "FirstAdmissionOrderInstant": 0,
+            # "FirstAdmissionOrderInstant": 0,
             "InpatientAdmissionInstant": 48,
         }
     )
@@ -24,7 +24,7 @@ class BasicAnalysisConfig(DataConfig):
     encounter_level_info_cols: List[str] = Field(default_factory=lambda: [
             "EncounterEpicCsn",
             "Arrival_Instant",
-            "FirstAdmissionOrderInstant",
+            # "FirstAdmissionOrderInstant",
             "InpatientAdmissionInstant",
             'Death_Flag',
             "DischargeDepartment",
@@ -47,7 +47,8 @@ class BasicAnalysisConfig(DataConfig):
 
     poa_config: POAvsNPOAConfig = POAvsNPOAConfig()
     severitysepsisconfig: SeveritySepsisConfig = severitysepsisconfig
-    billing_sepsis_col: str = Field(default="Sepsis_Category", description="Column name for billing sepsis category")
+    billing_sepsis_col: str = Field(default="Sepsis_Category",
+                                    description="Column name for billing sepsis category")
     billing_values_order: List[str] = Field(default_factory=lambda:[
         "NPOA-1",
         "NPOA-2",
