@@ -3,7 +3,7 @@ import duckdb
 import os
 from pathlib import Path
 from src.utils.logger import get_logger
-from src.configs.dataconfig import input_output_config, DataInputOutputConfig, VasopressorsConfig
+from src.configs.dataconfig import DataInputOutputConfig, VasopressorsConfig
 from src.utils.utils import convert_bp_to_sbp_in_numerivalue_col
 
 logger = get_logger(__name__)

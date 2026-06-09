@@ -620,6 +620,7 @@ class CoreAnalysis():
         # plt.tight_layout()
         # plt.show()
     
+
     def analyze(self):
         # df_s1 = self.df_dict['df_sepsis1']
         # # s1_cols = [
@@ -691,7 +692,7 @@ class CoreAnalysis():
         # self.plot_poa_barplot(df_joined.filter(~pl.col("Sepsis_Category").str.starts_with("U")))
         # self.plot_poa_barplot(df_joined.filter(~pl.col("Sepsis_Category").str.starts_with("U")),hue_col="POA_InpatientAdmissionInstant")
         self.plot_sepsis_time_boxplot(
-            df_joined.filter(~pl.col("Sepsis_Category").str.starts_with("U")).filter(pl.col("Arrival To Sepsis Time")<pl.col("Arrival To Sepsis Time").quantile(0.99)),
+            df_joined.filter(~pl.col("Sepsis_Category").str.starts_with("U")).filter(pl.col("Arrival To Sepsis Time")<pl.col("Arrival To Sepsis Time").quantile(0.99)).filter(pl.col("Arrival To Sepsis Time")>0),
               time_col="Arrival To Sepsis Time",
               group_cols=['Sepsis_Category', "POA_Arrival+48hrs"], filename="sepsis_time_boxplot_arrival.png"
         )

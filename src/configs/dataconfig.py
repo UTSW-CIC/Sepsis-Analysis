@@ -6,20 +6,32 @@ from .envconfig import env_settings
 #==============================================================================================================================
 # Input/Output Configurations
 #==============================================================================================================================
+# class InputFileNames(BaseModel):
+#     # ENCOUNTER_BASELINE_SCORES: str = "Encounters - Mar 2025 - Feb 2026 - 3.31.26.csv"
+#     # ENCOUNTER_BASELINE_SCORES: str = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.2.26.csv"
+#     # ENCOUNTER_BASELINE_SCORES: str = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.13.26.csv" 
+#     ENCOUNTER_BASELINE_SCORES: str = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.13.26 v2.csv" 
+#     # FLOWSHEETS: str = "Flowsheet Events Feb 2025 - Mar 2026 - 3.31.26.csv"
+#     FLOWSHEETS: str = "Flowsheets - Mar 2025 - Feb 2026 - 4.9.26.csv"
+#     # LABS: str = "Lab Results - 3.9.26.csv"
+#     LABS: str = "Lab Results - Mar 2025 - Feb 2026 - 4.8.26.csv"
+#     # MEDS: str = "Med Admin - 3.9.26.csv"
+#     MEDS: str = "Med Admin - Mar 2025 - Feb 2026 - 4.8.26.csv"
+#     # PROCEDURES: str = "Procedure Orders - 3.9.26.csv"
+#     PROCEDURES: str = "Procedure Orders - Mar 2025 - Feb 2026 - 4.9.26.csv"
+#     DIAGNOSIS: str = "Diagnoses - 3.9.26.csv"
+
 class InputFileNames(BaseModel):
-    # ENCOUNTER_BASELINE_SCORES: str = "Encounters - Mar 2025 - Feb 2026 - 3.31.26.csv"
-    # ENCOUNTER_BASELINE_SCORES: str = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.2.26.csv"
-    # ENCOUNTER_BASELINE_SCORES: str = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.13.26.csv" 
-    ENCOUNTER_BASELINE_SCORES: str = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.13.26 v2.csv" 
+    ENCOUNTER_BASELINE_SCORES: str = "Encounter Table with Baseline Values - June 2022 - May 2026 - 6.5.26.csv" 
     # FLOWSHEETS: str = "Flowsheet Events Feb 2025 - Mar 2026 - 3.31.26.csv"
-    FLOWSHEETS: str = "Flowsheets - Mar 2025 - Feb 2026 - 4.9.26.csv"
+    FLOWSHEETS: str = "Flowsheet Events - 6.5.26.csv"
     # LABS: str = "Lab Results - 3.9.26.csv"
-    LABS: str = "Lab Results - Mar 2025 - Feb 2026 - 4.8.26.csv"
+    LABS: str = "Lab Results - 6.5.26.csv"
     # MEDS: str = "Med Admin - 3.9.26.csv"
-    MEDS: str = "Med Admin - Mar 2025 - Feb 2026 - 4.8.26.csv"
+    MEDS: str = "Med Admin Events - 6.5.26.csv"
     # PROCEDURES: str = "Procedure Orders - 3.9.26.csv"
-    PROCEDURES: str = "Procedure Orders - Mar 2025 - Feb 2026 - 4.9.26.csv"
-    DIAGNOSIS: str = "Diagnoses - 3.9.26.csv"
+    PROCEDURES: str = "Procedure Order Events - 6.5.26.csv"
+    DIAGNOSIS: str = "Diagnoses - 6.5.26.csv"
 
 class DataInputOutputConfig(BaseModel):
     data_path: str = Field(..., description="Path to the data directory")
@@ -77,13 +89,40 @@ class VasopressorsConfig(DataConfig):
 #==============================================================================================================================
 # config instances
 #==============================================================================================================================
-input_output_config = DataInputOutputConfig(
-    data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase2_v2"
+# input_output_config = DataInputOutputConfig(
+#     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase2_v2"
+# )
+
+
+input_filenames_v2 = InputFileNames(
+    ENCOUNTER_BASELINE_SCORES = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.13.26 v2.csv" ,
+    FLOWSHEETS = "Flowsheets - Mar 2025 - Feb 2026 - 4.9.26.csv",
+    PROCEDURES  = "Procedure Orders - Mar 2025 - Feb 2026 - 4.9.26.csv",
+    DIAGNOSIS  = "Diagnoses - 3.9.26.csv",
+    MEDS = "Med Admin - Mar 2025 - Feb 2026 - 4.8.26.csv",
+    LABS = "Lab Results - Mar 2025 - Feb 2026 - 4.8.26.csv"
 )
 input_output_config_2 = DataInputOutputConfig(
     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase2_v2",
-    output_path=f'{env_settings.DATA_ABS_PATH}/data/output_data_phase2_v2_iteration2'
+    output_path=f'{env_settings.DATA_ABS_PATH}/data/output_data_phase2_v2_iteration2',
+    input_file_names=input_filenames_v2
 )
+
+
+input_filenames_v3 = InputFileNames(
+    ENCOUNTER_BASELINE_SCORES = "Encounter Table with Baseline Values - June 2022 - May 2026 - 6.5.26.csv",
+    FLOWSHEETS = "Flowsheet Events - 6.5.26.csv",
+    LABS = "Lab Results - 6.5.26.csv",
+    MEDS = "Med Admin Events - 6.5.26.csv",
+    PROCEDURES = "Procedure Order Events - 6.5.26.csv",
+    DIAGNOSIS = "Diagnoses - 6.5.26.csv",
+)
+input_output_config_3 = DataInputOutputConfig(
+    data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
+    output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3',
+    input_file_names=input_filenames_v3
+)
+
 data_config = DataConfig()
 
 bp_config = BloodPressureConfig()

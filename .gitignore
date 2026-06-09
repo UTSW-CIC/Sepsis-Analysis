@@ -5,3 +5,4 @@
 *.parquet
 .vscode/
 __pycache__/
+*.png

@@ -4508,3 +4508,419 @@
 2026-06-07 15:07:54 | INFO     | src.events.analysis | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
 2026-06-07 15:42:23 | INFO     | src.events.analysis | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
 2026-06-07 15:48:14 | INFO     | src.events.analysis | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2
+2026-06-08 11:13:51 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase3
+2026-06-08 11:13:57 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1903955, 8), flowsheets=(16312206, 8), med_admin=(985705, 8), procedures=(130186, 8), baseline=(14914, 44), diagnosis=(1498475, 8)
+2026-06-08 11:13:57 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-08 11:13:58 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-08 11:13:58 | INFO     | src.dataloader | Data type casting completed.
+2026-06-08 11:14:03 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (20830527, 52) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'PatientAgeAtAdmission', 'Sex', 'Ethnicity', 'FirstRace', 'MultiRacial', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'FirstAdmissionOrderInstant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-08 11:14:10 | INFO     | src.dataloader | Dropped duplicate rows. Before: 20830527, After: 20767934, Dropped: 62593
+2026-06-08 11:14:10 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-08 11:14:11 | INFO     | src.dataloader | After filtering, df_all has shape (20767931, 52)
+2026-06-08 11:20:16 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase3
+2026-06-08 11:20:18 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1903955, 8), flowsheets=(16312206, 8), med_admin=(985705, 8), procedures=(130186, 8), baseline=(14914, 44), diagnosis=(1498475, 8)
+2026-06-08 11:20:18 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-08 11:20:19 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-08 11:20:19 | INFO     | src.dataloader | Data type casting completed.
+2026-06-08 11:20:25 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (20830527, 52) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'PatientAgeAtAdmission', 'Sex', 'Ethnicity', 'FirstRace', 'MultiRacial', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'FirstAdmissionOrderInstant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-08 11:20:31 | INFO     | src.dataloader | Dropped duplicate rows. Before: 20830527, After: 20767934, Dropped: 62593
+2026-06-08 11:20:31 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-08 11:20:32 | INFO     | src.dataloader | After filtering, df_all has shape (20767931, 52)
+2026-06-08 11:21:14 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3/df_all.parquet
+2026-06-08 11:27:52 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase3
+2026-06-08 11:27:55 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1903955, 8), flowsheets=(16312206, 8), med_admin=(985705, 8), procedures=(130186, 8), baseline=(14914, 44), diagnosis=(1498475, 8)
+2026-06-08 11:27:55 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-08 11:27:56 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-08 11:27:56 | INFO     | src.dataloader | Data type casting completed.
+2026-06-08 11:28:02 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (20830527, 52) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'PatientAgeAtAdmission', 'Sex', 'Ethnicity', 'FirstRace', 'MultiRacial', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'FirstAdmissionOrderInstant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-08 11:28:08 | INFO     | src.dataloader | Dropped duplicate rows. Before: 20830527, After: 20767934, Dropped: 62593
+2026-06-08 11:28:08 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-08 11:28:09 | INFO     | src.dataloader | After filtering, df_all has shape (20767931, 52)
+2026-06-08 11:28:09 | INFO     | __main__ | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3/df_all.parquet
+2026-06-08 11:28:14 | INFO     | __main__ | =================================================================================
+2026-06-08 11:28:15 | INFO     | __main__ | Groupers with outlier values: shape: (3, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Temperature            ┆ 359   │
+│ Pulse                  ┆ 3289  │
+│ Respirations           ┆ 21234 │
+└────────────────────────┴───────┘
+2026-06-08 11:28:15 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3/df_all_layer1.parquet
+2026-06-08 11:28:20 | INFO     | __main__ | =================================================================================
+2026-06-08 11:28:20 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-06-08 11:28:20 | INFO     | src.events.infectiondetection | Detected 23612 infections with antibiotic and culture criteria
+2026-06-08 11:28:20 | INFO     | src.events.infectiondetection | Detecting infection with lactate and culture criteria
+2026-06-08 11:28:21 | INFO     | src.events.infectiondetection | Detected 25122 infections with lactate and culture criteria
+2026-06-08 11:28:21 | INFO     | src.events.infectiondetection | Detecting infection with code sepsis order criteria
+2026-06-08 11:28:21 | INFO     | src.events.infectiondetection | Detected 6921 infections with code sepsis order criteria
+2026-06-08 11:28:21 | INFO     | src.events.infectiondetection | Detecting infection with suspected infection criteria
+2026-06-08 11:28:21 | INFO     | src.events.infectiondetection | Detected 4797 infections with suspected infection criteria
+2026-06-08 11:28:21 | INFO     | src.events.infectiondetection | --------------------------------------------------------------------------------
+2026-06-08 11:28:21 | INFO     | src.events.infectiondetection | Combining infection detection results from all criteria
+2026-06-08 11:28:21 | INFO     | src.events.infectiondetection | Combined infection detection results has 60452 rows and columns: ['EncounterEpicCsn', 'criterion', 'infect_dt', 'suspicion_infection_type']
+2026-06-08 11:28:21 | INFO     | __main__ | Infection data detected. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3/df_infect_long.parquet
+2026-06-08 11:28:21 | INFO     | __main__ | =================================================================================
+2026-06-08 11:29:15 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase3
+2026-06-08 11:29:17 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1903955, 8), flowsheets=(16312206, 8), med_admin=(985705, 8), procedures=(130186, 8), baseline=(14914, 44), diagnosis=(1498475, 8)
+2026-06-08 11:29:17 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-08 11:29:18 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-08 11:29:18 | INFO     | src.dataloader | Data type casting completed.
+2026-06-08 11:29:24 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (20830527, 52) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'PatientAgeAtAdmission', 'Sex', 'Ethnicity', 'FirstRace', 'MultiRacial', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'FirstAdmissionOrderInstant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-08 11:29:31 | INFO     | src.dataloader | Dropped duplicate rows. Before: 20830527, After: 20767934, Dropped: 62593
+2026-06-08 11:29:31 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-08 11:29:32 | INFO     | src.dataloader | After filtering, df_all has shape (20767931, 52)
+2026-06-08 12:54:19 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-08 12:54:20 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-08 12:54:20 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-08 12:54:21 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-08 12:54:21 | INFO     | src.dataloader | Data type casting completed.
+2026-06-08 12:54:22 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-08 12:54:24 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-08 12:54:24 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-08 12:54:24 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-08 12:54:24 | INFO     | pipeline | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_all.parquet
+2026-06-08 12:54:25 | INFO     | pipeline | ================================================================================
+2026-06-08 12:54:26 | INFO     | pipeline | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+│ Temperature            ┆ 98    │
+│ Respirations           ┆ 5646  │
+└────────────────────────┴───────┘
+2026-06-08 12:54:26 | INFO     | pipeline | Layer 1 outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_all_layer1.parquet
+2026-06-08 12:54:27 | INFO     | pipeline | ================================================================================
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Detected 7390 infections with antibiotic and culture criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Detecting infection with lactate and culture criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Detected 6646 infections with lactate and culture criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Detecting infection with code sepsis order criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Detected 1682 infections with code sepsis order criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Detecting infection with suspected infection criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Detected 901 infections with suspected infection criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | --------------------------------------------------------------------------------
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Combining infection detection results from all criteria
+2026-06-08 12:54:27 | INFO     | src.events.infectiondetection | Combined infection detection results has 16619 rows and columns: ['EncounterEpicCsn', 'criterion', 'infect_dt', 'suspicion_infection_type']
+2026-06-08 12:54:27 | INFO     | pipeline | Infection data detected. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_infect_long.parquet
+2026-06-08 12:54:27 | INFO     | pipeline | ================================================================================
+2026-06-08 12:54:28 | INFO     | src.events.aggregator | Created reference table with 2536039 rows based on unique combinations of EncounterEpicCsn and Event_DateTime
+2026-06-08 12:54:28 | INFO     | src.events.aggregator | Aggregating feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-06-08 12:54:29 | INFO     | src.events.aggregator | Joining aggregated feature last_temp_8h back to reference table
+2026-06-08 12:54:29 | INFO     | src.events.aggregator | Feature last_temp_8h aggregated and joined. Current reference table now has 2536039 rows and 3 columns.
+2026-06-08 12:54:29 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:29 | INFO     | src.events.aggregator | Aggregating feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-06-08 12:54:38 | INFO     | src.events.aggregator | Joining aggregated feature last_pulse_8h back to reference table
+2026-06-08 12:54:38 | INFO     | src.events.aggregator | Feature last_pulse_8h aggregated and joined. Current reference table now has 2536039 rows and 4 columns.
+2026-06-08 12:54:38 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:38 | INFO     | src.events.aggregator | Aggregating feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-06-08 12:54:45 | INFO     | src.events.aggregator | Joining aggregated feature last_resp_8h back to reference table
+2026-06-08 12:54:45 | INFO     | src.events.aggregator | Feature last_resp_8h aggregated and joined. Current reference table now has 2536039 rows and 5 columns.
+2026-06-08 12:54:45 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:45 | INFO     | src.events.aggregator | Aggregating feature last_sbp_8h using last over last 480.0 minutes for events in Systolic Blood Pressure
+2026-06-08 12:54:48 | INFO     | src.events.aggregator | Joining aggregated feature last_sbp_8h back to reference table
+2026-06-08 12:54:48 | INFO     | src.events.aggregator | Feature last_sbp_8h aggregated and joined. Current reference table now has 2536039 rows and 6 columns.
+2026-06-08 12:54:48 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:48 | INFO     | src.events.aggregator | Aggregating feature last_map_8h using last over last 480.0 minutes for events in Arterial Blood Pressure Mean
+2026-06-08 12:54:52 | INFO     | src.events.aggregator | Joining aggregated feature last_map_8h back to reference table
+2026-06-08 12:54:52 | INFO     | src.events.aggregator | Feature last_map_8h aggregated and joined. Current reference table now has 2536039 rows and 7 columns.
+2026-06-08 12:54:52 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:52 | INFO     | src.events.aggregator | Aggregating feature last_wbc_12h using last over last 720.0 minutes for events in WBC
+2026-06-08 12:54:53 | INFO     | src.events.aggregator | Joining aggregated feature last_wbc_12h back to reference table
+2026-06-08 12:54:53 | INFO     | src.events.aggregator | Feature last_wbc_12h aggregated and joined. Current reference table now has 2536039 rows and 8 columns.
+2026-06-08 12:54:53 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:53 | INFO     | src.events.aggregator | Aggregating feature last_creatinine_12h using last over last 720.0 minutes for events in Creatinine
+2026-06-08 12:54:54 | INFO     | src.events.aggregator | Joining aggregated feature last_creatinine_12h back to reference table
+2026-06-08 12:54:54 | INFO     | src.events.aggregator | Feature last_creatinine_12h aggregated and joined. Current reference table now has 2536039 rows and 9 columns.
+2026-06-08 12:54:54 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:54 | INFO     | src.events.aggregator | Aggregating feature last_egfr_12h using last over last 720.0 minutes for events in eGFR
+2026-06-08 12:54:55 | INFO     | src.events.aggregator | Joining aggregated feature last_egfr_12h back to reference table
+2026-06-08 12:54:55 | INFO     | src.events.aggregator | Feature last_egfr_12h aggregated and joined. Current reference table now has 2536039 rows and 10 columns.
+2026-06-08 12:54:55 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:55 | INFO     | src.events.aggregator | Aggregating feature last_bilirubin_12h using last over last 720.0 minutes for events in Bilirubin
+2026-06-08 12:54:56 | INFO     | src.events.aggregator | Joining aggregated feature last_bilirubin_12h back to reference table
+2026-06-08 12:54:56 | INFO     | src.events.aggregator | Feature last_bilirubin_12h aggregated and joined. Current reference table now has 2536039 rows and 11 columns.
+2026-06-08 12:54:56 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:56 | INFO     | src.events.aggregator | Aggregating feature last_lactate_6h using last over last 360.0 minutes for events in Lactate
+2026-06-08 12:54:57 | INFO     | src.events.aggregator | Joining aggregated feature last_lactate_6h back to reference table
+2026-06-08 12:54:57 | INFO     | src.events.aggregator | Feature last_lactate_6h aggregated and joined. Current reference table now has 2536039 rows and 12 columns.
+2026-06-08 12:54:57 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:57 | INFO     | src.events.aggregator | Aggregating feature last_platelets_24h using last over last 1440.0 minutes for events in Platelets
+2026-06-08 12:54:58 | INFO     | src.events.aggregator | Joining aggregated feature last_platelets_24h back to reference table
+2026-06-08 12:54:58 | INFO     | src.events.aggregator | Feature last_platelets_24h aggregated and joined. Current reference table now has 2536039 rows and 13 columns.
+2026-06-08 12:54:58 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:58 | INFO     | src.events.aggregator | Aggregating feature last_inr_12h using last over last 720.0 minutes for events in INR
+2026-06-08 12:54:59 | INFO     | src.events.aggregator | Joining aggregated feature last_inr_12h back to reference table
+2026-06-08 12:54:59 | INFO     | src.events.aggregator | Feature last_inr_12h aggregated and joined. Current reference table now has 2536039 rows and 14 columns.
+2026-06-08 12:54:59 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:59 | INFO     | src.events.aggregator | Aggregating feature last_aptt_24h using last over last 1440.0 minutes for events in APTT
+2026-06-08 12:54:59 | WARNING  | src.events.aggregator | Only 0 events found for feature last_aptt_24h. Check if the event_grouper value is correct and if there are enough events in the data.
+2026-06-08 12:54:59 | INFO     | src.events.aggregator | Joining aggregated feature last_aptt_24h back to reference table
+2026-06-08 12:54:59 | INFO     | src.events.aggregator | Feature last_aptt_24h aggregated and joined. Current reference table now has 2536039 rows and 15 columns.
+2026-06-08 12:54:59 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:54:59 | INFO     | src.events.aggregator | Aggregating feature last_gcs_12h using last over last 720.0 minutes for events in Glasgow Coma Score
+2026-06-08 12:55:01 | INFO     | src.events.aggregator | Joining aggregated feature last_gcs_12h back to reference table
+2026-06-08 12:55:01 | INFO     | src.events.aggregator | Feature last_gcs_12h aggregated and joined. Current reference table now has 2536039 rows and 16 columns.
+2026-06-08 12:55:01 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:55:01 | INFO     | src.events.aggregator | Aggregating feature last_vasopressin_24h using last over last 1440.0 minutes for events in Vasopressin
+2026-06-08 12:55:02 | INFO     | src.events.aggregator | Joining aggregated feature last_vasopressin_24h back to reference table
+2026-06-08 12:55:02 | INFO     | src.events.aggregator | Feature last_vasopressin_24h aggregated and joined. Current reference table now has 2536039 rows and 17 columns.
+2026-06-08 12:55:02 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:55:02 | INFO     | src.events.aggregator | Aggregating feature last_phenylephrine_24h using last over last 1440.0 minutes for events in Phenylephrine
+2026-06-08 12:55:02 | WARNING  | src.events.aggregator | Only 522 events found for feature last_phenylephrine_24h. Check if the event_grouper value is correct and if there are enough events in the data.
+2026-06-08 12:55:02 | INFO     | src.events.aggregator | Joining aggregated feature last_phenylephrine_24h back to reference table
+2026-06-08 12:55:02 | INFO     | src.events.aggregator | Feature last_phenylephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 18 columns.
+2026-06-08 12:55:02 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:55:02 | INFO     | src.events.aggregator | Aggregating feature last_norepinephrine_24h using last over last 1440.0 minutes for events in Norepinephrine
+2026-06-08 12:55:03 | INFO     | src.events.aggregator | Joining aggregated feature last_norepinephrine_24h back to reference table
+2026-06-08 12:55:03 | INFO     | src.events.aggregator | Feature last_norepinephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 19 columns.
+2026-06-08 12:55:03 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:55:03 | INFO     | src.events.aggregator | Aggregating feature last_epinephrine_24h using last over last 1440.0 minutes for events in Epinephrine
+2026-06-08 12:55:04 | INFO     | src.events.aggregator | Joining aggregated feature last_epinephrine_24h back to reference table
+2026-06-08 12:55:04 | INFO     | src.events.aggregator | Feature last_epinephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 20 columns.
+2026-06-08 12:55:04 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 12:55:04 | INFO     | src.events.aggregator | All features aggregated and joined back to reference table.
+2026-06-08 12:55:04 | INFO     | pipeline | Aggregated features saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_agg.parquet
+2026-06-08 12:55:04 | INFO     | pipeline | ================================================================================
+2026-06-08 12:55:04 | INFO     | pipeline | SIRS flags calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_sirs_postagg.parquet
+2026-06-08 12:55:04 | INFO     | pipeline | ================================================================================
+2026-06-08 12:55:05 | INFO     | pipeline | Vent O2 delivery processed. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_o2vent.parquet
+2026-06-08 12:55:06 | INFO     | pipeline | ================================================================================
+2026-06-08 12:55:06 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 12:55:07 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-08 12:55:08 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-08 12:55:08 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 12:55:08 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-08 12:55:08 | INFO     | pipeline | Organ dysfunction labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_organdysfunction.parquet
+2026-06-08 12:55:08 | INFO     | pipeline | ================================================================================
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | Calculating septic shock criteria.
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | Calculating SBP<90 flag for septic shock criteria.
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | Calculating SBP delta>40 flag for septic shock criteria.
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | Calculating MAP<65 flag for septic shock criteria.
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | Calculating lactate>4 flag for septic shock criteria.
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | Calculating vasopressor flag for septic shock criteria.
+2026-06-08 12:55:08 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-08 12:55:08 | INFO     | pipeline | Septic shock labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_septicshock.parquet
+2026-06-08 12:55:08 | INFO     | pipeline | ================================================================================
+2026-06-08 12:55:10 | INFO     | pipeline | Sepsis 1 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_sepsis1.parquet
+2026-06-08 12:55:10 | INFO     | pipeline | Sepsis 2 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_sepsis2.parquet
+2026-06-08 12:55:11 | INFO     | pipeline | Sepsis 3 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_sepsis3.parquet
+2026-06-08 12:55:11 | INFO     | pipeline | ================================================================================
+2026-06-08 12:55:11 | INFO     | pipeline | Pipeline complete.
+2026-06-08 12:55:11 | INFO     | src.analysis.core | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h
+2026-06-08 14:08:05 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-06-08 15:17:19 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-08 15:17:20 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-08 15:17:20 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-08 15:17:20 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-08 15:17:20 | INFO     | src.dataloader | Data type casting completed.
+2026-06-08 15:17:21 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-08 15:17:23 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-08 15:17:23 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-08 15:17:23 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-08 15:17:23 | INFO     | pipeline | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_all.parquet
+2026-06-08 15:17:24 | INFO     | pipeline | ================================================================================
+2026-06-08 15:17:25 | INFO     | pipeline | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+│ Temperature            ┆ 98    │
+└────────────────────────┴───────┘
+2026-06-08 15:17:25 | INFO     | pipeline | Layer 1 outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_all_layer1.parquet
+2026-06-08 15:17:26 | INFO     | pipeline | ================================================================================
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Detected 7430 infections with antibiotic and culture criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Detecting infection with lactate and culture criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Detected 6646 infections with lactate and culture criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Detecting infection with code sepsis order criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Detected 1682 infections with code sepsis order criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Detecting infection with suspected infection criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Detected 901 infections with suspected infection criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | --------------------------------------------------------------------------------
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Combining infection detection results from all criteria
+2026-06-08 15:17:26 | INFO     | src.events.infectiondetection | Combined infection detection results has 16659 rows and columns: ['EncounterEpicCsn', 'criterion', 'infect_dt', 'suspicion_infection_type']
+2026-06-08 15:17:26 | INFO     | pipeline | Infection data detected. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_infect_long.parquet
+2026-06-08 15:17:26 | INFO     | pipeline | ================================================================================
+2026-06-08 15:17:26 | INFO     | src.events.aggregator | Created reference table with 2536039 rows based on unique combinations of EncounterEpicCsn and Event_DateTime
+2026-06-08 15:17:26 | INFO     | src.events.aggregator | Aggregating feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-06-08 15:17:28 | INFO     | src.events.aggregator | Joining aggregated feature last_temp_8h back to reference table
+2026-06-08 15:17:28 | INFO     | src.events.aggregator | Feature last_temp_8h aggregated and joined. Current reference table now has 2536039 rows and 3 columns.
+2026-06-08 15:17:28 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:17:28 | INFO     | src.events.aggregator | Aggregating feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-06-08 15:17:32 | INFO     | src.dataloader | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase2_v2
+2026-06-08 15:17:33 | INFO     | src.dataloader | Data loaded. Shapes: lab_res=(1356486, 8), flowsheets=(6646460, 8), med_admin=(270921, 8), procedures=(118629, 8), baseline=(3982, 38), diagnosis=(441520, 8)
+2026-06-08 15:17:33 | INFO     | src.dataloader | --------------------------------------------------------------------------------
+2026-06-08 15:17:33 | INFO     | src.dataloader | Converting blood pressure values to systolic blood pressure in flowsheets data.
+2026-06-08 15:17:33 | INFO     | src.dataloader | Data type casting completed.
+2026-06-08 15:17:34 | INFO     | src.dataloader | Concatenated all data into a single DataFrame with shape (8834016, 46) and columns ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'NumericValue', 'Value', 'Flag', 'PrimaryMrn', 'EncounterEpicCsn_right', 'AdmissionDateValue', 'DischargeDateValue', 'Arrival_Instant', 'InpatientAdmissionInstant', 'Admitted_from_ED', 'PatientClass', 'InpatientAdmissionPatientClass', 'HospitalService', 'LengthOfStayInDays', 'AdmittingDepartment', 'DischargeDepartment', 'AdmissionType', 'AdmissionSource', 'AdmissionOrigin', 'PrincipalProblem', 'PrimaryCodedDiagnosis', 'PrimaryCodedProcedureKey', 'Death_Flag', 'Original_POA_Condition', 'Sepsis_Category', 'Baseline_SBP', 'Baseline_RespiratoryRate', 'Baseline_PulseRate', 'Baseline_Creatinine', 'Baseline_Platelets', 'Baseline_Bilirubin', 'Baseline_eGFR', 'Baseline_WBC', 'First_Suspected_Infection_Time', 'Suspected_Infection_Criteria_Met', 'Cancer_Registry_YN', 'HIV_Registry_YN', 'Immunocrompromised_Registry_YN', 'CKD_Dialysis_Registry_YN', 'Solid_Organ_Transplant_Registry_YN', 'Pregnancy_Registry_YN']
+2026-06-08 15:17:36 | INFO     | src.dataloader | Dropped duplicate rows. Before: 8834016, After: 8814652, Dropped: 19364
+2026-06-08 15:17:36 | INFO     | src.dataloader | Filtering out rows with null EncounterEpicCsn or Event_DateTime
+2026-06-08 15:17:36 | INFO     | src.dataloader | After filtering, df_all has shape (8814652, 46)
+2026-06-08 15:17:36 | INFO     | pipeline | Initial data loaded. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_all.parquet
+2026-06-08 15:17:37 | INFO     | pipeline | ================================================================================
+2026-06-08 15:17:38 | INFO     | pipeline | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Temperature            ┆ 98    │
+│ Pulse                  ┆ 682   │
+└────────────────────────┴───────┘
+2026-06-08 15:17:38 | INFO     | pipeline | Layer 1 outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_all_layer1.parquet
+2026-06-08 15:17:39 | INFO     | pipeline | ================================================================================
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Detected 7408 infections with antibiotic and culture criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Detecting infection with lactate and culture criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Detected 6646 infections with lactate and culture criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Detecting infection with code sepsis order criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Detected 1682 infections with code sepsis order criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Detecting infection with suspected infection criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Detected 901 infections with suspected infection criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | --------------------------------------------------------------------------------
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Combining infection detection results from all criteria
+2026-06-08 15:17:39 | INFO     | src.events.infectiondetection | Combined infection detection results has 16637 rows and columns: ['EncounterEpicCsn', 'criterion', 'infect_dt', 'suspicion_infection_type']
+2026-06-08 15:17:39 | INFO     | pipeline | Infection data detected. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_infect_long.parquet
+2026-06-08 15:17:39 | INFO     | pipeline | ================================================================================
+2026-06-08 15:17:39 | INFO     | src.events.aggregator | Created reference table with 2536039 rows based on unique combinations of EncounterEpicCsn and Event_DateTime
+2026-06-08 15:17:39 | INFO     | src.events.aggregator | Aggregating feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-06-08 15:17:41 | INFO     | src.events.aggregator | Joining aggregated feature last_temp_8h back to reference table
+2026-06-08 15:17:41 | INFO     | src.events.aggregator | Feature last_temp_8h aggregated and joined. Current reference table now has 2536039 rows and 3 columns.
+2026-06-08 15:17:41 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:17:41 | INFO     | src.events.aggregator | Aggregating feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-06-08 15:17:50 | INFO     | src.events.aggregator | Joining aggregated feature last_pulse_8h back to reference table
+2026-06-08 15:17:50 | INFO     | src.events.aggregator | Feature last_pulse_8h aggregated and joined. Current reference table now has 2536039 rows and 4 columns.
+2026-06-08 15:17:50 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:17:50 | INFO     | src.events.aggregator | Aggregating feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-06-08 15:17:56 | INFO     | src.events.aggregator | Joining aggregated feature last_resp_8h back to reference table
+2026-06-08 15:17:57 | INFO     | src.events.aggregator | Feature last_resp_8h aggregated and joined. Current reference table now has 2536039 rows and 5 columns.
+2026-06-08 15:17:57 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:17:57 | INFO     | src.events.aggregator | Aggregating feature last_sbp_8h using last over last 480.0 minutes for events in Systolic Blood Pressure
+2026-06-08 15:18:00 | INFO     | src.events.aggregator | Joining aggregated feature last_sbp_8h back to reference table
+2026-06-08 15:18:00 | INFO     | src.events.aggregator | Feature last_sbp_8h aggregated and joined. Current reference table now has 2536039 rows and 6 columns.
+2026-06-08 15:18:00 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:00 | INFO     | src.events.aggregator | Aggregating feature last_map_8h using last over last 480.0 minutes for events in Arterial Blood Pressure Mean
+2026-06-08 15:18:04 | INFO     | src.events.aggregator | Joining aggregated feature last_map_8h back to reference table
+2026-06-08 15:18:04 | INFO     | src.events.aggregator | Feature last_map_8h aggregated and joined. Current reference table now has 2536039 rows and 7 columns.
+2026-06-08 15:18:04 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:04 | INFO     | src.events.aggregator | Aggregating feature last_wbc_12h using last over last 720.0 minutes for events in WBC
+2026-06-08 15:18:05 | INFO     | src.events.aggregator | Joining aggregated feature last_wbc_12h back to reference table
+2026-06-08 15:18:05 | INFO     | src.events.aggregator | Feature last_wbc_12h aggregated and joined. Current reference table now has 2536039 rows and 8 columns.
+2026-06-08 15:18:05 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:05 | INFO     | src.events.aggregator | Aggregating feature last_creatinine_12h using last over last 720.0 minutes for events in Creatinine
+2026-06-08 15:18:06 | INFO     | src.events.aggregator | Joining aggregated feature last_creatinine_12h back to reference table
+2026-06-08 15:18:06 | INFO     | src.events.aggregator | Feature last_creatinine_12h aggregated and joined. Current reference table now has 2536039 rows and 9 columns.
+2026-06-08 15:18:06 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:06 | INFO     | src.events.aggregator | Aggregating feature last_egfr_12h using last over last 720.0 minutes for events in eGFR
+2026-06-08 15:18:07 | INFO     | src.events.aggregator | Joining aggregated feature last_egfr_12h back to reference table
+2026-06-08 15:18:07 | INFO     | src.events.aggregator | Feature last_egfr_12h aggregated and joined. Current reference table now has 2536039 rows and 10 columns.
+2026-06-08 15:18:07 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:07 | INFO     | src.events.aggregator | Aggregating feature last_bilirubin_12h using last over last 720.0 minutes for events in Bilirubin
+2026-06-08 15:18:08 | INFO     | src.events.aggregator | Joining aggregated feature last_bilirubin_12h back to reference table
+2026-06-08 15:18:08 | INFO     | src.events.aggregator | Feature last_bilirubin_12h aggregated and joined. Current reference table now has 2536039 rows and 11 columns.
+2026-06-08 15:18:08 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:08 | INFO     | src.events.aggregator | Aggregating feature last_lactate_6h using last over last 360.0 minutes for events in Lactate
+2026-06-08 15:18:08 | INFO     | src.events.aggregator | Joining aggregated feature last_lactate_6h back to reference table
+2026-06-08 15:18:08 | INFO     | src.events.aggregator | Feature last_lactate_6h aggregated and joined. Current reference table now has 2536039 rows and 12 columns.
+2026-06-08 15:18:08 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:08 | INFO     | src.events.aggregator | Aggregating feature last_platelets_24h using last over last 1440.0 minutes for events in Platelets
+2026-06-08 15:18:09 | INFO     | src.events.aggregator | Joining aggregated feature last_platelets_24h back to reference table
+2026-06-08 15:18:09 | INFO     | src.events.aggregator | Feature last_platelets_24h aggregated and joined. Current reference table now has 2536039 rows and 13 columns.
+2026-06-08 15:18:09 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:09 | INFO     | src.events.aggregator | Aggregating feature last_inr_12h using last over last 720.0 minutes for events in INR
+2026-06-08 15:18:10 | INFO     | src.events.aggregator | Joining aggregated feature last_inr_12h back to reference table
+2026-06-08 15:18:10 | INFO     | src.events.aggregator | Feature last_inr_12h aggregated and joined. Current reference table now has 2536039 rows and 14 columns.
+2026-06-08 15:18:10 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:10 | INFO     | src.events.aggregator | Aggregating feature last_aptt_24h using last over last 1440.0 minutes for events in APTT
+2026-06-08 15:18:10 | WARNING  | src.events.aggregator | Only 0 events found for feature last_aptt_24h. Check if the event_grouper value is correct and if there are enough events in the data.
+2026-06-08 15:18:11 | INFO     | src.events.aggregator | Joining aggregated feature last_aptt_24h back to reference table
+2026-06-08 15:18:11 | INFO     | src.events.aggregator | Feature last_aptt_24h aggregated and joined. Current reference table now has 2536039 rows and 15 columns.
+2026-06-08 15:18:11 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:11 | INFO     | src.events.aggregator | Aggregating feature last_gcs_12h using last over last 720.0 minutes for events in Glasgow Coma Score
+2026-06-08 15:18:12 | INFO     | src.events.aggregator | Joining aggregated feature last_gcs_12h back to reference table
+2026-06-08 15:18:12 | INFO     | src.events.aggregator | Feature last_gcs_12h aggregated and joined. Current reference table now has 2536039 rows and 16 columns.
+2026-06-08 15:18:12 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:12 | INFO     | src.events.aggregator | Aggregating feature last_vasopressin_24h using last over last 1440.0 minutes for events in Vasopressin
+2026-06-08 15:18:13 | INFO     | src.events.aggregator | Joining aggregated feature last_vasopressin_24h back to reference table
+2026-06-08 15:18:13 | INFO     | src.events.aggregator | Feature last_vasopressin_24h aggregated and joined. Current reference table now has 2536039 rows and 17 columns.
+2026-06-08 15:18:13 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:13 | INFO     | src.events.aggregator | Aggregating feature last_phenylephrine_24h using last over last 1440.0 minutes for events in Phenylephrine
+2026-06-08 15:18:13 | WARNING  | src.events.aggregator | Only 522 events found for feature last_phenylephrine_24h. Check if the event_grouper value is correct and if there are enough events in the data.
+2026-06-08 15:18:13 | INFO     | src.events.aggregator | Joining aggregated feature last_phenylephrine_24h back to reference table
+2026-06-08 15:18:13 | INFO     | src.events.aggregator | Feature last_phenylephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 18 columns.
+2026-06-08 15:18:13 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:13 | INFO     | src.events.aggregator | Aggregating feature last_norepinephrine_24h using last over last 1440.0 minutes for events in Norepinephrine
+2026-06-08 15:18:14 | INFO     | src.events.aggregator | Joining aggregated feature last_norepinephrine_24h back to reference table
+2026-06-08 15:18:14 | INFO     | src.events.aggregator | Feature last_norepinephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 19 columns.
+2026-06-08 15:18:14 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:14 | INFO     | src.events.aggregator | Aggregating feature last_epinephrine_24h using last over last 1440.0 minutes for events in Epinephrine
+2026-06-08 15:18:15 | INFO     | src.events.aggregator | Joining aggregated feature last_epinephrine_24h back to reference table
+2026-06-08 15:18:15 | INFO     | src.events.aggregator | Feature last_epinephrine_24h aggregated and joined. Current reference table now has 2536039 rows and 20 columns.
+2026-06-08 15:18:15 | INFO     | src.events.aggregator | --------------------------------------------------------------------------------
+2026-06-08 15:18:15 | INFO     | src.events.aggregator | All features aggregated and joined back to reference table.
+2026-06-08 15:18:15 | INFO     | pipeline | Aggregated features saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_agg.parquet
+2026-06-08 15:18:15 | INFO     | pipeline | ================================================================================
+2026-06-08 15:18:15 | INFO     | pipeline | SIRS flags calculated. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_sirs_postagg.parquet
+2026-06-08 15:18:15 | INFO     | pipeline | ================================================================================
+2026-06-08 15:18:17 | INFO     | pipeline | Vent O2 delivery processed. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_o2vent.parquet
+2026-06-08 15:18:17 | INFO     | pipeline | ================================================================================
+2026-06-08 15:18:17 | INFO     | src.events.organdysfunction.organdysfunction | (IF needed) Joining baseline values to aggregated dataframe for organ dysfunction calculation.
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | Calculating coagulation dysfunction flag.
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | Calculating cardiovascular dysfunction flag.
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | Calculating renal dysfunction flag.
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | Calculating hepatic dysfunction flag.
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | Calculating neurological dysfunction flag.
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 15:18:18 | INFO     | src.events.organdysfunction.organdysfunction | Joining organ dysfunction flag dataframes to create final organ dysfunction dataframe.
+2026-06-08 15:18:19 | INFO     | src.events.organdysfunction.organdysfunction | All flag frames are the same length and have the same indices.
+2026-06-08 15:18:19 | INFO     | src.events.organdysfunction.organdysfunction | ----------------------------------------------------------------------------------
+2026-06-08 15:18:19 | INFO     | src.events.organdysfunction.organdysfunction | Calculating total organ dysfunction flag by summing individual organ dysfunction flags.
+2026-06-08 15:18:19 | INFO     | pipeline | Organ dysfunction labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_organdysfunction.parquet
+2026-06-08 15:18:19 | INFO     | pipeline | ================================================================================
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | Calculating septic shock criteria.
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | Calculating SBP<90 flag for septic shock criteria.
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | Calculating SBP delta>40 flag for septic shock criteria.
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | Calculating MAP<65 flag for septic shock criteria.
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | Calculating lactate>4 flag for septic shock criteria.
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | Calculating vasopressor flag for septic shock criteria.
+2026-06-08 15:18:19 | INFO     | src.events.septicshock | -----------------------------------------------------------------------------------
+2026-06-08 15:18:19 | INFO     | pipeline | Septic shock labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_septicshock.parquet
+2026-06-08 15:18:19 | INFO     | pipeline | ================================================================================
+2026-06-08 15:18:22 | INFO     | pipeline | Sepsis 1 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_sepsis1.parquet
+2026-06-08 15:18:22 | INFO     | pipeline | Sepsis 2 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_sepsis2.parquet
+2026-06-08 15:18:22 | INFO     | pipeline | Sepsis 3 labels saved. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h/df_sepsis3.parquet
+2026-06-08 15:18:22 | INFO     | pipeline | ================================================================================
+2026-06-08 15:18:22 | INFO     | pipeline | Pipeline complete.
+2026-06-08 15:18:22 | INFO     | src.analysis.core | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output/phase2_v2_abx_fwd_48h

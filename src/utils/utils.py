@@ -140,30 +140,6 @@ def rolling_agg(
             f"Unknown agg_func: '{agg_func}'. Supported functions: {supported}"
         )
 
-    # if agg_func == "max":
-    #     agg_expr = "MAX(events.evt_val)"
-    # elif agg_func == "min":
-    #     agg_expr = "MIN(events.evt_val)"
-    # elif agg_func == "last":
-    #     agg_expr = "LAST(events.evt_val ORDER BY events.evt_dt)"
-    # else:
-    #     raise ValueError(f"Unknown agg_func: '{agg_func}'. Choose from: max, min, last")
-
-    # return duckdb.sql(f"""
-    #     SELECT
-    #         reference.{encounter_col},
-    #         reference.Event_DateTime,
-    #         {agg_expr} AS {agg_col_name}
-    #     FROM reference
-    #     LEFT JOIN events
-    #         ON reference.{encounter_col} = events.{encounter_col}
-    #         AND events.evt_dt < reference.Event_DateTime
-    #         AND events.evt_dt >= reference.Event_DateTime - INTERVAL '{interval_str}'
-    #     GROUP BY
-    #         reference.{encounter_col},
-    #         reference.Event_DateTime
-    # """).pl()
-
     with duckdb.connect() as conn:
         conn.register("reference_tbl", reference)
         conn.register("events_tbl", events)

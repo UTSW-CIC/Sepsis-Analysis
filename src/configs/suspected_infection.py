@@ -1,9 +1,13 @@
 from pydantic import BaseModel, Field
 from .dataconfig import DataConfig, data_config 
+from typing import Optional
 
 class AntibioticBloodCultureConfig(DataConfig):
     antibiotic_type_name: str = Field(default="IV Antibiotics",
                                        description="Type name for antibiotic")
+
+    antibiotic_excluded_type_names: Optional[str] = Field(default='Perioperative Antibiotics', description="Excluded type names for antibiotic")
+
     blood_culture_grouper_val: str = Field(default="Blood Culture Order",
                                             description="Grouper value for blood culture")
 
@@ -90,4 +94,9 @@ class SuspectedInfectionConfig(DataConfig):
 
 
 
-suspected_infection_config = SuspectedInfectionConfig()
+# suspected_infection_config = SuspectedInfectionConfig()
+suspected_infection_config = SuspectedInfectionConfig(
+    antibiotic_blood_culture_config = AntibioticBloodCultureConfig(
+        antibiotic_type_name = "IV Antibiotics - First",
+    )
+)
