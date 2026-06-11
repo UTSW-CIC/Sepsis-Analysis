@@ -69,6 +69,11 @@ class DataLoader:
             cast_expr.append(
                 pl.col("NumericValue").cast(pl.Float64)
             )
+
+        if 'PatientAgeAtAdmission' in df.schema and df.schema['PatientAgeAtAdmission'] == pl.Utf8:
+            cast_expr.append(
+                pl.col("PatientAgeAtAdmission").cast(pl.Float64)
+            )
         
         return df.with_columns(
             cast_expr

@@ -111,8 +111,8 @@ input_output_config_2 = DataInputOutputConfig(
 
 input_filenames_v3 = InputFileNames(
     ENCOUNTER_BASELINE_SCORES = "Encounter Table with Baseline Values - June 2022 - May 2026 - 6.5.26.csv",
-    FLOWSHEETS = "Flowsheet Events - 6.5.26.csv",
-    LABS = "Lab Results - 6.5.26.csv",
+    FLOWSHEETS = "flowsheets_bp - 6.8.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
+    LABS = "labs_with_fio2 - 6.9.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
     MEDS = "Med Admin Events - 6.5.26.csv",
     PROCEDURES = "Procedure Order Events - 6.5.26.csv",
     DIAGNOSIS = "Diagnoses - 6.5.26.csv",
