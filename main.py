@@ -45,7 +45,7 @@ def combine_sepsis123(df_s1, df_s2, df_s3):
 #                         vent_config, septicshock_config)
 
 
-from src.configs.dataconfig import input_output_config_2, vasopressors_config
+from src.configs.dataconfig import input_output_config_2, vasopressors_config, input_output_config_3
 from src.configs.suspected_infection import suspected_infection_config
 from src.configs.sirscalculator import sirs_config, sirs_postagg_config
 from src.configs.aggregator import feature_config, vent_config, AggregatorConfig, agg_config
@@ -66,7 +66,7 @@ import os
 import polars as pl
 os.environ["NUMEXPR_MAX_THREADS"] = "64"  
 
-setup_root_logger(log_dir=input_output_config_2.logger_dir)
+setup_root_logger(log_dir=input_output_config_3.logger_dir)
 logger = get_logger(__name__)
 
 if __name__ == "__main__":
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     # df_all = dl.load_data()
     # save_df(df_all, input_output_config_2.output_path, "df_all.parquet", logger, message="Initial data loaded.")
     # logger.info("=================================================================================")
-    df_all = load_df(input_output_config_2.output_path, "df_all.parquet", logger)
+    df_all = load_df(input_output_config_3.output_path, "df_all.parquet", logger)
 
     # # Apply outlier removal for vital signs before any calculations, as vitals are used in multiple downstream steps and we want to ensure consistency
     layer1 = Layer1PhysiologicalBound(physiological_bounds_config)

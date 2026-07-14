@@ -5077,3 +5077,48 @@
 2026-06-09 17:39:42 | INFO     | pipeline | ================================================================================
 2026-06-09 17:39:42 | INFO     | pipeline | Pipeline complete.
 2026-06-09 17:39:42 | INFO     | src.analysis.core | Loading dataframes from /work/InternalMedicine/s223850/Sepsis-data/data/output/phase3_v3
+2026-07-07 17:30:42 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-07-07 17:30:45 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Respirations           ┆ 5646  │
+│ Temperature            ┆ 98    │
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+└────────────────────────┴───────┘
+2026-07-07 17:30:45 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-07-07 17:30:46 | INFO     | __main__ | =================================================================================
+2026-07-07 17:31:01 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-07-07 17:32:44 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all.parquet
+2026-07-07 17:32:45 | INFO     | __main__ | Groupers with outlier values: shape: (4, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Temperature            ┆ 98    │
+│ Respirations           ┆ 5646  │
+│ Blood Pressure         ┆ 83    │
+│ Pulse                  ┆ 682   │
+└────────────────────────┴───────┘
+2026-07-07 17:32:45 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-07-07 17:32:46 | INFO     | __main__ | =================================================================================
+2026-07-07 17:32:54 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria
+2026-07-07 17:35:45 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3/df_all.parquet
+2026-07-07 17:38:29 | INFO     | __main__ | Loading dataframe from /work/InternalMedicine/s223850/Sepsis-data/data/output/raw_data_phase3_v2_old/df_all.parquet
+2026-07-07 17:38:40 | INFO     | __main__ | Groupers with outlier values: shape: (3, 2)
+┌────────────────────────┬───────┐
+│ original_Event_Grouper ┆ count │
+│ ---                    ┆ ---   │
+│ str                    ┆ u64   │
+╞════════════════════════╪═══════╡
+│ Pulse                  ┆ 3289  │
+│ Temperature            ┆ 359   │
+│ Respirations           ┆ 21234 │
+└────────────────────────┴───────┘
+2026-07-07 17:38:40 | INFO     | __main__ | Layer 1 (Physiological bounds of vital signs) outlier removal applied. Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output_data_phase2_v2_iteration2/df_all_layer1.parquet
+2026-07-07 17:38:42 | INFO     | __main__ | =================================================================================
+2026-07-07 17:45:10 | INFO     | src.events.infectiondetection | Detecting infection with antibiotic and culture criteria

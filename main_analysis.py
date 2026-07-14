@@ -25,7 +25,8 @@ input_output_config_2 = DataInputOutputConfig(
 
 if __name__ == "__main__":
     # b = BasicAnalysis(input_output_config_2.output_path, basic_analysis_config) 
-    b = CoreAnalysis( f'{env_settings.DATA_ABS_PATH}/data/output/raw_data_phase3_v2_old', "./core_analysis_output_v3_v2old", basic_analysis_config) 
+    b = CoreAnalysis( f'{env_settings.DATA_ABS_PATH}/data/output/raw_data_phase3_v2_old',
+                      "./core_analysis_output_v3_v2old_1", basic_analysis_config) 
     b.analyze()
     # b = TwoExperimentsAnalysis(Path("../Sepsis-data/data/output/raw_data_phase2_v2_old"),
     #                                 input_output_config_2.output_path,

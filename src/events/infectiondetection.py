@@ -19,13 +19,13 @@ class InfectionDetection:
             pl.col(self.config.type_col)== antibiotic_bculture_config.antibiotic_type_name
         ).select(self.config.encounter_col, self.config.event_dt_col, self.config.event_name_col)\
             .rename({self.config.event_dt_col: antibiotic_bculture_config.antibiotic_datetime_col,
-                      self.config.event_name_col: antibiotic_bculture_config.antibiotic_evname_col})
+                      self.config.event_name_col: antibiotic_bculture_config.antibiotic_evname_col}).sort(by=[self.config.encounter_col, antibiotic_bculture_config.antibiotic_datetime_col])
 
         df_culture = self.df_all.filter(
             pl.col(self.config.grouper_col)==antibiotic_bculture_config.blood_culture_grouper_val
         ).select(self.config.encounter_col, self.config.event_dt_col, self.config.event_name_col)\
             .rename({self.config.event_dt_col: antibiotic_bculture_config.blood_culture_datetime_col,
-                     self.config.event_name_col: antibiotic_bculture_config.blood_culture_evname_col})
+                     self.config.event_name_col: antibiotic_bculture_config.blood_culture_evname_col}).sort(by=[self.config.encounter_col, antibiotic_bculture_config.blood_culture_datetime_col])
 
         # IV centered
         df_forward = df_iv.join_asof(
@@ -160,7 +160,6 @@ class InfectionDetection:
 
         return df_infect
 
-
     def _detect_infection_with_code_sepsis_order(self) -> pl.DataFrame:
         logger.info("Detecting infection with code sepsis order criteria")
         code_sepsis_config = self.config.code_sepsis_config
@@ -192,9 +191,7 @@ class InfectionDetection:
         return df_suspected_infection_grouper
         # return detect_infection_with_suspected_infection(self.df_all)
     
-    
     def detect_infection_longframe(self):
-
         iv_dt_col = self.config.antibiotic_blood_culture_config.antibiotic_datetime_col
         culture_dt_col = self.config.antibiotic_blood_culture_config.blood_culture_datetime_col
         antibiotic_culture_longval = self.config.antibiotic_culture_longval # "IV+CULTURE"

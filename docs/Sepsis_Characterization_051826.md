@@ -55,3 +55,18 @@ EncounterEpicCsn ┆ infect_dt           ┆ last_dt_with_organdysfunction ┆ T
 1. Sepsis as state machines:
     - What if I treat sepsis (1, 2, 3) as state machines. Sepsis 1 is a state that patients can enter either through spesis 2 if organ dysfunction stops, and SIRS >= 2, or through SI + SIRS>=2 within +-24 hours, Sepsis 2 is a state than can be entered either from Sepsis 1 + organ dysfunction, SI + organ dysfunction within +-48hr, or sepsis 3 once shock criteria vanishes, and sepsis 3 is a state than can be entered through Spesis 2 + shock criteria within 14 days.
     - Once an encounter moves from state to another state, the backbone data is updated. For example, Sepsis 1 patient developed organ dysfunction after 5 days, Then that encounter is moved to Sepsis 2 state with a start date of the organ dysfunction date, and then it is tracked for 14 more days. This process is repeated recursively until an equilibrium is reached of the encounter ends.
+
+
+
+### Decisions
+#### Date: 06-25-2026, context: Dr. Glazer meeting, Topic: Encounter list that helps us to improve the billing algorithm
+Encounters will be selected based on criteria that should not be missed by our algorithm: <br>
+- Billing POA-3 and NPOA-3 that have no suspected infection criteria
+- Billing POA-3 that we classified as NPOA-3
+- (Based on current V3) billing septic shock that we failed to detect
+
+
+
+### First IV, culuture event time per encounter versus first SI criteria detected time
+1. Lactate with value >= 2.0 mmol/L is considered a sign of infection, and should be used instead of merely lactate lab results or lactate lab order places. Moreover, lacate value of < 2.0 mmol/L should cancel out the previous suspected infection if set within the last 24 [#needrevesion] hours
+2. When I run the analysis to compare between the first ordered culture versus the first suspected infection. I found there are 5902 encounters where the first suspected infection is IV+culture, however the first culture time proceeds that. Interestingly, I ran this analysis because when I checked first IV versus first suspected infection, I noticed that Blood Culture always preceeds the IV in most cases. This requires deeper analysis.

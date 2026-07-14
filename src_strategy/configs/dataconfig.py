@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, model_validator
 from pathlib import Path
 from enum import Enum
 from .envconfig import env_settings
+import polars as pl
 
 #==============================================================================================================================
 # Input/Output Configurations
@@ -33,12 +34,49 @@ class InputFileNames(BaseModel):
     PROCEDURES: str = "Procedure Order Events - 6.5.26.csv"
     DIAGNOSIS: str = "Diagnoses - 6.5.26.csv"
 
-class DataInputOutputConfig(BaseModel):
+class DataConfig(BaseModel):
+    encounter_col: str = Field(default="EncounterEpicCsn", description="Column name for encounter identifier")
+    event_dt_col: str = Field(default="Event_DateTime", description="Column name for timestamp")
+    event_name_col: str = Field(default="Event_Name", description="Column name for name")
+    grouper_col: str = Field(default="Event_Grouper", description="Column name for grouper")
+    type_col: str = Field(default="Type", description="Column name for events type")
+    val_col: str = Field(default="NumericValue", description="Column name for value")
+    raw_val_col: str = Field(default="Value", description="Column name for raw value (Numeric and non-numeric values)")
+    BASELINE_CREATININE: str     = Field(default="Baseline_Creatinine", description="Baseline Creatinine")
+    BASELINE_SBP: str            = Field(default="Baseline_SBP", description="Baseline Systolic Blood Pressure")
+    BASELINE_RESP_RATE: str      = Field(default="Baseline_RespiratoryRate", description="Baseline Respiratory Rate")
+    BASELINE_PULSE_RATE: str     = Field(default="Baseline_PulseRate", description="Baseline Pulse Rate")
+    BASELINE_PLATELETS: str      = Field(default="Baseline_Platelets", description="Baseline Platelets")
+    BASELINE_BILIRUBIN: str      = Field(default="Baseline_Bilirubin", description="Baseline Bilirubin")
+    BASELINE_eGFR: str           = Field(default="Baseline_eGFR", description="Baseline eGFR")
+    BASELINE_WBC: str            = Field(default="Baseline_WBC", description="Baseline WBC")
+
+class DataInputOutputConfig(DataConfig):
     data_path: str = Field(..., description="Path to the data directory")
     output_path: str = Field("", description="Path to the output directory")
     logger_dir: str = Field("./logs", description="Directory to write logs to")
     input_file_names: InputFileNames = InputFileNames()
     convert_bp_to_sbp: bool = True
+    cast_schema: dict = Field(default_factory=lambda: {
+        "EncounterEpicCsn": pl.Int64,
+        "NumericValue": pl.Float64,
+        "Event_DateTime": ("datetime", "%Y-%m-%d %H:%M:%S%.f"),
+        "PrimaryMrn": pl.Int64,
+        "Death_Flag": pl.Int64,
+        "Arrival_Instant": ("datetime", "%Y-%m-%d %H:%M:%S%.f"),
+        "FirstAdmissionOrderInstant": ("datetime", "%Y-%m-%d %H:%M:%S%.f"),
+        "InpatientAdmissionInstant": ("datetime", "%Y-%m-%d %H:%M:%S%.f"),
+        "AdmissionDateValue": ("date", "%Y-%m-%d"),
+        "DischargeDateValue": ("date", "%Y-%m-%d"),
+        "LengthOfStayInDays": pl.Int64,
+        "NumericValue": pl.Float64,
+        "PatientAgeAtAdmission": pl.Float64,
+        "Immunocrompromised_Registry_YN": pl.Int64,
+        "CKD_Dialysis_Registry_YN": pl.Int64,
+        "Solid_Organs_Transplant_Registry_YN": pl.Int64,
+        "Pregnancy_Registry_YN": pl.Int64,
+
+    }, description="Schema for the data")
 
     @model_validator(mode="after")
     def set_output_path(self) -> "DataInputOutputConfig":
@@ -58,27 +96,15 @@ class DataInputOutputConfig(BaseModel):
                 raise FileNotFoundError(f"Required input file '{filename}' not found in '{self.data_path}'")
         return self
 
-class DataConfig(BaseModel):
-    encounter_col: str = Field(default="EncounterEpicCsn", description="Column name for encounter identifier")
-    event_dt_col: str = Field(default="Event_DateTime", description="Column name for timestamp")
-    event_name_col: str = Field(default="Event_Name", description="Column name for name")
-    grouper_col: str = Field(default="Event_Grouper", description="Column name for grouper")
-    type_col: str = Field(default="Type", description="Column name for events type")
-    val_col: str = Field(default="NumericValue", description="Column name for value")
-    raw_val_col: str = Field(default="Value", description="Column name for raw value (Numeric and non-numeric values)")
-    BASELINE_CREATININE: str     = Field(default="Baseline_Creatinine", description="Baseline Creatinine")
-    BASELINE_SBP: str            = Field(default="Baseline_SBP", description="Baseline Systolic Blood Pressure")
-    BASELINE_RESP_RATE: str      = Field(default="Baseline_RespiratoryRate", description="Baseline Respiratory Rate")
-    BASELINE_PULSE_RATE: str     = Field(default="Baseline_PulseRate", description="Baseline Pulse Rate")
-    BASELINE_PLATELETS: str      = Field(default="Baseline_Platelets", description="Baseline Platelets")
-    BASELINE_BILIRUBIN: str      = Field(default="Baseline_Bilirubin", description="Baseline Bilirubin")
-    BASELINE_eGFR: str           = Field(default="Baseline_eGFR", description="Baseline eGFR")
-    BASELINE_WBC: str            = Field(default="Baseline_WBC", description="Baseline WBC")
 
-class BloodPressureConfig(BaseModel):
+class BloodPressureConfig(DataConfig):
     bp_grouper_val: str = Field(default="Blood Pressure", description="Grouper value for blood pressure") #
     bp_val_col: str = Field(default="Value", description="Column name for value") 
     sys_col: str = Field(default="sys", description="Column name for systolic blood pressure") 
+    dia_col: str = Field(default="dia", description="Column name for diastolic blood pressure") 
+    map_col: str = Field(default="map", description="Column name for mean arterial pressure")
+    map_event_grouper: str = Field(default="Arterial Blood Pressure Mean", description="Grouper value for mean arterial pressure")
+
 
 
 class VasopressorsConfig(DataConfig):
@@ -119,8 +145,7 @@ input_filenames_v3 = InputFileNames(
 )
 input_output_config_3 = DataInputOutputConfig(
     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
-    # output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3',
-    output_path=f'{env_settings.DATA_ABS_PATH}/data/output/raw_data_phase3_v2_old',
+    output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3',
     input_file_names=input_filenames_v3
 )
 

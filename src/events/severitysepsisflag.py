@@ -171,8 +171,6 @@ class SeveritySepsisFlag:
         # # sepsis3_df = self._sepsis_3_new()
         return sepsis1_df, sepsis2_df, sepsis3_df
 
-
-
     
     def detect_sepsis2_sepsis3_from_sepsis_1(self, clean_sepsis1_df: pl.DataFrame):
         enc_id = self.severitysepsisconfig.encounter_col        

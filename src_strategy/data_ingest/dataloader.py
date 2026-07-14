@@ -2,18 +2,33 @@ import polars as pl
 import duckdb
 import os
 from pathlib import Path
-from src.utils.logger import get_logger
-from src.configs.dataconfig import DataInputOutputConfig, VasopressorsConfig
-from src.utils.utils import convert_bp_to_sbp_in_numerivalue_col
+from src_strategy.utils.logger import get_logger
+from src_strategy.configs.dataconfig import DataInputOutputConfig, BloodPressureConfig 
+from src_strategy.utils.utils import extract_sys_dia_from_flowsheets
+
+# from src_strategy.outlierdetection.layer1 import Layer1PhysiologicalBound
+# from src_strategy.configs.outlierdetection.layer1 import physiological_bounds_config
+from src_strategy.configs.outlierdetection.extremeoutliers import (
+    FlowsheetBoundsConfig, LabBoundsConfig,
+    flowsheet_bounds_config, lab_bounds_config
+    )
 
 logger = get_logger(__name__)
 
 class DataLoader:
-    def __init__(self, input_output_dataconfig: DataInputOutputConfig):
-        #, vasopressors_config: VasopressorsConfig):
+    def __init__(self, input_output_dataconfig: DataInputOutputConfig,
+                  bp_config: BloodPressureConfig,
+                  physiological_bounds_config: FlowsheetBoundsConfig = None,
+                  lab_bounds_config: LabBoundsConfig = None):
         self.input_output_dataconfig = input_output_dataconfig
-        # self.vasopressors_config = vasopressors_config
+        self.bp_config = bp_config
         self.df_all = None
+        if physiological_bounds_config:
+            self.physiological_bounds_obj = FlowsheetBoundsConfig(config=physiological_bounds_config)
+        else: self.physiological_bounds_obj = None
+        if lab_bounds_config:
+            self.lab_bounds_obj = LabBoundsConfig(config=lab_bounds_config)
+        else: self.lab_bounds_config = None
 
     def cast_cols(self,df: pl.DataFrame):
         cast_expr = [pl.col(c).cast(pl.Float64) for c in df.columns if c.startswith('Baseline_')]
@@ -58,15 +73,15 @@ class DataLoader:
             cast_expr.append(
                 pl.col("AdmissionDateValue").str.strptime(pl.Datetime, "%Y-%m-%d"),
             )
+        
+        if 'LengthOfStayInDays' in df.schema and df.schema['LengthOfStayInDays'] == pl.Utf8:
+            cast_expr.append(
+                pl.col("LengthOfStayInDays").cast(pl.Int64)
+            )
 
         if 'DischargeDateValue' in df.schema and df.schema['DischargeDateValue'] == pl.Utf8:
             cast_expr.append(
                 pl.col("DischargeDateValue").str.strptime(pl.Datetime, "%Y-%m-%d"),
-            )
-
-        if 'LengthOfStayInDays' in df.schema and df.schema['LengthOfStayInDays'] == pl.Utf8:
-            cast_expr.append(
-                pl.col("LengthOfStayInDays").cast(pl.Int64)
             )
 
         if 'NumericValue' in df.schema and df.schema['NumericValue'] == pl.Utf8:
@@ -78,6 +93,12 @@ class DataLoader:
             cast_expr.append(
                 pl.col("PatientAgeAtAdmission").cast(pl.Float64)
             )
+        
+        for col in ["Immunocrompromised_Registry_YN",	"CKD_Dialysis_Registry_YN",	"Solid_Organ_Transplant_Registry_YN", "Pregnancy_Registry_YN"]:
+            if col in df.schema and df.schema[col] == pl.Utf8:
+                cast_expr.append(
+                    pl.col(col).cast(pl.Int64)
+                )
         
         return df.with_columns(
             cast_expr
@@ -95,21 +116,6 @@ class DataLoader:
         return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.DIAGNOSIS), infer_schema=False, null_values=['Null', "NULL", 'null'])
     def _load_flowsheets(self) -> pl.DataFrame:
         return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.FLOWSHEETS), infer_schema=False, null_values=['Null', "NULL", 'null'])
-
-    # def _set_vasopressors_flags(self, df: pl.DataFrame) -> pl.DataFrame:
-    #     expr = pl.col(self.vasopressors_config.flag_col)
-    #     df = df.with_columns(
-    #         pl.when(
-    #             (pl.col(self.vasopressors_config.grouper_col).is_in(self.vasopressors_config.grouper_vals))&
-    #             (pl.col(self.vasopressors_config.raw_val_col) == 'Yes')
-    #         ).then(pl.lit(1))
-    #         .when(
-    #             (pl.col(self.vasopressors_config.grouper_col).is_in(self.vasopressors_config.grouper_vals))&
-    #             (pl.col(self.vasopressors_config.raw_val_col) == 'No')
-    #         ).then(pl.lit(0))
-    #         .otherwise(expr).alias(f"NumericValue_with_vaso")
-    #     )
-    #     return df
 
     def load_data(self) -> pl.DataFrame:
         """
@@ -129,8 +135,12 @@ class DataLoader:
         # baseline = pl.read_csv(self.data_dir/Path("Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 3.25.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
         # diagnosis = pl.read_csv(self.data_dir/Path("Diagnoses - 3.9.26.csv"), infer_schema=False, null_values=['Null', "NULL", 'null'])
 
-        lab_res = self._load_labs()
         flowsheets = self._load_flowsheets()
+        flowsheets = self.cast_cols(flowsheets)
+        flowsheets = extract_sys_dia_from_flowsheets(flowsheets, self.bp_config)
+        # flowsheets_1 = self.physiological_bounds_obj.apply(flowsheets, [self.input_output_dataconfig.encounter_col, self.input_output_dataconfig.event_dt_col])
+
+        lab_res = self._load_labs()
         med_admin = self._load_meds()
         procedures = self._load_procedures()
         baseline = self._load_encounters()
@@ -139,7 +149,6 @@ class DataLoader:
         logger.info(f"Data loaded. Shapes: lab_res={lab_res.shape}, flowsheets={flowsheets.shape}, med_admin={med_admin.shape}, procedures={procedures.shape}, baseline={baseline.shape}, diagnosis={diagnosis.shape}")
         logger.info("--------------------------------------------------------------------------------")
         lab_res = self.cast_cols(lab_res)
-        flowsheets = self.cast_cols(flowsheets)
         med_admin = self.cast_cols(med_admin)
         procedures = self.cast_cols(procedures)
         baseline = self.cast_cols(baseline)
