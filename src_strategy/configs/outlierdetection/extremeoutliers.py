@@ -1,4 +1,4 @@
-from pydantic import model_validator
+from pydantic import model_validator, Field
 from .common import ThresholdingConfig, BoundConfig
 from typing import ClassVar
 from ..dataconfig import bp_config
@@ -35,11 +35,12 @@ class PhysiologicalBoundsConfig(ThresholdingConfig):
 class FlowsheetBoundsConfig(PhysiologicalBoundsConfig):
     """Vitals from flowsheets. Toggle independently of labs."""
 
-    REQUIRED_SIGNALS: ClassVar[set] = {"Pulse", "Blood Pressure", "Respirations", "Temperature"}
+    # REQUIRED_SIGNALS: ClassVar[set] = {"Pulse", "Blood Pressure", "Respirations", "Temperature"}
+    REQUIRED_SIGNALS: ClassVar[set] = {"Pulse",  "Respirations", "Temperature"}
 
     _DEFAULTS: ClassVar[dict] = {
         "Pulse":          BoundConfig(upper_bound=250, lower_bound=20),
-        "Blood Pressure": BoundConfig(upper_bound=300, lower_bound=40),
+        # "Blood Pressure": BoundConfig(upper_bound=300, lower_bound=40),
         "Respirations":   BoundConfig(upper_bound=60, lower_bound=4),
         "Temperature":    BoundConfig(upper_bound=113, lower_bound=77),  # Fahrenheit
     }
@@ -62,6 +63,7 @@ class LabBoundsConfig(PhysiologicalBoundsConfig):
         "CREATININE", "BILIRUBIN, TOTAL", "LACTATE",
         "BUN", "INR", "EGFR CKD EPI CR",
     }
+    grouper_col: str = Field(default="Event_Name", description="Column name for grouper")
 
     _DEFAULTS: ClassVar[dict] = {
         # Blood gas

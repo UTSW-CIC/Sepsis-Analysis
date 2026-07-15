@@ -215,45 +215,23 @@ def extract_arterial_blood_pressure_mean_from_flowsheets(df_flowsheets: pl.DataF
     encounter_col = bp_config.encounter_col
     event_dt_col = bp_config.event_dt_col
     event_grouper_col = bp_config.grouper_col
-    bp_grouper_val = bp_config.blood_pressure_config.bp_grouper_val
-    sys_col_name = bp_config.blood_pressure_config.sys_col
-    dia_col_name = bp_config.blood_pressure_config.dia_col
-    map_col_name = bp_config.blood_pressure_config.map_col
-    val_col = bp_config.blood_pressure_config.bp_val_col
+    bp_grouper_val = bp_config.bp_grouper_val
+    sys_col_name = bp_config.sys_col
+    dia_col_name = bp_config.dia_col
+    map_col_name = bp_config.map_col
+    val_col = bp_config.bp_val_col
 
-    return df_flowsheets.with_columns(
-        # Strip whitespace, then split
-        pl.col(val_col).str.strip_chars().str.split("/").alias("_bp_parts")
-    ).with_columns(
-        # Only extract if we have at least 2 parts
-        pl.when(pl.col("_bp_parts").list.len() >= 2)
-          .then(pl.col("_bp_parts").list.get(0).str.strip_chars().cast(pl.Float64, strict=False))
-          .otherwise(None)
-          .alias(sys_col_name),
-
-        pl.when(pl.col("_bp_parts").list.len() >= 2)
-          .then(pl.col("_bp_parts").list.get(1).str.strip_chars().cast(pl.Float64, strict=False))
-          .otherwise(None)
-          .alias(dia_col_name),
-    ).with_columns(
-        # MAP is only valid if both SBP and DBP are non-null and physiologically plausible
-        pl.when(
-            pl.col(sys_col_name).is_not_null()
-            & pl.col(dia_col_name).is_not_null()
-            & (pl.col(sys_col_name) > 0)
-            & (pl.col(dia_col_name) > 0)
-            & (pl.col(sys_col_name) >= pl.col(dia_col_name))  # SBP should be ≥ DBP
-        )
-        .then(((pl.col(sys_col_name) + 2 * pl.col(dia_col_name)) / 3).round(1))
-        .otherwise(None)
-        .alias(map_col_name)
-    ).drop("_bp_parts").select(
-            pl.col(encounter_col),
-            pl.col(event_dt_col),
-            pl.col(map_col_name)
-        )
-
-
+    if bp_config.sys_col not in df_flowsheets.schema or bp_config.dia_col not in df_flowsheets.schema:
+        df_flowsheets = extract_sys_dia_from_flowsheets(df_flowsheets, bp_config)
+    df_flowsheets = df_flowsheets.with_columns(
+        ((pl.col(sys_col_name) + 2 * pl.col(dia_col_name)) / 3).round(1).alias(map_col_name)
+    )
+    expr = pl.col(map_col_name)
+    df_flowsheets = df_flowsheets.with_columns(
+        pl.when(pl.col(event_grouper_col) == bp_config.map_event_grouper)
+        .then(pl.col(bp_config.val_col).cast(pl.Float64)).otherwise(expr).alias(map_col_name)
+    )
+    return df_flowsheets
 
 def extract_arterial_blood_pressure_mean(df_all: pl.DataFrame,
                                          config: AggregatorConfig = None,

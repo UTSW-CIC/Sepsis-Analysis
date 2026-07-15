@@ -69,7 +69,6 @@ class DataInputOutputConfig(DataConfig):
         "AdmissionDateValue": ("date", "%Y-%m-%d"),
         "DischargeDateValue": ("date", "%Y-%m-%d"),
         "LengthOfStayInDays": pl.Int64,
-        "NumericValue": pl.Float64,
         "PatientAgeAtAdmission": pl.Float64,
         "Immunocrompromised_Registry_YN": pl.Int64,
         "CKD_Dialysis_Registry_YN": pl.Int64,

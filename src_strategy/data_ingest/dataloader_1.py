@@ -4,12 +4,13 @@ import os
 from pathlib import Path
 from src_strategy.utils.logger import get_logger
 from .transformers import (Transform, TransformPipeline, CastColumns,
-                           ExtractSysDia, ApplyBounds, SysDiaAnomalies)
+                           BloodPressureExtractor, ApplyBounds, BloodPressureBounds)
 
 from src_strategy.configs.dataconfig import DataInputOutputConfig, DataConfig, BloodPressureConfig
+from .bloodpressure import BloodPressureProcessor
 
 from src_strategy.configs.outlierdetection.extremeoutliers import (
-    FlowsheetBoundsConfig, LabBoundsConfig
+    FlowsheetBoundsConfig, LabBoundsConfig, BloodPressureBoundsConfig
     )
 
 
@@ -19,12 +20,14 @@ class DataLoader:
     def __init__(self, input_output_dataconfig: DataInputOutputConfig,
                   data_config: DataConfig, bp_config: BloodPressureConfig,
                   physiological_bounds_config: FlowsheetBoundsConfig = None,
-                  lab_bounds_config: LabBoundsConfig = None):
+                  lab_bounds_config: LabBoundsConfig = None, bp_bounds_config: BloodPressureBoundsConfig = None):
         self.input_output_dataconfig = input_output_dataconfig
         self.data_config = data_config
         self.bp_config = bp_config
         self.physiological_bounds_config = physiological_bounds_config
         self.lab_bounds_config = lab_bounds_config
+        self.bp_bounds_config = bp_bounds_config
+        
 
     def _load_labs(self) -> pl.DataFrame:
         return pl.read_csv(self.input_output_dataconfig.data_path/Path(self.input_output_dataconfig.input_file_names.LABS), infer_schema=False, null_values=['Null', "NULL", 'null'])
@@ -41,16 +44,11 @@ class DataLoader:
 
     def _define_transformation_pipelines(self) -> dict[Transform]:
         schema = self.input_output_dataconfig.cast_schema
-        flowsheets_pipeline = [CastColumns(schema), ExtractSysDia(self.bp_config)]
+        flowsheets_pipeline = [CastColumns(schema), BloodPressureExtractor(self.bp_config)]
         if self.physiological_bounds_config:
             flowsheets_pipeline.append(ApplyBounds(self.physiological_bounds_config,
                                                    outliers_replace_value=-1, outlier_column_name="flowsheet_outlier"))
-            expr_sys = pl.col(self.bp_config.sys_col)
-            expr_dia = pl.col(self.bp_config.dia_col)
-            expr_map = pl.col()
-            flowsheets_pipeline.append(SysDiaAnomalies(
-                pl.when(pl.col(self.bp_config.sys_col)<=pl.col(self.bp_config.dia_col))
-            ))
+            flowsheets_pipeline.append(BloodPressureBounds(self.bp_config, self.bp_bounds_config, outliers_replace_value=-1, outlier_column_name="bp_outlier"))
         
         labs_pipeline = [CastColumns(schema)]
         if self.lab_bounds_config:

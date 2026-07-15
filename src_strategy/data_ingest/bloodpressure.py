@@ -8,9 +8,6 @@ class BloodPressureProcessor:
     def __init__(self, bp_config: BloodPressureConfig, bp_bounds_config: BloodPressureBoundsConfig):
         self.bp_config = bp_config
         self.bp_bounds_config = bp_bounds_config
-    
-    def detect_anomalies(self, flowsheets: pl.DataFrame):
-
 
     def process(self, flowsheets: pl.DataFrame):
         flowsheets = extract_sys_dia_from_flowsheets(flowsheets, self.bp_config)
@@ -23,6 +20,5 @@ class BloodPressureProcessor:
         flowsheets_detected = Layer1PhysiologicalBound(self.bp_bounds_config).apply(flowsheets, outliers_replace_value=-1,
                                                                outlier_column_name="bp_outlier", inplace=True)
         return flowsheets_detected
-        return flowsheets_2
 
     
