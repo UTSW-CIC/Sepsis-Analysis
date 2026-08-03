@@ -14,6 +14,8 @@ This markdown file will log my progress, notes, questions, and stopping points t
 
 
 # Notes/Obeservations
+- (#critical) Suspected infection antibiotics does not cover all types (IV Antibiotics - Single, IV Antibiotics - First, IV Antibiotics - Last)
+- Flowsheets table has more Event_Grouper than Event_Name and this is because repetitive Event_Name for different Event_Grouper. Example: `Event_Name: CPM S25 R INV DEVICE.INV O2 DEVICE` is repeated for `Event_Grouper IN ('O2 Delivery High-Flow', 'O2 Delivery Nasal Cannula', ...)`
 
 
 # Pauses

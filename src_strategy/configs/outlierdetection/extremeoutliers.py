@@ -39,10 +39,12 @@ class FlowsheetBoundsConfig(PhysiologicalBoundsConfig):
     REQUIRED_SIGNALS: ClassVar[set] = {"Pulse",  "Respirations", "Temperature"}
 
     _DEFAULTS: ClassVar[dict] = {
-        "Pulse":          BoundConfig(upper_bound=250, lower_bound=20),
-        # "Blood Pressure": BoundConfig(upper_bound=300, lower_bound=40),
-        "Respirations":   BoundConfig(upper_bound=60, lower_bound=4),
-        "Temperature":    BoundConfig(upper_bound=113, lower_bound=77),  # Fahrenheit
+        # "Pulse":          BoundConfig(upper_bound=250, lower_bound=20, outlier_holder=-9999),
+        # "Respirations":   BoundConfig(upper_bound=60, lower_bound=4, outlier_holder=-9999),
+        # "Temperature":    BoundConfig(upper_bound=113, lower_bound=77, outlier_holder=-9999),  # Fahrenheit
+        "Pulse":          BoundConfig(upper_bound=250, lower_bound=-9999999, outlier_holder=-9999),
+        "Respirations":   BoundConfig(upper_bound=60, lower_bound=-9999999, outlier_holder=-9999),
+        "Temperature":    BoundConfig(upper_bound=113, lower_bound=-9999999, outlier_holder=-9999),  # Fahrenheit
     }
 
 
@@ -50,9 +52,12 @@ class BloodPressureBoundsConfig(PhysiologicalBoundsConfig):
     REQUIRED_SIGNALS: ClassVar[set] = {bp_config.sys_col, bp_config.dia_col, bp_config.map_col}
 
     _DEFAULTS: ClassVar[dict] = {
-        bp_config.sys_col: BoundConfig(upper_bound=300, lower_bound=40),
-        bp_config.dia_col: BoundConfig(upper_bound=250, lower_bound=10),
-        bp_config.map_col: BoundConfig(upper_bound=300, lower_bound=20),
+        # bp_config.sys_col: BoundConfig(upper_bound=300, lower_bound=40),
+        # bp_config.dia_col: BoundConfig(upper_bound=250, lower_bound=10),
+        # bp_config.map_col: BoundConfig(upper_bound=300, lower_bound=20),
+        bp_config.sys_col: BoundConfig(upper_bound=300, lower_bound=-999999, outlier_holder=-9999),
+        bp_config.dia_col: BoundConfig(upper_bound=250, lower_bound=-999999, outlier_holder=-9999),
+        bp_config.map_col: BoundConfig(upper_bound=300, lower_bound=-999999, outlier_holder=-9999),
     }
 
 class LabBoundsConfig(PhysiologicalBoundsConfig):

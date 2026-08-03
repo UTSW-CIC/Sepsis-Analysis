@@ -1,7 +1,11 @@
 from typing import Protocol, List
 import polars as pl
-from ..utils.utils import cast_cols, extract_sys_dia_from_flowsheets, extract_arterial_blood_pressure_mean_from_flowsheets
+from ..utils.utils import (cast_cols,
+                           extract_sys_dia_from_flowsheets,
+                           extract_arterial_blood_pressure_mean_from_flowsheets,
+                           calculate_pf_ratio)
 from ..configs.dataconfig import DataConfig, BloodPressureConfig
+from ..configs.pulmonarydysfunction import PFConfig
 from ..configs.outlierdetection.extremeoutliers import PhysiologicalBoundsConfig
 from ..outlierdetection.layer1 import Layer1PhysiologicalBound
 
@@ -49,15 +53,27 @@ class BloodPressureExtractor:
         df = extract_arterial_blood_pressure_mean_from_flowsheets(df, self.bp_config)
         return df
 
+
+class PFRatioCalculator:
+    name='pfratio'
+    def __init__(self, pf_config: PFConfig):
+        self.pf_config = pf_config
+    def apply(self, df:pl.DataFrame, logger=None):
+        if logger:
+            logger.info('calculating calculating pf ratio ...')
+        df = calculate_pf_ratio(df, self.pf_config)
+        return df
+
+
 class BloodPressureBounds:
     name='bp_bounds'
     def __init__(self, bp_config: BloodPressureConfig, bp_bounds_config: PhysiologicalBoundsConfig,
-                outliers_replace_value:float|str=None,
+                # outliers_replace_value:float|str=None,
                 outlier_column_name:str=None,
                  ):
         self.bp_bounds_config = bp_bounds_config
         self.bp_config = bp_config
-        self.outliers_replace_value = outliers_replace_value
+        # self.outliers_replace_value = outliers_replace_value
         self.outlier_column_name = outlier_column_name
 
     def _get_sys_expr(self):
@@ -71,7 +87,8 @@ class BloodPressureBounds:
                 |
                 (pl.col(self.bp_config.sys_col)>self.bp_bounds_config.thresholds[self.bp_config.sys_col].upper_bound)
             )
-            ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_sys).alias(self.outlier_column_name+'_sys')
+            # ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_sys).alias(self.outlier_column_name+'_sys')
+            ).then(pl.lit(self.bp_bounds_config.thresholds[self.bp_config.sys_col].outlier_holder)).otherwise(expr_sys).alias(self.outlier_column_name+'_sys')
         return expr_sys
 
     def _get_dia_expr(self):
@@ -87,7 +104,8 @@ class BloodPressureBounds:
                 |
                 (pl.col(self.bp_config.dia_col)>=pl.col(self.bp_config.sys_col))
             )
-            ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_dia).alias(self.outlier_column_name+'_dia')
+            # ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_dia).alias(self.outlier_column_name+'_dia')
+            ).then(pl.lit(self.bp_bounds_config.thresholds[self.bp_config.dia_col].outlier_holder)).otherwise(expr_dia).alias(self.outlier_column_name+'_dia')
         return expr_dia 
 
     def _get_map_expr(self):
@@ -101,7 +119,8 @@ class BloodPressureBounds:
                 |
                 (pl.col(self.bp_config.map_col)>self.bp_bounds_config.thresholds[self.bp_config.map_col].upper_bound)
             )
-            ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_map).alias(self.outlier_column_name+'_map')
+            # ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_map).alias(self.outlier_column_name+'_map')
+            ).then(pl.lit(self.bp_bounds_config.thresholds[self.bp_config.map_col].outlier_holder)).otherwise(expr_map).alias(self.outlier_column_name+'_map')
         return expr_map
 
     def apply(self, df: pl.DataFrame, logger=None):
@@ -123,13 +142,11 @@ class BloodPressureBounds:
 class ApplyBounds:
     name = "outliers"
     def __init__(self, bounds_config: PhysiologicalBoundsConfig,
-                outliers_replace_value:float|str=None,
                 outlier_column_name:str=None,
                 sort_by:None|str|List[str]=None, inplace:bool=False):
         self.bounds_config = bounds_config
         self.sort_by = sort_by
         self.inplace = inplace
-        self.outliers_replace_value = outliers_replace_value
         self.outlier_column_name = outlier_column_name 
     
     def apply(self, df:pl.DataFrame, logger=None):
@@ -137,7 +154,7 @@ class ApplyBounds:
             logger.info('applying physiological bounds ...')
 
         df_detected= Layer1PhysiologicalBound(self.bounds_config, self.sort_by).apply(
-            df, outliers_replace_value=self.outliers_replace_value,
+            df,
             outlier_column_name=self.outlier_column_name, inplace=self.inplace
         )
         return df_detected

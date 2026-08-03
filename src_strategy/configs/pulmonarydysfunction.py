@@ -23,6 +23,7 @@ class PFConfig(DataConfig):
     pf_lower_threshold: float = Field(default=200, description="lower Threshold for P/F ratio")
 
     time_window_between_pao2_fio2_hrs: float = 2.0
+    fio2_suffix:str = Field(default="_fio2", description="Suffix to be added after joining with pao2")
     pf_ratio_col: str = Field(default="pf_ratio")
     pf_flag: str = Field(default="PF_Ratio_Flag")
 
@@ -94,7 +95,7 @@ class PulmonaryDysfunctionConfig(DataConfig):
         ]
 
 pulmonary_dysfunction_config = PulmonaryDysfunctionConfig()
-    
+pf_config = PFConfig() 
     # vent_on_status: str = "Vent on Documentation"
     # vent_off_status: str = "Vent off Documentation"
 

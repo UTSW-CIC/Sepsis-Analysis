@@ -6,6 +6,7 @@ from ..dataconfig import DataConfig
 class BoundConfig(BaseModel):
     lower_bound: float = Field(default=0.0)
     upper_bound: float = Field(default=1.0)
+    outlier_holder: float = Field(default=-2.0)
 
     @model_validator(mode="after")
     def validate_bounds(self):

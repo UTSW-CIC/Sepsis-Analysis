@@ -10,7 +10,6 @@ class Layer1PhysiologicalBound:
         self.sort_by = sort_by
     
     def apply(self, df: pl.DataFrame,
-              outliers_replace_value:float|str=None,
               outlier_column_name:str=None,
               inplace=False):
         if inplace:
@@ -29,7 +28,7 @@ class Layer1PhysiologicalBound:
                         ((pl.col(self.config.val_col) < bounds.lower_bound) |
                         (pl.col(self.config.val_col) > bounds.upper_bound))
                     )
-                    .then(outliers_replace_value)
+                    .then(bounds.outlier_holder)
                     .otherwise(expr)
                 )
 

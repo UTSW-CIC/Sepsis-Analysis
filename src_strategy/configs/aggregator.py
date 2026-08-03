@@ -51,9 +51,10 @@ class FeatureColumn(str, Enum):
     LAST_EPINEPHRINE_24H     = auto()
 
     # Pulmonary
-    VENT_STATUS_FLAG        = auto()
-    VENT_STATUS_TIME        = auto()    
-    O2_DELIVERY_FLAG        = auto()
+    # VENT_STATUS_FLAG        = auto()
+    # VENT_STATUS_TIME        = auto()    
+    # O2_DELIVERY_FLAG        = auto()
+    LAST_PFRATIO_2H           = auto()
 
 class BaselineColumn(str, Enum):
     BASELINE_CREATININE     = "Baseline_Creatinine"
@@ -70,6 +71,7 @@ class FeatureDefinition(BaseModel):
     alias: str
     agg: Literal["max", "min", "last", "sum", "mean"]
     lookback_period: float
+    val_col: str = Field(default="NumericValue", description="Column name for value")
 
 FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     # Temperature
@@ -103,18 +105,32 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     ),
 
     # Blood Pressure
+    # FeatureColumn.LAST_SBP_8h: FeatureDefinition(
+    #     event_grouper="Systolic Blood Pressure",
+    #     alias=FeatureColumn.LAST_SBP_8h,
+    #     agg="last",
+    #     lookback_period=8*60
+    # ),
     FeatureColumn.LAST_SBP_8h: FeatureDefinition(
-        event_grouper="Systolic Blood Pressure",
+        event_grouper="Blood Pressure",
         alias=FeatureColumn.LAST_SBP_8h,
         agg="last",
-        lookback_period=8*60
+        lookback_period=8*60,
+        val_col="sys"
     ),
 
+    # FeatureColumn.LAST_MAP_8h: FeatureDefinition(
+    #     event_grouper="Arterial Blood Pressure Mean",
+    #     alias=FeatureColumn.LAST_MAP_8h,
+    #     agg="last",
+    #     lookback_period=8*60
+    # ),
     FeatureColumn.LAST_MAP_8h: FeatureDefinition(
-        event_grouper="Arterial Blood Pressure Mean",
+        event_grouper="Blood Pressure",
         alias=FeatureColumn.LAST_MAP_8h,
         agg="last",
-        lookback_period=8*60
+        lookback_period=8*60,
+        val_col="map"
     ),
 
     # WBC
@@ -192,35 +208,42 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     # Vasopressors
     # TODO:Question: There are two Event_Names: VASOPRESSIN 20 UNIT/ML, VASOPRESSIN 0.2 UNIT/ML
     # Numeric values vary between 0.0 up to 40
-    FeatureColumn.LAST_VASOPRESSIN_24H: FeatureDefinition(
-        event_grouper="Vasopressin",
-        alias=FeatureColumn.LAST_VASOPRESSIN_24H,
-        agg="last",
-        lookback_period=24*60
-    ),
-    # TODO: Question: There are multiple Event_Names for Phenylephrine: PHENYLEPHRINE 10 MG/ML, PHENYLEPHRINE 0.1 MG/ML, PHENYLEPHRINE 1 MG/ML, PHENYLEPHRINE 20 MG/ML, PHENYLEPHRINE 2 MG/ML, PHENYLEPHRINE 5 MG/ML
-    FeatureColumn.LAST_PHENYLEPHRINE_24H: FeatureDefinition(
-        event_grouper="Phenylephrine",
-        alias=FeatureColumn.LAST_PHENYLEPHRINE_24H,
-        agg="last",
-        lookback_period=24*60
-    ),
+    # FeatureColumn.LAST_VASOPRESSIN_24H: FeatureDefinition(
+    #     event_grouper="Vasopressin",
+    #     alias=FeatureColumn.LAST_VASOPRESSIN_24H,
+    #     agg="last",
+    #     lookback_period=24*60
+    # ),
+    # # TODO: Question: There are multiple Event_Names for Phenylephrine: PHENYLEPHRINE 10 MG/ML, PHENYLEPHRINE 0.1 MG/ML, PHENYLEPHRINE 1 MG/ML, PHENYLEPHRINE 20 MG/ML, PHENYLEPHRINE 2 MG/ML, PHENYLEPHRINE 5 MG/ML
+    # FeatureColumn.LAST_PHENYLEPHRINE_24H: FeatureDefinition(
+    #     event_grouper="Phenylephrine",
+    #     alias=FeatureColumn.LAST_PHENYLEPHRINE_24H,
+    #     agg="last",
+    #     lookback_period=24*60
+    # ),
     
-    FeatureColumn.LAST_NOREPINEPHRINE_24H: FeatureDefinition(
-        event_grouper="Norepinephrine",
-        alias=FeatureColumn.LAST_NOREPINEPHRINE_24H,
+    # FeatureColumn.LAST_NOREPINEPHRINE_24H: FeatureDefinition(
+    #     event_grouper="Norepinephrine",
+    #     alias=FeatureColumn.LAST_NOREPINEPHRINE_24H,
+    #     agg="last",
+    #     lookback_period=24*60
+    # ),
+    # FeatureColumn.LAST_EPINEPHRINE_24H: FeatureDefinition(
+    #     event_grouper="Epinephrine",
+    #     alias=FeatureColumn.LAST_EPINEPHRINE_24H,
+    #     agg="last",
+    #     lookback_period=24*60
+    # ),
+    FeatureColumn.LAST_PFRATIO_2H: FeatureDefinition(
+        event_grouper="FIO2",
+        alias=FeatureColumn.LAST_PFRATIO_2H,
         agg="last",
-        lookback_period=24*60
-    ),
-    FeatureColumn.LAST_EPINEPHRINE_24H: FeatureDefinition(
-        event_grouper="Epinephrine",
-        alias=FeatureColumn.LAST_EPINEPHRINE_24H,
-        agg="last",
-        lookback_period=24*60
-    ),
+        lookback_period=2*60
+    )
+
 }
 
-class FeatureConfig(BaseModel):
+class FeatureConfig(DataConfig):
     selected: List[FeatureColumn] = Field(
         default_factory=lambda: list(FEATURE_REGISTRY.keys())
     )
@@ -261,9 +284,9 @@ class VentConfig(DataConfig):
     # o2_evt_val_col: str = "evt_o2"
     # o2_evt_dt_col: str = "evt_dt_o2"
     # alias: str = "Last_Vent_Status"
-    vent_alias: str = FeatureColumn.VENT_STATUS_FLAG
-    vent_dt_alias: str = FeatureColumn.VENT_STATUS_TIME
-    o2_alias: str = FeatureColumn.O2_DELIVERY_FLAG
+    # vent_alias: str = FeatureColumn.VENT_STATUS_FLAG
+    # vent_dt_alias: str = FeatureColumn.VENT_STATUS_TIME
+    # o2_alias: str = FeatureColumn.O2_DELIVERY_FLAG
 
 
 agg_config = AggregatorConfig()

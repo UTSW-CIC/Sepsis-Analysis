@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, computed_field
 from pathlib import Path
 from enum import Enum
 from .envconfig import env_settings
 import polars as pl
+from typing import List
 
 #==============================================================================================================================
 # Input/Output Configurations
@@ -51,12 +52,43 @@ class DataConfig(BaseModel):
     BASELINE_eGFR: str           = Field(default="Baseline_eGFR", description="Baseline eGFR")
     BASELINE_WBC: str            = Field(default="Baseline_WBC", description="Baseline WBC")
 
+    @computed_field
+    @property
+    def unique_subset_with_grouper(self) -> List[str]:
+        return [self.encounter_col, self.event_dt_col, self.grouper_col, self.raw_val_col]
+
+    @computed_field
+    @property
+    def unique_subset_with_type(self) -> List[str]:
+        return [self.encounter_col, self.event_dt_col, self.type_col, self.raw_val_col]
+
+    @computed_field
+    @property
+    def unique_subset_with_eventname(self) -> List[str]:
+        return [self.encounter_col, self.event_dt_col, self.event_name_col, self.raw_val_col]
+
+    @computed_field
+    @property
+    def unique_subset_with_all(self) -> List[str]:
+        return [self.encounter_col, self.event_dt_col, self.type_col, self.grouper_col, self.event_name_col, self.raw_val_col]
+
+    @computed_field
+    @property
+    def base_cols(self) -> List[str]:
+        return [self.encounter_col, self.event_dt_col, self.type_col,
+                 self.grouper_col, self.event_name_col, self.val_col, self.raw_val_col]
+
+
 class DataInputOutputConfig(DataConfig):
     data_path: str = Field(..., description="Path to the data directory")
     output_path: str = Field("", description="Path to the output directory")
+    meta_output_path: str = Field("", description="Path to the meta output directory that contains configs, thresholds, monitored tables, etc.")
+    meta_outlier_path: str = Field("", description="Path to the meta outlier directory that contains outlier tables")
+    meta_ingest_path: str = Field("", description="Path to the meta outlier directory that contains outlier tables")
     logger_dir: str = Field("./logs", description="Directory to write logs to")
     input_file_names: InputFileNames = InputFileNames()
     convert_bp_to_sbp: bool = True
+
     cast_schema: dict = Field(default_factory=lambda: {
         "EncounterEpicCsn": pl.Int64,
         "NumericValue": pl.Float64,
@@ -85,6 +117,15 @@ class DataInputOutputConfig(DataConfig):
             # self.output_path = f"./data/output/{phase_experiment_id}"
             self.output_path = f"{str(parent_dir)}/output/{phase_experiment_id}"
         Path(self.output_path).mkdir(parents=True, exist_ok=True)
+
+        self.meta_output_path = f"{self.output_path}/meta"
+        Path(self.meta_output_path).mkdir(parents=True, exist_ok=True)
+
+        self.meta_outlier_path = f"{self.meta_output_path}/outliers"
+        Path(self.meta_outlier_path).mkdir(parents=True, exist_ok=True)
+
+        self.meta_ingest_path = f"{self.meta_output_path}/ingest"
+        Path(self.meta_ingest_path).mkdir(parents=True, exist_ok=True)
         return self
 
     @model_validator(mode="after")
@@ -142,12 +183,18 @@ input_filenames_v3 = InputFileNames(
     PROCEDURES = "Procedure Order Events - 6.5.26.csv",
     DIAGNOSIS = "Diagnoses - 6.5.26.csv",
 )
+
 input_output_config_3 = DataInputOutputConfig(
     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
     output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3',
     input_file_names=input_filenames_v3
 )
 
+input_output_config_3_1 = DataInputOutputConfig(
+    data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
+    output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3_1',
+    input_file_names=input_filenames_v3
+)
 data_config = DataConfig()
 
 bp_config = BloodPressureConfig()
