@@ -69,9 +69,38 @@ class BaselineColumn(str, Enum):
 class FeatureDefinition(BaseModel):
     event_grouper: str
     alias: str
+    agg_type: Literal["flag", "numeric"] = "numeric"
     agg: Literal["max", "min", "last", "sum", "mean"]
-    lookback_period: float
+    lookback_period: float | None = None
     val_col: str = Field(default="NumericValue", description="Column name for value")
+    flag_true_values: List[str] | None = Field(
+        default=None,
+        description="Raw values that set a flag feature to true",
+    )
+    flag_false_values: List[str] | None = Field(
+        default=None,
+        description="Raw values that set a flag feature to false",
+    )
+    persist_until_termination: bool = True
+    termination_event_grouper: str | None = None
+
+    @model_validator(mode="after")
+    def validate_flag_definition(self) -> "FeatureDefinition":
+        if self.agg_type == "numeric" and self.lookback_period is None:
+            raise ValueError("lookback_period is required for numeric features")
+        if self.lookback_period is not None and self.lookback_period < 0:
+            raise ValueError("lookback_period must be non-negative")
+
+        if self.agg_type == "flag":
+            overlapping_values = set(self.flag_true_values or []) & set(
+                self.flag_false_values or []
+            )
+            if overlapping_values:
+                raise ValueError(
+                    "Flag true and false values must not overlap: "
+                    f"{sorted(overlapping_values)!r}"
+                )
+        return self
 
 FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     # Temperature
@@ -208,32 +237,36 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     # Vasopressors
     # TODO:Question: There are two Event_Names: VASOPRESSIN 20 UNIT/ML, VASOPRESSIN 0.2 UNIT/ML
     # Numeric values vary between 0.0 up to 40
-    # FeatureColumn.LAST_VASOPRESSIN_24H: FeatureDefinition(
-    #     event_grouper="Vasopressin",
-    #     alias=FeatureColumn.LAST_VASOPRESSIN_24H,
-    #     agg="last",
-    #     lookback_period=24*60
-    # ),
+    FeatureColumn.LAST_VASOPRESSIN_24H: FeatureDefinition(
+        event_grouper="Vasopressin",
+        alias=FeatureColumn.LAST_VASOPRESSIN_24H,
+        agg_type="flag",
+        agg="last",
+        lookback_period=24*60
+    ),
     # # TODO: Question: There are multiple Event_Names for Phenylephrine: PHENYLEPHRINE 10 MG/ML, PHENYLEPHRINE 0.1 MG/ML, PHENYLEPHRINE 1 MG/ML, PHENYLEPHRINE 20 MG/ML, PHENYLEPHRINE 2 MG/ML, PHENYLEPHRINE 5 MG/ML
-    # FeatureColumn.LAST_PHENYLEPHRINE_24H: FeatureDefinition(
-    #     event_grouper="Phenylephrine",
-    #     alias=FeatureColumn.LAST_PHENYLEPHRINE_24H,
-    #     agg="last",
-    #     lookback_period=24*60
-    # ),
+    FeatureColumn.LAST_PHENYLEPHRINE_24H: FeatureDefinition(
+        event_grouper="Phenylephrine",
+        alias=FeatureColumn.LAST_PHENYLEPHRINE_24H,
+        agg_type="flag",
+        agg="last",
+        lookback_period=24*60
+    ),
     
-    # FeatureColumn.LAST_NOREPINEPHRINE_24H: FeatureDefinition(
-    #     event_grouper="Norepinephrine",
-    #     alias=FeatureColumn.LAST_NOREPINEPHRINE_24H,
-    #     agg="last",
-    #     lookback_period=24*60
-    # ),
-    # FeatureColumn.LAST_EPINEPHRINE_24H: FeatureDefinition(
-    #     event_grouper="Epinephrine",
-    #     alias=FeatureColumn.LAST_EPINEPHRINE_24H,
-    #     agg="last",
-    #     lookback_period=24*60
-    # ),
+    FeatureColumn.LAST_NOREPINEPHRINE_24H: FeatureDefinition(
+        event_grouper="Norepinephrine",
+        alias=FeatureColumn.LAST_NOREPINEPHRINE_24H,
+        agg_type="flag",
+        agg="last",
+        lookback_period=24*60
+    ),
+    FeatureColumn.LAST_EPINEPHRINE_24H: FeatureDefinition(
+        event_grouper="Epinephrine",
+        alias=FeatureColumn.LAST_EPINEPHRINE_24H,
+        agg_type="flag",
+        agg="last",
+        lookback_period=24*60
+    ),
     FeatureColumn.LAST_PFRATIO_2H: FeatureDefinition(
         event_grouper="FIO2",
         alias=FeatureColumn.LAST_PFRATIO_2H,

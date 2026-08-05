@@ -1375,3 +1375,509 @@
 2026-08-03 16:39:26 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
 2026-08-03 16:39:26 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h aggregated and joined. Current backbone table now has 8029940 rows and 17 columns.
 2026-08-03 16:39:26 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:12:28 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-08-04 16:12:28 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-04 16:12:28 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-04 16:12:35 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h pre-aggregation: 1365823
+2026-08-04 16:12:35 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h post-aggregation: 7814219
+2026-08-04 16:12:35 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h has 5.721253046697852 ratio of post to pre aggregation
+2026-08-04 16:12:35 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:12:35 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h aggregated and joined. Current backbone table now has 8029940 rows and 4 columns.
+2026-08-04 16:12:35 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:12:35 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-08-04 16:13:10 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h pre-aggregation: 5577936
+2026-08-04 16:13:10 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h post-aggregation: 7906584
+2026-08-04 16:13:10 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h has 1.4174748509125956 ratio of post to pre aggregation
+2026-08-04 16:13:10 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:13:10 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h aggregated and joined. Current backbone table now has 8029940 rows and 6 columns.
+2026-08-04 16:13:10 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:13:10 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-08-04 16:13:42 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h pre-aggregation: 4729102
+2026-08-04 16:13:42 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h post-aggregation: 7864212
+2026-08-04 16:13:42 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h has 1.6629398139435352 ratio of post to pre aggregation
+2026-08-04 16:13:42 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:13:42 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h aggregated and joined. Current backbone table now has 8029940 rows and 8 columns.
+2026-08-04 16:13:42 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:13:42 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_sbp_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-04 16:13:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h pre-aggregation: 2417651
+2026-08-04 16:13:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h post-aggregation: 6319556
+2026-08-04 16:13:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h has 2.6139240113647504 ratio of post to pre aggregation
+2026-08-04 16:13:59 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:13:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h aggregated and joined. Current backbone table now has 8029940 rows and 10 columns.
+2026-08-04 16:13:59 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:13:59 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_map_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-04 16:14:25 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h pre-aggregation: 3903487
+2026-08-04 16:14:25 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h post-aggregation: 7883964
+2026-08-04 16:14:25 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h has 2.0197233909066434 ratio of post to pre aggregation
+2026-08-04 16:14:25 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:25 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h aggregated and joined. Current backbone table now has 8029940 rows and 12 columns.
+2026-08-04 16:14:25 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:25 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_wbc_12h using last over last 720.0 minutes for events in WBC
+2026-08-04 16:14:27 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h pre-aggregation: 255458
+2026-08-04 16:14:27 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h post-aggregation: 5265123
+2026-08-04 16:14:27 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h has 20.610523060542242 ratio of post to pre aggregation
+2026-08-04 16:14:27 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:27 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h aggregated and joined. Current backbone table now has 8029940 rows and 14 columns.
+2026-08-04 16:14:27 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:27 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_creatinine_12h using last over last 720.0 minutes for events in Creatinine
+2026-08-04 16:14:30 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h pre-aggregation: 305906
+2026-08-04 16:14:30 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h post-aggregation: 5947584
+2026-08-04 16:14:30 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h has 19.442521558910254 ratio of post to pre aggregation
+2026-08-04 16:14:30 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:30 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h aggregated and joined. Current backbone table now has 8029940 rows and 16 columns.
+2026-08-04 16:14:30 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:30 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_egfr_12h using last over last 720.0 minutes for events in eGFR
+2026-08-04 16:14:33 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h pre-aggregation: 302491
+2026-08-04 16:14:33 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h post-aggregation: 5869225
+2026-08-04 16:14:33 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h has 19.402973972779357 ratio of post to pre aggregation
+2026-08-04 16:14:33 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:33 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h aggregated and joined. Current backbone table now has 8029940 rows and 18 columns.
+2026-08-04 16:14:33 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:33 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_bilirubin_12h using last over last 720.0 minutes for events in Bilirubin
+2026-08-04 16:14:35 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h pre-aggregation: 123139
+2026-08-04 16:14:35 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h post-aggregation: 2956130
+2026-08-04 16:14:35 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h has 24.006447997791113 ratio of post to pre aggregation
+2026-08-04 16:14:35 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:35 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h aggregated and joined. Current backbone table now has 8029940 rows and 20 columns.
+2026-08-04 16:14:35 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:35 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_lactate_6h using last over last 360.0 minutes for events in Lactate
+2026-08-04 16:14:37 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h pre-aggregation: 88688
+2026-08-04 16:14:37 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h post-aggregation: 1558002
+2026-08-04 16:14:37 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h has 17.567224427205485 ratio of post to pre aggregation
+2026-08-04 16:14:37 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:37 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h aggregated and joined. Current backbone table now has 8029940 rows and 22 columns.
+2026-08-04 16:14:37 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:37 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_platelets_24h using last over last 1440.0 minutes for events in Platelets
+2026-08-04 16:14:40 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h pre-aggregation: 257493
+2026-08-04 16:14:40 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h post-aggregation: 7481041
+2026-08-04 16:14:40 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h has 29.053376208285275 ratio of post to pre aggregation
+2026-08-04 16:14:40 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:40 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h aggregated and joined. Current backbone table now has 8029940 rows and 24 columns.
+2026-08-04 16:14:40 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:40 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_inr_12h using last over last 720.0 minutes for events in INR
+2026-08-04 16:14:41 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h pre-aggregation: 50452
+2026-08-04 16:14:41 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h post-aggregation: 1417553
+2026-08-04 16:14:41 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h has 28.097062554507254 ratio of post to pre aggregation
+2026-08-04 16:14:41 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:41 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h aggregated and joined. Current backbone table now has 8029940 rows and 26 columns.
+2026-08-04 16:14:41 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:42 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_aptt_24h using last over last 1440.0 minutes for events in APTT
+2026-08-04 16:14:43 | WARNING  | src_strategy.data_preparation.aggregator | Feature last_aptt_24h has no events to aggregate. Check if the event_grouper 'APTT' is correct and if the input data has any events for this feature.
+2026-08-04 16:14:43 | INFO     | src_strategy.data_preparation.aggregator | Feature last_aptt_24h aggregated and joined. Current backbone table now has 8029940 rows and 28 columns.
+2026-08-04 16:14:43 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:43 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_gcs_12h using last over last 720.0 minutes for events in Glasgow Coma Score
+2026-08-04 16:14:48 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h pre-aggregation: 706381
+2026-08-04 16:14:48 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h post-aggregation: 7348013
+2026-08-04 16:14:48 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h has 10.402336699316658 ratio of post to pre aggregation
+2026-08-04 16:14:48 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:14:48 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h aggregated and joined. Current backbone table now has 8029940 rows and 30 columns.
+2026-08-04 16:14:48 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:17:07 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_vasopressin_24h over last 1440.0 minutes for events in Vasopressin
+2026-08-04 16:40:28 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h pre-aggregation: 24534
+2026-08-04 16:40:28 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h post-aggregation: 1197664
+2026-08-04 16:40:28 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h has 48.81649955164262 ratio of post to pre aggregation
+2026-08-04 16:40:28 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:40:34 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h aggregated and joined. Current backbone table now has 8029940 rows and 32 columns.
+2026-08-04 16:40:36 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:42:00 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-08-04 16:42:01 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-04 16:42:01 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-04 16:42:07 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h pre-aggregation: 1365823
+2026-08-04 16:42:07 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h post-aggregation: 7814219
+2026-08-04 16:42:07 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h has 5.721253046697852 ratio of post to pre aggregation
+2026-08-04 16:42:07 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:42:07 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h aggregated and joined. Current backbone table now has 8029940 rows and 4 columns.
+2026-08-04 16:42:07 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:42:07 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-08-04 16:42:42 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h pre-aggregation: 5577936
+2026-08-04 16:42:42 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h post-aggregation: 7906584
+2026-08-04 16:42:42 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h has 1.4174748509125956 ratio of post to pre aggregation
+2026-08-04 16:42:42 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:42:42 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h aggregated and joined. Current backbone table now has 8029940 rows and 6 columns.
+2026-08-04 16:42:42 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:42:42 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-08-04 16:43:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h pre-aggregation: 4729102
+2026-08-04 16:43:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h post-aggregation: 7864212
+2026-08-04 16:43:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h has 1.6629398139435352 ratio of post to pre aggregation
+2026-08-04 16:43:14 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:43:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h aggregated and joined. Current backbone table now has 8029940 rows and 8 columns.
+2026-08-04 16:43:14 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:43:14 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_sbp_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-04 16:43:30 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h pre-aggregation: 2417651
+2026-08-04 16:43:30 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h post-aggregation: 6319556
+2026-08-04 16:43:30 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h has 2.6139240113647504 ratio of post to pre aggregation
+2026-08-04 16:43:30 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:43:30 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h aggregated and joined. Current backbone table now has 8029940 rows and 10 columns.
+2026-08-04 16:43:30 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:43:31 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_map_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-04 16:43:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h pre-aggregation: 3903487
+2026-08-04 16:43:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h post-aggregation: 7883964
+2026-08-04 16:43:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h has 2.0197233909066434 ratio of post to pre aggregation
+2026-08-04 16:43:56 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:43:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h aggregated and joined. Current backbone table now has 8029940 rows and 12 columns.
+2026-08-04 16:43:56 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:43:56 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_wbc_12h using last over last 720.0 minutes for events in WBC
+2026-08-04 16:43:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h pre-aggregation: 255458
+2026-08-04 16:43:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h post-aggregation: 5265123
+2026-08-04 16:43:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h has 20.610523060542242 ratio of post to pre aggregation
+2026-08-04 16:43:59 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:43:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h aggregated and joined. Current backbone table now has 8029940 rows and 14 columns.
+2026-08-04 16:43:59 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:43:59 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_creatinine_12h using last over last 720.0 minutes for events in Creatinine
+2026-08-04 16:44:01 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h pre-aggregation: 305906
+2026-08-04 16:44:01 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h post-aggregation: 5947584
+2026-08-04 16:44:01 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h has 19.442521558910254 ratio of post to pre aggregation
+2026-08-04 16:44:01 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:01 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h aggregated and joined. Current backbone table now has 8029940 rows and 16 columns.
+2026-08-04 16:44:01 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:01 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_egfr_12h using last over last 720.0 minutes for events in eGFR
+2026-08-04 16:44:04 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h pre-aggregation: 302491
+2026-08-04 16:44:04 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h post-aggregation: 5869225
+2026-08-04 16:44:04 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h has 19.402973972779357 ratio of post to pre aggregation
+2026-08-04 16:44:04 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:04 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h aggregated and joined. Current backbone table now has 8029940 rows and 18 columns.
+2026-08-04 16:44:04 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:04 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_bilirubin_12h using last over last 720.0 minutes for events in Bilirubin
+2026-08-04 16:44:06 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h pre-aggregation: 123139
+2026-08-04 16:44:06 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h post-aggregation: 2956130
+2026-08-04 16:44:06 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h has 24.006447997791113 ratio of post to pre aggregation
+2026-08-04 16:44:06 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:06 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h aggregated and joined. Current backbone table now has 8029940 rows and 20 columns.
+2026-08-04 16:44:06 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:06 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_lactate_6h using last over last 360.0 minutes for events in Lactate
+2026-08-04 16:44:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h pre-aggregation: 88688
+2026-08-04 16:44:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h post-aggregation: 1558002
+2026-08-04 16:44:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h has 17.567224427205485 ratio of post to pre aggregation
+2026-08-04 16:44:08 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h aggregated and joined. Current backbone table now has 8029940 rows and 22 columns.
+2026-08-04 16:44:08 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:08 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_platelets_24h using last over last 1440.0 minutes for events in Platelets
+2026-08-04 16:44:11 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h pre-aggregation: 257493
+2026-08-04 16:44:11 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h post-aggregation: 7481041
+2026-08-04 16:44:11 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h has 29.053376208285275 ratio of post to pre aggregation
+2026-08-04 16:44:11 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:11 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h aggregated and joined. Current backbone table now has 8029940 rows and 24 columns.
+2026-08-04 16:44:11 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:11 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_inr_12h using last over last 720.0 minutes for events in INR
+2026-08-04 16:44:13 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h pre-aggregation: 50452
+2026-08-04 16:44:13 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h post-aggregation: 1417553
+2026-08-04 16:44:13 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h has 28.097062554507254 ratio of post to pre aggregation
+2026-08-04 16:44:13 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:13 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h aggregated and joined. Current backbone table now has 8029940 rows and 26 columns.
+2026-08-04 16:44:13 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:13 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_aptt_24h using last over last 1440.0 minutes for events in APTT
+2026-08-04 16:44:14 | WARNING  | src_strategy.data_preparation.aggregator | Feature last_aptt_24h has no events to aggregate. Check if the event_grouper 'APTT' is correct and if the input data has any events for this feature.
+2026-08-04 16:44:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_aptt_24h aggregated and joined. Current backbone table now has 8029940 rows and 28 columns.
+2026-08-04 16:44:14 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:14 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_gcs_12h using last over last 720.0 minutes for events in Glasgow Coma Score
+2026-08-04 16:44:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h pre-aggregation: 706381
+2026-08-04 16:44:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h post-aggregation: 7348013
+2026-08-04 16:44:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h has 10.402336699316658 ratio of post to pre aggregation
+2026-08-04 16:44:19 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:44:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h aggregated and joined. Current backbone table now has 8029940 rows and 30 columns.
+2026-08-04 16:44:19 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:07 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_vasopressin_24h over last 1440.0 minutes for events in Vasopressin
+2026-08-04 16:46:17 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h pre-aggregation: 24534
+2026-08-04 16:46:17 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h post-aggregation: 1197664
+2026-08-04 16:46:17 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h has 48.81649955164262 ratio of post to pre aggregation
+2026-08-04 16:46:17 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:17 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h aggregated and joined. Current backbone table now has 8029940 rows and 32 columns.
+2026-08-04 16:46:17 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:17 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_phenylephrine_24h over last 1440.0 minutes for events in Phenylephrine
+2026-08-04 16:46:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h pre-aggregation: 2165
+2026-08-04 16:46:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h post-aggregation: 107869
+2026-08-04 16:46:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h has 49.82401847575058 ratio of post to pre aggregation
+2026-08-04 16:46:19 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 34 columns.
+2026-08-04 16:46:19 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:19 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_norepinephrine_24h over last 1440.0 minutes for events in Norepinephrine
+2026-08-04 16:46:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h pre-aggregation: 26400
+2026-08-04 16:46:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h post-aggregation: 1675284
+2026-08-04 16:46:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h has 63.457727272727276 ratio of post to pre aggregation
+2026-08-04 16:46:20 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 36 columns.
+2026-08-04 16:46:20 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:21 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_epinephrine_24h over last 1440.0 minutes for events in Epinephrine
+2026-08-04 16:46:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h pre-aggregation: 12520
+2026-08-04 16:46:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h post-aggregation: 465216
+2026-08-04 16:46:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h has 37.157827476038335 ratio of post to pre aggregation
+2026-08-04 16:46:22 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 38 columns.
+2026-08-04 16:46:22 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:22 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pfratio_2h using last over last 120.0 minutes for events in FIO2
+2026-08-04 16:46:24 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h pre-aggregation: 84402
+2026-08-04 16:46:24 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h post-aggregation: 659575
+2026-08-04 16:46:24 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h has 7.814684486149617 ratio of post to pre aggregation
+2026-08-04 16:46:24 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 16:46:24 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h aggregated and joined. Current backbone table now has 8029940 rows and 40 columns.
+2026-08-04 16:46:24 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:06:53 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-08-04 18:06:54 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-04 18:06:54 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-04 18:07:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h pre-aggregation: 1365823
+2026-08-04 18:07:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h post-aggregation: 7814219
+2026-08-04 18:07:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h has 5.721253046697852 ratio of post to pre aggregation
+2026-08-04 18:07:00 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:07:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h aggregated and joined. Current backbone table now has 8029940 rows and 4 columns.
+2026-08-04 18:07:00 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:07:01 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-08-04 18:07:36 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h pre-aggregation: 5577936
+2026-08-04 18:07:36 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h post-aggregation: 7906584
+2026-08-04 18:07:36 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h has 1.4174748509125956 ratio of post to pre aggregation
+2026-08-04 18:07:36 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:07:36 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h aggregated and joined. Current backbone table now has 8029940 rows and 6 columns.
+2026-08-04 18:07:36 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:07:36 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-08-04 18:08:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h pre-aggregation: 4729102
+2026-08-04 18:08:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h post-aggregation: 7864212
+2026-08-04 18:08:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h has 1.6629398139435352 ratio of post to pre aggregation
+2026-08-04 18:08:08 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h aggregated and joined. Current backbone table now has 8029940 rows and 8 columns.
+2026-08-04 18:08:08 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:08 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_sbp_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-04 18:08:25 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h pre-aggregation: 2417651
+2026-08-04 18:08:25 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h post-aggregation: 6319556
+2026-08-04 18:08:25 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h has 2.6139240113647504 ratio of post to pre aggregation
+2026-08-04 18:08:25 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:25 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h aggregated and joined. Current backbone table now has 8029940 rows and 10 columns.
+2026-08-04 18:08:25 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:25 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_map_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-04 18:08:51 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h pre-aggregation: 3903487
+2026-08-04 18:08:51 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h post-aggregation: 7883964
+2026-08-04 18:08:51 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h has 2.0197233909066434 ratio of post to pre aggregation
+2026-08-04 18:08:51 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:51 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h aggregated and joined. Current backbone table now has 8029940 rows and 12 columns.
+2026-08-04 18:08:51 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:51 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_wbc_12h using last over last 720.0 minutes for events in WBC
+2026-08-04 18:08:53 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h pre-aggregation: 255458
+2026-08-04 18:08:53 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h post-aggregation: 5265123
+2026-08-04 18:08:53 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h has 20.610523060542242 ratio of post to pre aggregation
+2026-08-04 18:08:53 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:53 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h aggregated and joined. Current backbone table now has 8029940 rows and 14 columns.
+2026-08-04 18:08:53 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:53 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_creatinine_12h using last over last 720.0 minutes for events in Creatinine
+2026-08-04 18:08:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h pre-aggregation: 305906
+2026-08-04 18:08:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h post-aggregation: 5947584
+2026-08-04 18:08:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h has 19.442521558910254 ratio of post to pre aggregation
+2026-08-04 18:08:56 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h aggregated and joined. Current backbone table now has 8029940 rows and 16 columns.
+2026-08-04 18:08:56 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:56 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_egfr_12h using last over last 720.0 minutes for events in eGFR
+2026-08-04 18:08:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h pre-aggregation: 302491
+2026-08-04 18:08:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h post-aggregation: 5869225
+2026-08-04 18:08:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h has 19.402973972779357 ratio of post to pre aggregation
+2026-08-04 18:08:59 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:59 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h aggregated and joined. Current backbone table now has 8029940 rows and 18 columns.
+2026-08-04 18:08:59 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:08:59 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_bilirubin_12h using last over last 720.0 minutes for events in Bilirubin
+2026-08-04 18:09:01 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h pre-aggregation: 123139
+2026-08-04 18:09:01 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h post-aggregation: 2956130
+2026-08-04 18:09:01 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h has 24.006447997791113 ratio of post to pre aggregation
+2026-08-04 18:09:01 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:01 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h aggregated and joined. Current backbone table now has 8029940 rows and 20 columns.
+2026-08-04 18:09:01 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:01 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_lactate_6h using last over last 360.0 minutes for events in Lactate
+2026-08-04 18:09:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h pre-aggregation: 88688
+2026-08-04 18:09:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h post-aggregation: 1558002
+2026-08-04 18:09:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h has 17.567224427205485 ratio of post to pre aggregation
+2026-08-04 18:09:03 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h aggregated and joined. Current backbone table now has 8029940 rows and 22 columns.
+2026-08-04 18:09:03 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:03 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_platelets_24h using last over last 1440.0 minutes for events in Platelets
+2026-08-04 18:09:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h pre-aggregation: 257493
+2026-08-04 18:09:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h post-aggregation: 7481041
+2026-08-04 18:09:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h has 29.053376208285275 ratio of post to pre aggregation
+2026-08-04 18:09:05 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h aggregated and joined. Current backbone table now has 8029940 rows and 24 columns.
+2026-08-04 18:09:05 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:05 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_inr_12h using last over last 720.0 minutes for events in INR
+2026-08-04 18:09:07 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h pre-aggregation: 50452
+2026-08-04 18:09:07 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h post-aggregation: 1417553
+2026-08-04 18:09:07 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h has 28.097062554507254 ratio of post to pre aggregation
+2026-08-04 18:09:07 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:07 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h aggregated and joined. Current backbone table now has 8029940 rows and 26 columns.
+2026-08-04 18:09:07 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:07 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_aptt_24h using last over last 1440.0 minutes for events in APTT
+2026-08-04 18:09:09 | WARNING  | src_strategy.data_preparation.aggregator | Feature last_aptt_24h has no events to aggregate. Check if the event_grouper 'APTT' is correct and if the input data has any events for this feature.
+2026-08-04 18:09:09 | INFO     | src_strategy.data_preparation.aggregator | Feature last_aptt_24h aggregated and joined. Current backbone table now has 8029940 rows and 28 columns.
+2026-08-04 18:09:09 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:09 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_gcs_12h using last over last 720.0 minutes for events in Glasgow Coma Score
+2026-08-04 18:09:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h pre-aggregation: 706381
+2026-08-04 18:09:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h post-aggregation: 7348013
+2026-08-04 18:09:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h has 10.402336699316658 ratio of post to pre aggregation
+2026-08-04 18:09:14 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h aggregated and joined. Current backbone table now has 8029940 rows and 30 columns.
+2026-08-04 18:09:14 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:14 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_vasopressin_24h over last 1440.0 minutes for events in Vasopressin
+2026-08-04 18:09:15 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h pre-aggregation: 24534
+2026-08-04 18:09:15 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h post-aggregation: 1197664
+2026-08-04 18:09:15 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h has 48.81649955164262 ratio of post to pre aggregation
+2026-08-04 18:09:15 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:15 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h aggregated and joined. Current backbone table now has 8029940 rows and 32 columns.
+2026-08-04 18:09:15 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:15 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_phenylephrine_24h over last 1440.0 minutes for events in Phenylephrine
+2026-08-04 18:09:17 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h pre-aggregation: 2165
+2026-08-04 18:09:17 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h post-aggregation: 107869
+2026-08-04 18:09:17 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h has 49.82401847575058 ratio of post to pre aggregation
+2026-08-04 18:09:17 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:17 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 34 columns.
+2026-08-04 18:09:17 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:17 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_norepinephrine_24h over last 1440.0 minutes for events in Norepinephrine
+2026-08-04 18:09:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h pre-aggregation: 26400
+2026-08-04 18:09:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h post-aggregation: 1675284
+2026-08-04 18:09:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h has 63.457727272727276 ratio of post to pre aggregation
+2026-08-04 18:09:19 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:19 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 36 columns.
+2026-08-04 18:09:19 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:19 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_epinephrine_24h over last 1440.0 minutes for events in Epinephrine
+2026-08-04 18:09:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h pre-aggregation: 12520
+2026-08-04 18:09:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h post-aggregation: 465216
+2026-08-04 18:09:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h has 37.157827476038335 ratio of post to pre aggregation
+2026-08-04 18:09:20 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 38 columns.
+2026-08-04 18:09:20 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:20 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pfratio_2h using last over last 120.0 minutes for events in FIO2
+2026-08-04 18:09:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h pre-aggregation: 84402
+2026-08-04 18:09:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h post-aggregation: 659575
+2026-08-04 18:09:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h has 7.814684486149617 ratio of post to pre aggregation
+2026-08-04 18:09:22 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:09:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h aggregated and joined. Current backbone table now has 8029940 rows and 40 columns.
+2026-08-04 18:09:22 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:14:51 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-08-04 18:14:52 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-04 18:14:52 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-04 18:14:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h pre-aggregation: 1365823
+2026-08-04 18:14:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h post-aggregation: 7814219
+2026-08-04 18:14:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h has 5.721253046697852 ratio of post to pre aggregation
+2026-08-04 18:14:58 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:14:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h aggregated and joined. Current backbone table now has 8029940 rows and 4 columns.
+2026-08-04 18:14:58 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:14:58 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-08-04 18:15:33 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h pre-aggregation: 5577936
+2026-08-04 18:15:33 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h post-aggregation: 7906584
+2026-08-04 18:15:33 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h has 1.4174748509125956 ratio of post to pre aggregation
+2026-08-04 18:15:33 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:15:33 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h aggregated and joined. Current backbone table now has 8029940 rows and 6 columns.
+2026-08-04 18:15:33 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:15:33 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-08-04 18:16:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h pre-aggregation: 4729102
+2026-08-04 18:16:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h post-aggregation: 7864212
+2026-08-04 18:16:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h has 1.6629398139435352 ratio of post to pre aggregation
+2026-08-04 18:16:05 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h aggregated and joined. Current backbone table now has 8029940 rows and 8 columns.
+2026-08-04 18:16:05 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:05 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_sbp_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-04 18:16:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h pre-aggregation: 2417651
+2026-08-04 18:16:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h post-aggregation: 6319556
+2026-08-04 18:16:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h has 2.6139240113647504 ratio of post to pre aggregation
+2026-08-04 18:16:22 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:22 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h aggregated and joined. Current backbone table now has 8029940 rows and 10 columns.
+2026-08-04 18:16:22 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:22 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_map_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-04 18:16:48 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h pre-aggregation: 3903487
+2026-08-04 18:16:48 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h post-aggregation: 7883964
+2026-08-04 18:16:48 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h has 2.0197233909066434 ratio of post to pre aggregation
+2026-08-04 18:16:48 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:48 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h aggregated and joined. Current backbone table now has 8029940 rows and 12 columns.
+2026-08-04 18:16:48 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:48 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_wbc_12h using last over last 720.0 minutes for events in WBC
+2026-08-04 18:16:51 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h pre-aggregation: 255458
+2026-08-04 18:16:51 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h post-aggregation: 5265123
+2026-08-04 18:16:51 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h has 20.610523060542242 ratio of post to pre aggregation
+2026-08-04 18:16:51 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:51 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h aggregated and joined. Current backbone table now has 8029940 rows and 14 columns.
+2026-08-04 18:16:51 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:51 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_creatinine_12h using last over last 720.0 minutes for events in Creatinine
+2026-08-04 18:16:53 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h pre-aggregation: 305906
+2026-08-04 18:16:53 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h post-aggregation: 5947584
+2026-08-04 18:16:53 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h has 19.442521558910254 ratio of post to pre aggregation
+2026-08-04 18:16:53 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:53 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h aggregated and joined. Current backbone table now has 8029940 rows and 16 columns.
+2026-08-04 18:16:53 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:54 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_egfr_12h using last over last 720.0 minutes for events in eGFR
+2026-08-04 18:16:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h pre-aggregation: 302491
+2026-08-04 18:16:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h post-aggregation: 5869225
+2026-08-04 18:16:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h has 19.402973972779357 ratio of post to pre aggregation
+2026-08-04 18:16:56 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:56 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h aggregated and joined. Current backbone table now has 8029940 rows and 18 columns.
+2026-08-04 18:16:56 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:56 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_bilirubin_12h using last over last 720.0 minutes for events in Bilirubin
+2026-08-04 18:16:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h pre-aggregation: 123139
+2026-08-04 18:16:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h post-aggregation: 2956130
+2026-08-04 18:16:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h has 24.006447997791113 ratio of post to pre aggregation
+2026-08-04 18:16:58 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h aggregated and joined. Current backbone table now has 8029940 rows and 20 columns.
+2026-08-04 18:16:58 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:16:58 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_lactate_6h using last over last 360.0 minutes for events in Lactate
+2026-08-04 18:17:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h pre-aggregation: 88688
+2026-08-04 18:17:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h post-aggregation: 1558002
+2026-08-04 18:17:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h has 17.567224427205485 ratio of post to pre aggregation
+2026-08-04 18:17:00 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h aggregated and joined. Current backbone table now has 8029940 rows and 22 columns.
+2026-08-04 18:17:00 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:00 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_platelets_24h using last over last 1440.0 minutes for events in Platelets
+2026-08-04 18:17:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h pre-aggregation: 257493
+2026-08-04 18:17:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h post-aggregation: 7481041
+2026-08-04 18:17:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h has 29.053376208285275 ratio of post to pre aggregation
+2026-08-04 18:17:03 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h aggregated and joined. Current backbone table now has 8029940 rows and 24 columns.
+2026-08-04 18:17:03 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:03 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_inr_12h using last over last 720.0 minutes for events in INR
+2026-08-04 18:17:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h pre-aggregation: 50452
+2026-08-04 18:17:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h post-aggregation: 1417553
+2026-08-04 18:17:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h has 28.097062554507254 ratio of post to pre aggregation
+2026-08-04 18:17:05 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h aggregated and joined. Current backbone table now has 8029940 rows and 26 columns.
+2026-08-04 18:17:05 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:05 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_aptt_24h using last over last 1440.0 minutes for events in APTT
+2026-08-04 18:17:06 | WARNING  | src_strategy.data_preparation.aggregator | Feature last_aptt_24h has no events to aggregate. Check if the event_grouper 'APTT' is correct and if the input data has any events for this feature.
+2026-08-04 18:17:06 | INFO     | src_strategy.data_preparation.aggregator | Feature last_aptt_24h aggregated and joined. Current backbone table now has 8029940 rows and 28 columns.
+2026-08-04 18:17:06 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:06 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_gcs_12h using last over last 720.0 minutes for events in Glasgow Coma Score
+2026-08-04 18:17:11 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h pre-aggregation: 706381
+2026-08-04 18:17:11 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h post-aggregation: 7348013
+2026-08-04 18:17:11 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h has 10.402336699316658 ratio of post to pre aggregation
+2026-08-04 18:17:11 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:11 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h aggregated and joined. Current backbone table now has 8029940 rows and 30 columns.
+2026-08-04 18:17:11 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:11 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_vasopressin_24h over last 1440.0 minutes for events in Vasopressin
+2026-08-04 18:17:13 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h pre-aggregation: 24534
+2026-08-04 18:17:13 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h post-aggregation: 1197664
+2026-08-04 18:17:13 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h has 48.81649955164262 ratio of post to pre aggregation
+2026-08-04 18:17:13 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:13 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h aggregated and joined. Current backbone table now has 8029940 rows and 32 columns.
+2026-08-04 18:17:13 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:13 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_phenylephrine_24h over last 1440.0 minutes for events in Phenylephrine
+2026-08-04 18:17:15 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h pre-aggregation: 2165
+2026-08-04 18:17:15 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h post-aggregation: 107869
+2026-08-04 18:17:15 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h has 49.82401847575058 ratio of post to pre aggregation
+2026-08-04 18:17:15 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:15 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 34 columns.
+2026-08-04 18:17:15 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:15 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_norepinephrine_24h over last 1440.0 minutes for events in Norepinephrine
+2026-08-04 18:17:16 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h pre-aggregation: 26400
+2026-08-04 18:17:16 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h post-aggregation: 1675284
+2026-08-04 18:17:16 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h has 63.457727272727276 ratio of post to pre aggregation
+2026-08-04 18:17:16 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:16 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 36 columns.
+2026-08-04 18:17:16 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:16 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_epinephrine_24h over last 1440.0 minutes for events in Epinephrine
+2026-08-04 18:17:18 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h pre-aggregation: 12520
+2026-08-04 18:17:18 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h post-aggregation: 465216
+2026-08-04 18:17:18 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h has 37.157827476038335 ratio of post to pre aggregation
+2026-08-04 18:17:18 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:18 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h aggregated and joined. Current backbone table now has 8029940 rows and 38 columns.
+2026-08-04 18:17:18 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:18 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pfratio_2h using last over last 120.0 minutes for events in FIO2
+2026-08-04 18:17:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h pre-aggregation: 84402
+2026-08-04 18:17:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h post-aggregation: 659575
+2026-08-04 18:17:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h has 7.814684486149617 ratio of post to pre aggregation
+2026-08-04 18:17:20 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:20 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h aggregated and joined. Current backbone table now has 8029940 rows and 40 columns.
+2026-08-04 18:17:20 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-04 18:17:20 | INFO     | __main__ | Aggregation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_aggregated.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_aggregated.parquet
+2026-08-04 18:18:28 | INFO     | __main__ | SIRS calculation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet
+2026-08-04 18:43:36 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-04 18:43:36 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-04 18:43:37 | INFO     | __main__ | Suspected-infection detection completed Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_suspected_infection.parquet
+2026-08-04 18:43:38 | INFO     | __main__ | SIRS calculation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet

@@ -1,102 +1,125 @@
-from pydantic import BaseModel, Field
-from .dataconfig import DataConfig, data_config 
-from typing import Optional
+from enum import Enum
+from typing import List
 
-class AntibioticBloodCultureConfig(DataConfig):
-    antibiotic_type_name: str = Field(default="IV Antibiotics",
-                                       description="Type name for antibiotic")
+from pydantic import BaseModel, Field, model_validator
 
-    antibiotic_excluded_type_names: Optional[str] = Field(default='Perioperative Antibiotics', description="Excluded type names for antibiotic")
+from .dataconfig import DataConfig
 
-    blood_culture_grouper_val: str = Field(default="Blood Culture Order",
-                                            description="Grouper value for blood culture")
 
-    antibiotic_datetime_col: str = Field(default="iv_dt", description="Column name for antibiotic event datetime")
-    blood_culture_datetime_col: str = Field(default="culture_dt", description="Column name for blood culture event datetime")
-    antibiotic_evname_col: str = Field(default="iv_name", description="Column name for antibiotic event name")
-    blood_culture_evname_col: str = Field(default="culture_name", description="Column name for blood culture event name")
+class SuspectedInfectionCriterionName(str, Enum):
+    ANTIBIOTIC_CULTURE = "antibiotic_culture"
+    LACTATE_CULTURE = "lactate_culture"
+    CODE_SEPSIS = "code_sepsis"
+    FLOWSHEET = "flowsheet"
 
-    first_time_ev_col: str = Field(default="first_ev_time_iv_culture", description="Column name for first event datetime between antibiotic and blood culture")
 
-    forward_tolerance: str = Field(default="24h", description="Forward tolerance for antibiotic and blood culture events")
-    backward_tolerance: str = Field(default="72h", description="Backward tolerance for antibiotic and blood culture events")
+class AntibioticBloodCultureConfig(BaseModel):
+    antibiotic_type_prefix: str = "IV Antibiotics"
+    antibiotic_excluded_type_prefixes: List[str] = Field(
+        default_factory=lambda: ["Perioperative Antibiotics"]
+    )
+    blood_culture_grouper_val: str = "Blood Culture Order"
 
-    flag_val: str = Field(default="antibiotic_culture", description="Value to flag suspected infection based on antibiotic and blood culture events")
-    flag_col: str = Field(default="ev_type_iv_culture", description="Column name to flag suspected infection based on antibiotic and blood culture events")
+    culture_before_antibiotic_minutes: int = 72 * 60
+    culture_after_antibiotic_minutes: int = 24 * 60
 
-class LactateBloodCultureConfig(DataConfig):
-    lactate_grouper_val: str = Field(default="Lactate", description="Grouper value for lactate")
-    blood_culture_grouper_val: str = Field(default="Blood Culture Order", description="Grouper value for blood culture")
+    antibiotic_datetime_col: str = "iv_dt"
+    blood_culture_datetime_col: str = "culture_dt"
+    long_value: str = "IV+Culture"
 
-    lactate_datetime_col: str = Field(default="lactate_dt", description="Column name for lactate event datetime")
-    blood_culture_datetime_col: str = Field(default="culture_dt", description="Column name for blood culture event datetime")
-    blood_culture_evname_col: str = Field(default="culture_name", description="Column name for blood culture event name")
 
-    first_time_ev_col: str = Field(default="first_ev_time_lactcult", description="Column name for first event datetime between lactate and blood culture")
+class LactateBloodCultureConfig(BaseModel):
+    lactate_grouper_val: str = "Lactate"
+    blood_culture_grouper_val: str = "Blood Culture Order"
 
-    tolerance: str = Field(default="6 hours", description="Tolerance for lactate and blood culture events")
+    tolerance_minutes: int = 6 * 60
+    minimum_culture_orders: int = Field(default=2, ge=2)
 
-    flag_val: str = Field(default="lactate_culture", description="Value to flag suspected infection based on lactate and blood culture events")
-    flag_col: str = Field(default="ev_type_lactate_culture", description="Column name to flag suspected infection based on lactate and blood culture events")
+    lactate_datetime_col: str = "lactate_dt"
+    blood_culture_datetime_col: str = "culture_dt"
+    long_value: str = "LACTATE+CULTURE"
 
-class CodeSepsisConfig(DataConfig):
-    diagnosis_grouper_val: str = Field(default="Code Sepsis Page", description="Grouper value for sepsis diagnosis codes")
-    diagnosis_time_col: str = Field(default="first_ev_time_codesepsis", description="Column name for sepsis diagnosis code event datetime")
-    flag_val: str = Field(default="sepsis_diagnosis_code", description="Value to flag suspected infection based on sepsis diagnosis codes")
-    flag_col: str = Field(default="ev_type_sepsis_diag_code", description="Column name to flag suspected infection based on sepsis diagnosis codes")
 
-class SuspectedInfectionFlowsheetConfig(DataConfig):
-    flowsheet_grouper_val: str = Field(default="Suspected Infection", description="Grouper value for suspected infection flowsheet events")
-    raw_val_col_value: str = Field(default="Yes", description="Raw value in the flowsheet events to flag suspected infection")
+class CodeSepsisConfig(BaseModel):
+    grouper_val: str = "Code Sepsis Page"
+    datetime_col: str = "first_ev_time_codesepsis"
+    long_value: str = "CODE_SEPSIS_ORDER"
 
-    flowsheet_time_col: str = Field(default="first_ev_time_flowsheet", description="Column name for suspected infection flowsheet event datetime")
 
-    flag_val: str = Field(default="suspected_infection_flowsheet", description="Value to flag suspected infection based on flowsheet events")
-    flag_col: str = Field(default="ev_type_suspected_infection_flowsheet", description="Column name to flag suspected infection based on flowsheet events")
+class SuspectedInfectionFlowsheetConfig(BaseModel):
+    grouper_val: str = "Suspected Infection"
+    qualifying_value: str = "Yes"
+    datetime_col: str = "first_ev_time_flowsheet"
+    long_value: str = "FLOWSHEET_SUSPECTED_INFECTION"
+
 
 class SuspectedInfectionConfig(DataConfig):
-    antibiotic_blood_culture_config: AntibioticBloodCultureConfig = AntibioticBloodCultureConfig()
-    lactate_culture_config: LactateBloodCultureConfig = LactateBloodCultureConfig()
-    code_sepsis_config: CodeSepsisConfig = CodeSepsisConfig()
-    suspected_infection_flowsheet_config: SuspectedInfectionFlowsheetConfig = SuspectedInfectionFlowsheetConfig()
+    antibiotic_blood_culture_config: AntibioticBloodCultureConfig = Field(
+        default_factory=AntibioticBloodCultureConfig
+    )
+    lactate_culture_config: LactateBloodCultureConfig = Field(
+        default_factory=LactateBloodCultureConfig
+    )
+    code_sepsis_config: CodeSepsisConfig = Field(
+        default_factory=CodeSepsisConfig
+    )
+    suspected_infection_flowsheet_config: SuspectedInfectionFlowsheetConfig = Field(
+        default_factory=SuspectedInfectionFlowsheetConfig
+    )
 
-    lactate_culture_suffix: str = Field(default="_lactcult", description="Suffix used for Lactate and Blood culture infection detection criteria when joined with other criteria")
-    diagnosis_codesepsis_suffix: str = Field(default="_codesepsis", description="Suffix used for Diagnosis Code Sepsis detection criteria when joined with other criteria")
-    flowsheet_infection_suffix: str = Field(default="_suspectedinfection", description="Suffix used for Flowsheet Infection detection criteria when joined with other criteria")
+    selected: List[SuspectedInfectionCriterionName] = Field(
+        default_factory=lambda: list(SuspectedInfectionCriterionName)
+    )
 
-    earliest_infection_time_col: str = Field(default="infection_time", description="Column name for earliest infection time detected among all criteria")
-    earliest_infection_type_col: str = Field(default="first_ev_type", description="Column name for infection event type indicating which criteria were the earliest for suspected infection detection")
-    infection_type_col: str = Field(default="infection_ev_type", description="Column name for infection event type indicating which criteria were met for suspected infection detection")
+    variable_name_col: str = "criterion"
+    value_name_dt_col: str = "infect_dt"
+    value_type_col: str = "suspicion_infection_type"
 
-    variable_name_col: str = Field(default="criterion", description="Column name for infection event type indicating which criteria were met for suspected infection detection")
-    value_name_dt_col :str = Field(default="infect_dt", description="Column name for infection event datetime")
-    value_type_col: str = Field(default="suspicion_infection_type", description="Column name for infection event type indicating which criteria were met for suspected infection detection")
+    @model_validator(mode="after")
+    def validate_suspected_infection_config(self) -> "SuspectedInfectionConfig":
+        if len(self.selected) != len(set(self.selected)):
+            raise ValueError("selected suspected-infection criteria must be unique")
+        if not self.selected:
+            raise ValueError(
+                "at least one suspected-infection criterion must be selected"
+            )
 
-    antibiotic_culture_longval: str = Field(default="IV+Culture", description="Long value for antibiotic and blood culture infection detection criteria")
-    lactate_culture_longval: str = Field(default="LACTATE+CULTURE", description="Long value for lactate and blood culture infection detection criteria")
-    codesepsis_longval: str = Field(default="CODE_SEPSIS_ORDER", description="Long value for sepsis diagnosis code infection detection criteria")
-    flowsheet_longval: str = Field(default="FLOWSHEET_SUSPECTED_INFECTION", description="Long value for suspected infection flowsheet infection detection criteria")
+        antibiotic = self.antibiotic_blood_culture_config
+        if not antibiotic.antibiotic_type_prefix:
+            raise ValueError("antibiotic_type_prefix must not be empty")
+        if antibiotic.culture_before_antibiotic_minutes < 0:
+            raise ValueError(
+                "culture_before_antibiotic_minutes must be non-negative"
+            )
+        if antibiotic.culture_after_antibiotic_minutes < 0:
+            raise ValueError(
+                "culture_after_antibiotic_minutes must be non-negative"
+            )
+
+        lactate = self.lactate_culture_config
+        if lactate.tolerance_minutes < 0:
+            raise ValueError("tolerance_minutes must be non-negative")
+        return self
 
     @property
-    def dt_columns(self):
+    def long_frame_columns(self) -> List[str]:
+        return [
+            self.encounter_col,
+            self.variable_name_col,
+            self.value_name_dt_col,
+            self.value_type_col,
+        ]
+
+    @property
+    def dt_columns(self) -> List[str]:
         return [
             self.antibiotic_blood_culture_config.antibiotic_datetime_col,
             self.antibiotic_blood_culture_config.blood_culture_datetime_col,
             self.lactate_culture_config.lactate_datetime_col,
-
-            self.lactate_culture_config.blood_culture_datetime_col+self.lactate_culture_suffix,
-
-            self.code_sepsis_config.diagnosis_time_col,
-
-            self.suspected_infection_flowsheet_config.flowsheet_time_col,
+            self.lactate_culture_config.blood_culture_datetime_col,
+            self.code_sepsis_config.datetime_col,
+            self.suspected_infection_flowsheet_config.datetime_col,
         ]
-    
 
 
-
-# suspected_infection_config = SuspectedInfectionConfig()
-suspected_infection_config = SuspectedInfectionConfig(
-    antibiotic_blood_culture_config = AntibioticBloodCultureConfig(
-        antibiotic_type_name = "IV Antibiotics - First",
-    )
-)
+suspected_infection_config = SuspectedInfectionConfig()

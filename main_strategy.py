@@ -8,6 +8,12 @@ from src_strategy.data_preparation.resolvecollision import ResolveCollision
 from src_strategy.data_preparation.aggregator import Aggregator
 from src_strategy.configs.aggregator import feature_config, agg_config
 from src_strategy.configs.pulmonarydysfunction import pf_config 
+from src_strategy.configs.sirscalculator import sirs_config
+from src_strategy.events.sirs import build_sirs_pipeline
+from src_strategy.configs.suspected_infection import suspected_infection_config
+from src_strategy.events.suspected_infection import (
+    build_suspected_infection_pipeline,
+)
 
 import polars as pl
 
@@ -54,13 +60,35 @@ logger = get_logger(__name__)
 #          message=f"Handling numerical value collisions completed, and data is saved to {input_output_config_3_1.output_path+'/df_all_no_collisions.parquet'}")
 # save_df(backbone, input_output_config_3_1.output_path, "backbone.parquet", logger,
 #          message=f"Backbone (unique encounter, event_dt) is saved to {input_output_config_3_1.output_path+'/backbone.parquet'}")
-df_all_no_collisions = load_df(input_output_config_3_1.output_path, "df_all_no_collisions.parquet")
-backbone = load_df(input_output_config_3_1.output_path, "backbone.parquet")
+# df_all_no_collisions = load_df(input_output_config_3_1.output_path, "df_all_no_collisions.parquet")
+# backbone = load_df(input_output_config_3_1.output_path, "backbone.parquet")
 
-agg = Aggregator(
-    agg_config,
-    feature_config
-)
-df_aggregated = agg.aggregate(df_all_no_collisions, backbone)
+# suspected_infection_pipeline = build_suspected_infection_pipeline(
+#     suspected_infection_config
+# )
+# df_suspected_infection = suspected_infection_pipeline.process(
+#     df_all_no_collisions
+# )
+# save_df(
+#     df_suspected_infection,
+#     input_output_config_3_1.output_path,
+#     "df_suspected_infection.parquet",
+#     logger,
+#     message="Suspected-infection detection completed",
+# )
+# agg = Aggregator(
+#     agg_config,
+#     feature_config
+# )
+# df_aggregated = agg.aggregate(df_all_no_collisions, backbone)
+# save_df(df_aggregated, input_output_config_3_1.output_path, "df_aggregated.parquet", logger,
+#          message=f"Aggregation completed, and data is saved to {input_output_config_3_1.output_path+'/df_aggregated.parquet'}")
+
+df_aggregated = load_df(input_output_config_3_1.output_path, "df_aggregated.parquet")
+
+sirs_pipeline = build_sirs_pipeline(sirs_config)
+df_sirs = sirs_pipeline.process(df_aggregated)
+save_df(df_sirs, input_output_config_3_1.output_path, "df_sirs.parquet", logger,
+         message=f"SIRS calculation completed, and data is saved to {input_output_config_3_1.output_path+'/df_sirs.parquet'}")
 
 x = 0

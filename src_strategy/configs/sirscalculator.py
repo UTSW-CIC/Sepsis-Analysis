@@ -1,68 +1,73 @@
-from .dataconfig import DataConfig
+from enum import Enum
 from typing import List
 
-class SIRSPostAggConfig(DataConfig):
-    # Last values
+from pydantic import Field, model_validator
 
-    temp_grouper_val: str = "last_temp_8h"
-    hr_grouper_val: str = "last_pulse_8h"
-    resp_grouper_val: str = "last_resp_8h"
-    wbc_grouper_val: str = "last_wbc_12h"
+from .aggregator import FeatureColumn
+from .dataconfig import DataConfig
 
-    temp_flag_col: str = "Temp_Abnormal_Flag"
-    hr_flag_col: str = "HR_High_Flag"
-    resp_flag_col: str = "Resp_Rate_High_Flag"
-    wbc_flag_col: str = "WBC_Abnormal_Flag"
-    
-    # Thresholds for abnormal flags
-    temp_lower_threshold: float=96.8
-    temp_upper_threshold: float=100.4
-    hr_upper_threshold: float=90
-    resp_upper_threshold: float=20
-    wbc_lower_threshold: float=4
-    wbc_upper_threshold: float=12
 
-    # Outputcol
-    sirs_score_col: str = "sirs_score"
+class SIRSCriterionName(str, Enum):
+    TEMPERATURE = "temperature"
+    HEART_RATE = "heart_rate"
+    RESPIRATORY_RATE = "respiratory_rate"
+    WBC = "wbc"
 
-    @property
-    def flag_cols(self) -> List[str]:
-        return [self.temp_flag_col, self.hr_flag_col, self.resp_flag_col, self.wbc_flag_col]
-    
 
 class SIRSConfig(DataConfig):
-    # Grouper values for each SIRS criterion
-    temp_grouper_val: str = "Temperature"
-    hr_grouper_val: str = "Pulse"
-    resp_grouper_val: str = "Respirations"
-    wbc_grouper_val: str = "WBC"
-    
-    # Flag column names
+    """Configuration for SIRS criteria applied to aggregated features."""
+
+    temp_feature_col: FeatureColumn = FeatureColumn.LAST_TEMP_8H
+    hr_feature_col: FeatureColumn = FeatureColumn.LAST_PULSE_8H
+    resp_feature_col: FeatureColumn = FeatureColumn.LAST_RESP_8H
+    wbc_feature_col: FeatureColumn = FeatureColumn.LAST_WBC_12H
+
     temp_flag_col: str = "Temp_Abnormal_Flag"
     hr_flag_col: str = "HR_High_Flag"
     resp_flag_col: str = "Resp_Rate_High_Flag"
     wbc_flag_col: str = "WBC_Abnormal_Flag"
-    
-    # Thresholds for abnormal flags
-    temp_lower_threshold: float=96.8
-    temp_upper_threshold: float=100.4
-    hr_upper_threshold: float=90
-    resp_upper_threshold: float=20
-    wbc_lower_threshold: float=4
-    wbc_upper_threshold: float=12
 
-    # Outputcol
+    temp_lower_threshold: float = 96.8
+    temp_upper_threshold: float = 100.4
+    hr_upper_threshold: float = 90.0
+    resp_upper_threshold: float = 20.0
+    wbc_lower_threshold: float = 4.0
+    wbc_upper_threshold: float = 12.0
+
+    selected: List[SIRSCriterionName] = Field(
+        default_factory=lambda: list(SIRSCriterionName)
+    )
     sirs_score_col: str = "sirs_score"
-    
-    @property
-    def selected_cols(self) -> List[str]:
-        return [self.encounter_col, self.event_dt_col, self.event_name_col, self.val_col]
+
+    @model_validator(mode="after")
+    def validate_sirs_config(self) -> "SIRSConfig":
+        if len(self.selected) != len(set(self.selected)):
+            raise ValueError("selected SIRS criteria must be unique")
+        if not self.selected:
+            raise ValueError("at least one SIRS criterion must be selected")
+        if self.temp_lower_threshold >= self.temp_upper_threshold:
+            raise ValueError(
+                "temp_lower_threshold must be below temp_upper_threshold"
+            )
+        if self.wbc_lower_threshold >= self.wbc_upper_threshold:
+            raise ValueError(
+                "wbc_lower_threshold must be below wbc_upper_threshold"
+            )
+        return self
 
     @property
     def flag_cols(self) -> List[str]:
-        return [self.temp_flag_col, self.hr_flag_col, self.resp_flag_col, self.wbc_flag_col]
-    
+        flag_by_criterion = {
+            SIRSCriterionName.TEMPERATURE: self.temp_flag_col,
+            SIRSCriterionName.HEART_RATE: self.hr_flag_col,
+            SIRSCriterionName.RESPIRATORY_RATE: self.resp_flag_col,
+            SIRSCriterionName.WBC: self.wbc_flag_col,
+        }
+        return [flag_by_criterion[name] for name in self.selected]
 
+
+# Compatibility name for callers that already distinguish post-aggregation SIRS.
+SIRSPostAggConfig = SIRSConfig
 
 sirs_config = SIRSConfig()
-sirs_postagg_config = SIRSPostAggConfig()
+sirs_postagg_config = sirs_config

@@ -1,5 +1,15 @@
 # Sepsis billing-classification project
 
+## Session Start Checklist
+
+Before beginning each session, review `AI_logs/` for dated summaries of prior work. Each file contains:
+- Summary of design decisions and implementation status
+- Checklist of remaining tasks
+- Open questions and assumptions
+- Files to modify and current state
+
+This ensures continuity and prevents rework.
+
 ## Mission and scope
 
 The primary goal is to build an auditable algorithm that uses all available EHR data from a patient encounter (arrival through discharge) to determine whether the encounter meets the project's clinical criteria for Sepsis 1, Sepsis 2, or Sepsis 3 and whether it is present-on-admission (POA) or not-present-on-admission/hospital-acquired (NPOA). The result is intended to support billing review: compare the calculated classification and timing with the billed classification and identify likely missed or incorrect sepsis coding.
