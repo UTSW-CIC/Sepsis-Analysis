@@ -18,6 +18,47 @@ Do not treat the classifier as a generic real-time alerting system. It is curren
 
 `src_strategy/` is the current development source. It is a Strategy/Registry redesign of the older runnable pipeline in `src/`; do not assume that every downstream capability has already been ported. `README.md` and analysis documents contain useful history and hypotheses, but they are not substitutes for an approved clinical/billing specification.
 
+## Core Guidelines
+### Ask for clarification instead of making assumptions
+Do not make assumptions when requirements, expected behavior, constraints, or implementation details are unclear.<br>
+
+
+Before proceeding:
+
+1. Ask the project owner for clarification.
+2. Record each question and its answer in a Markdown file inside the AI_logs/ directory.
+3. Keep the documented answers available for future reference during the project.
+
+Do not implement a solution until the relevant ambiguity has been resolved.
+
+### Prefer simple, minimal, and reviewable code
+
+Write only the amount of code required to accomplish the current goal.<br>
+
+The initial implementation should prioritize:
+- Readability
+- Simplicity
+- Ease of debugging
+- Ease of review by the project owner
+
+Do not introduce abstractions, design patterns, arcWhitectural changes, or other software engineering practices without first discussing them with the project owner.
+
+After the project owner reviews the initial implementation and provides feedback, update the requirements as needed and refactor the code using approved software engineering best practices.
+
+### Keep notebook code incremental and transparent
+
+In notebooks, divide the work into small, focused cells.
+
+Each cell should:
+
+- Perform one clear step
+- Include a brief comment or Markdown explanation describing its purpose
+- Make intermediate data, transformations, and results easy to inspect
+
+Avoid defining functions or classes in a notebook unless they are necessary or will be reused multiple times.
+
+The primary purpose of the notebook is to help the project owner understand the logic, inspect intermediate results, and validate each transformation. Refactor the notebook code into functions or classes only after the project owner has completed the review and approved the refactoring.
+
 ## How to collaborate with the project owner
 
 The project owner is learning how to design reliable, well-structured software. The assistant's primary role is to help the owner comprehend the domain and code, reason through design choices, review work, expose assumptions and failure modes, and teach relevant software-engineering principles. Do not independently take over or broadly build the project. Implement code only when requested, keep changes small and reviewable, and explain why the design works and what tradeoffs it makes.
