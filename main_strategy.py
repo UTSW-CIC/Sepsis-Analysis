@@ -20,15 +20,15 @@ import polars as pl
 setup_root_logger(log_dir=input_output_config_3_1.logger_dir)
 logger = get_logger(__name__)
 
-# dl = DataLoader(input_output_config_3_1,
-#                 data_config,
-#                 bp_config,
-#                 flowsheet_bounds_config,
-#                 lab_bounds_config,
-#                 bp_bounds_config,
-#                 pf_config=pf_config)
+dl = DataLoader(input_output_config_3_1,
+                data_config,
+                bp_config,
+                flowsheet_bounds_config,
+                lab_bounds_config,
+                bp_bounds_config,
+                pf_config=pf_config)
 
-# df_all, df_encounters = dl.load_data()
+df_all, df_encounters = dl.load_data()
 # save_df(df_all, input_output_config_3_1.output_path, "df_all.parquet", logger, message=f"Data injestion & Preprocessing completed, and data is saved to {input_output_config_3_1.output_path+'/df_all.parquet'}")
 # save_df(df_encounters, input_output_config_3_1.output_path, "df_encounters.parquet", logger, message=f"Encounters data is saved to {input_output_config_3_1.output_path+'/df_encounters.parquet'}")
 # df_all = load_df(input_output_config_3_1.output_path, "df_all.parquet")

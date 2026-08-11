@@ -268,6 +268,7 @@ class DataLoader:
         
 
     def merge_outlier_col_to_bp(self, flowsheets_preprocessed: pl.DataFrame):
+        # TODO: Debug here and confirm that sys_temp, matches bp_outlier_sys and matches sys. If needed modify the code in record_outliers_bp_mismatch to account for this
         sys_col_expr = pl.col(self.bp_config.sys_col)
         flowsheets_preprocessed = flowsheets_preprocessed.with_columns(
             pl.when(pl.col("bp_outlier_sys")==self.bp_bounds_config.thresholds["sys"].outlier_holder).then(None).otherwise(sys_col_expr).alias(self.bp_config.sys_col+'_temp')

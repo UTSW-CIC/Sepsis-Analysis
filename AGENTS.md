@@ -27,6 +27,7 @@ Before proceeding:
 1. Ask the project owner for clarification.
 2. Record each question and its answer in a Markdown file inside the AI_logs/ directory.
 3. Keep the documented answers available for future reference during the project.
+4. Always push back if my prompt might contain any inaccuracies, misunderstanding, or deviation from the original plan
 
 Do not implement a solution until the relevant ambiguity has been resolved.
 

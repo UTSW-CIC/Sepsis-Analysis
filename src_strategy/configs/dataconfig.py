@@ -144,6 +144,7 @@ class BloodPressureConfig(DataConfig):
     dia_col: str = Field(default="dia", description="Column name for diastolic blood pressure") 
     map_col: str = Field(default="map", description="Column name for mean arterial pressure")
     map_event_grouper: str = Field(default="Arterial Blood Pressure Mean", description="Grouper value for mean arterial pressure")
+    calculate_map: bool = False
 
 
 

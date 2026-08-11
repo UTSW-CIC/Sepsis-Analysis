@@ -271,11 +271,16 @@ def extract_arterial_blood_pressure_mean_from_flowsheets(df_flowsheets: pl.DataF
     map_col_name = bp_config.map_col
     val_col = bp_config.bp_val_col
 
-    if bp_config.sys_col not in df_flowsheets.schema or bp_config.dia_col not in df_flowsheets.schema:
-        df_flowsheets = extract_sys_dia_from_flowsheets(df_flowsheets, bp_config)
-    df_flowsheets = df_flowsheets.with_columns(
-        ((pl.col(sys_col_name) + 2 * pl.col(dia_col_name)) / 3).round(1).alias(map_col_name)
-    )
+    if bp_config.calculate_map:
+        if  bp_config.sys_col not in df_flowsheets.schema or bp_config.dia_col not in df_flowsheets.schema:
+            df_flowsheets = extract_sys_dia_from_flowsheets(df_flowsheets, bp_config)
+        df_flowsheets = df_flowsheets.with_columns(
+            ((pl.col(sys_col_name) + 2 * pl.col(dia_col_name)) / 3).round(1).alias(map_col_name)
+        )
+    else:
+        df_flowsheets = df_flowsheets.with_columns(
+            pl.lit(None) .alias(map_col_name)
+        )
     expr = pl.col(map_col_name)
     df_flowsheets = df_flowsheets.with_columns(
         pl.when(pl.col(event_grouper_col) == bp_config.map_event_grouper)
