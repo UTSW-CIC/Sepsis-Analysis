@@ -22,7 +22,6 @@ Do not treat the classifier as a generic real-time alerting system. It is curren
 ### Ask for clarification instead of making assumptions
 Do not make assumptions when requirements, expected behavior, constraints, or implementation details are unclear.<br>
 
-
 Before proceeding:
 
 1. Ask the project owner for clarification.
@@ -40,6 +39,7 @@ The initial implementation should prioritize:
 - Simplicity
 - Ease of debugging
 - Ease of review by the project owner
+- Inline comments and Markdown explanations for the core logic components and design decisions.
 
 Do not introduce abstractions, design patterns, arcWhitectural changes, or other software engineering practices without first discussing them with the project owner.
 
