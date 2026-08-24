@@ -54,8 +54,7 @@ class DataLoader:
         if self.physiological_bounds_config:
             flowsheets_pipeline.append(ApplyBounds(self.physiological_bounds_config,
                                                     outlier_column_name="flowsheet_outlier"))
-            # flowsheets_pipeline.append(BloodPressureBounds(self.bp_config, self.bp_bounds_config, outliers_replace_value=-1, outlier_column_name="bp_outlier"))
-            flowsheets_pipeline.append(BloodPressureBounds(self.bp_config, self.bp_bounds_config, outlier_column_name="bp_outlier"))
+            flowsheets_pipeline.append(BloodPressureBounds(self.bp_config, self.bp_bounds_config))
         
         labs_pipeline = [CastColumns(schema)]
         if self.lab_bounds_config:
@@ -140,17 +139,18 @@ class DataLoader:
             return pl.concat(list(df_list.values()), how='vertical')
 
     def record_outliers_bp(self, flowsheets_preprocessed: pl.DataFrame):
-        for key, bounds in self.bp_bounds_config.thresholds.items():
+        for key in self.bp_bounds_config.thresholds:
+            flag_col = f"{key}_is_outlier"
             flowsheets_preprocessed.filter(
-                pl.col(f"bp_outlier_{key}") == bounds.outlier_holder
+                pl.col(flag_col)
             ).select(
-                self.data_config.base_cols + [f"bp_outlier_{key}"]
+                self.data_config.base_cols + [key, flag_col]
             ).write_csv(f"{self.input_output_dataconfig.meta_outlier_path}/bp_outliers_{key}.csv")
         d = {
-                k: [v.lower_bound, v.upper_bound, v.outlier_holder] for k, v in self.bp_bounds_config.thresholds.items()
+                k: [v.lower_bound, v.upper_bound] for k, v in self.bp_bounds_config.thresholds.items()
             }
         d.update(
-                {"key":['lower_bound', 'upper_bound', 'outlier_holder']}
+                {"key":['lower_bound', 'upper_bound']}
             )
         pl.DataFrame(
             d
@@ -245,66 +245,109 @@ class DataLoader:
         )
 
     def record_outliers_bp_mismatch(self, flowsheets_preprocessed: pl.DataFrame):
+        sys_col = self.bp_config.sys_col
+        dia_col = self.bp_config.dia_col
+        map_col = self.bp_config.map_col
+        sys_temp_col = f"{sys_col}_temp"
+        dia_temp_col = f"{dia_col}_temp"
+        map_temp_col = f"{map_col}_temp"
+        sys_flag_col = f"{sys_col}_is_outlier"
+        dia_flag_col = f"{dia_col}_is_outlier"
+        map_flag_col = f"{map_col}_is_outlier"
+
+        bp_row = (
+            pl.col(self.data_config.grouper_col) == self.bp_config.bp_grouper_val
+        )
+        invalid_bp_pair = bp_row & (
+            pl.col(sys_col).is_null()
+            | pl.col(dia_col).is_null()
+            | pl.col(sys_flag_col)
+            | pl.col(dia_flag_col)
+        )
+
         sys_mismatch = flowsheets_preprocessed.filter(
-            pl.col(self.bp_config.sys_col).is_not_null()&pl.col(f"{self.bp_config.sys_col}_temp").is_null()&(pl.col("bp_outlier_sys")!=self.bp_bounds_config.thresholds[self.bp_config.sys_col].outlier_holder)
-        ).select(self.data_config.base_cols+['sys_temp', 'sys', 'bp_outlier_sys'])
+            bp_row
+            & (
+                (invalid_bp_pair & pl.col(sys_temp_col).is_not_null())
+                | ((~invalid_bp_pair) & (pl.col(sys_temp_col) != pl.col(sys_col)))
+            )
+        ).select(
+            self.data_config.base_cols
+            + [sys_temp_col, sys_col, sys_flag_col, dia_flag_col]
+        )
         if len(sys_mismatch)>0:
             logger.info(f'There are {len(sys_mismatch)} systolic blood pressure mismatch between outlier column and original value column')
             sys_mismatch.write_csv(f"{self.input_output_dataconfig.meta_outlier_path}/bp_outlier_sys_mismatch.csv")
 
         dia_mismatch = flowsheets_preprocessed.filter(
-            pl.col(self.bp_config.dia_col).is_not_null()&pl.col(f"{self.bp_config.dia_col}_temp").is_null()&(pl.col("bp_outlier_dia")!=self.bp_bounds_config.thresholds[self.bp_config.dia_col].outlier_holder)
-        ).select(self.data_config.base_cols+['dia_temp', 'dia', 'bp_outlier_dia'])
+            bp_row
+            & (
+                (invalid_bp_pair & pl.col(dia_temp_col).is_not_null())
+                | ((~invalid_bp_pair) & (pl.col(dia_temp_col) != pl.col(dia_col)))
+            )
+        ).select(
+            self.data_config.base_cols
+            + [dia_temp_col, dia_col, sys_flag_col, dia_flag_col]
+        )
         if len(dia_mismatch)>0:
             logger.info(f'There are {len(dia_mismatch)} diastolic blood pressure mismatch between outlier column and original value column')
             dia_mismatch.write_csv(f"{self.input_output_dataconfig.meta_outlier_path}/bp_outlier_dia_mismatch.csv")
 
+        map_row = (
+            pl.col(self.data_config.grouper_col) == self.bp_config.map_event_grouper
+        )
+        invalid_map = pl.col(map_col).is_null() | pl.col(map_flag_col)
+        unexpected_map_source = (~map_row) & (
+            pl.col(map_col).is_not_null() | pl.col(map_temp_col).is_not_null()
+        )
         map_mismatch = flowsheets_preprocessed.filter(
-            pl.col(self.bp_config.map_col).is_not_null()&pl.col(f"{self.bp_config.map_col}_temp").is_null()&(pl.col("bp_outlier_map")!=self.bp_bounds_config.thresholds[self.bp_config.map_col].outlier_holder)
-        ).select(self.data_config.base_cols+['map_temp', 'map', 'bp_outlier_map'])
+            unexpected_map_source
+            | (
+                map_row
+                & (
+                    (invalid_map & pl.col(map_temp_col).is_not_null())
+                    | ((~invalid_map) & (pl.col(map_temp_col) != pl.col(map_col)))
+                )
+            )
+        ).select(
+            self.data_config.base_cols + [map_temp_col, map_col, map_flag_col]
+        )
         if len(map_mismatch)>0:
             logger.info(f'There are {len(map_mismatch)} mean arterial blood pressure mismatch between outlier column and original value column')
             map_mismatch.write_csv(f"{self.input_output_dataconfig.meta_outlier_path}/bp_outlier_map_mismatch.csv")
         
 
-    def merge_outlier_col_to_bp(self, flowsheets_preprocessed: pl.DataFrame):
-        # TODO: Debug here and confirm that sys_temp, matches bp_outlier_sys and matches sys. If needed modify the code in record_outliers_bp_mismatch to account for this
-        sys_col_expr = pl.col(self.bp_config.sys_col)
-        flowsheets_preprocessed = flowsheets_preprocessed.with_columns(
-            pl.when(pl.col("bp_outlier_sys")==self.bp_bounds_config.thresholds["sys"].outlier_holder).then(None).otherwise(sys_col_expr).alias(self.bp_config.sys_col+'_temp')
+    def merge_outlier_col_to_bp(
+        self, flowsheets_preprocessed: pl.DataFrame
+    ) -> pl.DataFrame:
+        sys_col = self.bp_config.sys_col
+        dia_col = self.bp_config.dia_col
+        map_col = self.bp_config.map_col
+
+        invalid_bp_pair = (
+            (pl.col(self.data_config.grouper_col) == self.bp_config.bp_grouper_val)
+            & (
+                pl.col(sys_col).is_null()
+                | pl.col(dia_col).is_null()
+                | pl.col(f"{sys_col}_is_outlier")
+                | pl.col(f"{dia_col}_is_outlier")
+            )
         )
 
-        dia_col_expr = pl.col(self.bp_config.dia_col)
-        flowsheets_preprocessed = flowsheets_preprocessed.with_columns(
-            pl.when(pl.col("bp_outlier_dia")==self.bp_bounds_config.thresholds["dia"].outlier_holder).then(None).otherwise(dia_col_expr).alias(self.bp_config.dia_col+'_temp')
+        return flowsheets_preprocessed.with_columns(
+            pl.when(invalid_bp_pair)
+            .then(None)
+            .otherwise(pl.col(sys_col))
+            .alias(f"{sys_col}_temp"),
+            pl.when(invalid_bp_pair)
+            .then(None)
+            .otherwise(pl.col(dia_col))
+            .alias(f"{dia_col}_temp"),
+            pl.when(pl.col(f"{map_col}_is_outlier"))
+            .then(None)
+            .otherwise(pl.col(map_col))
+            .alias(f"{map_col}_temp"),
         )
-
-        map_col_expr = pl.col(self.bp_config.map_col)
-        flowsheets_preprocessed = flowsheets_preprocessed.with_columns(
-            pl.when(pl.col("bp_outlier_map")==self.bp_bounds_config.thresholds["map"].outlier_holder).then(None).otherwise(map_col_expr).alias(self.bp_config.map_col+'_temp')
-        )
-
-        flowsheets_preprocessed = flowsheets_preprocessed.with_columns(
-            [
-                pl.when(
-                    (pl.col(self.data_config.grouper_col) == self.bp_config.bp_grouper_val)&
-                    pl.col(self.data_config.raw_val_col).is_not_null()&
-                (pl.col(self.bp_config.sys_col+'_temp').is_null() | pl.col(self.bp_config.dia_col+'_temp').is_null() | pl.col(self.bp_config.map_col+'_temp').is_null())
-                ).then(None).otherwise(pl.col(self.bp_config.sys_col+'_temp')).alias(self.bp_config.sys_col+'_temp'),
-                pl.when(
-                    (pl.col(self.data_config.grouper_col) == self.bp_config.bp_grouper_val)&
-                    pl.col(self.data_config.raw_val_col).is_not_null()&
-                (pl.col(self.bp_config.sys_col+'_temp').is_null() | pl.col(self.bp_config.dia_col+'_temp').is_null() | pl.col(self.bp_config.map_col+'_temp').is_null())
-                ).then(None).otherwise(pl.col(self.bp_config.dia_col+'_temp')).alias(self.bp_config.dia_col+'_temp'),
-                pl.when(
-                    pl.col(self.data_config.grouper_col).is_in([self.bp_config.bp_grouper_val, self.bp_config.map_event_grouper])&
-                    pl.col(self.data_config.raw_val_col).is_not_null()&
-                (  (pl.col("bp_outlier_sys")==self.bp_bounds_config.thresholds['sys'].outlier_holder) |(pl.col("bp_outlier_dia")==self.bp_bounds_config.thresholds['dia'].outlier_holder) | pl.col(self.bp_config.map_col+'_temp').is_null())
-                ).then(None).otherwise(pl.col(self.bp_config.map_col+'_temp')).alias(self.bp_config.map_col+'_temp'),
-            ]
-        )
-
-        return flowsheets_preprocessed
 
     def apply_transformation(self, df_list: Mapping[str, pl.DataFrame], transform_pipeline: Mapping[str, Transform]):
         logger.info(f"Running transformation pipelines on the loaded data ...")

@@ -94,7 +94,9 @@ class AntibioticCultureCriterion(SuspectedInfectionCriterion):
             """).pl()
 
         chosen_pair = (
-            pairs.filter(pl.col("_episode_rank") == 1)
+            pairs
+            # TODO: Decide whether you want to keep all culture/IV combinations or only the earliest
+            #.filter(pl.col("_episode_rank") == 1)
             .drop("_episode_rank")
             .rename({"_encounter": self.config.encounter_col})
         )
@@ -164,28 +166,12 @@ class LactateCultureCriterion(SuspectedInfectionCriterion):
                 qualifying_episodes AS (
                     SELECT
                         _encounter,
-                        _lactate_dt,
-                        MIN(_culture_dt) AS _first_culture_dt,
-                        COUNT(*) AS _culture_count
+                        _lactate_dt
                     FROM matches
-                    GROUP BY _encounter, _lactate_dt
+                    GROUP BY
+                        _encounter,
+                        _lactate_dt
                     HAVING COUNT(*) >= {minimum_culture_orders}
-                ),
-                chosen_episode AS (
-                    SELECT _encounter, _lactate_dt
-                    FROM (
-                        SELECT
-                            _encounter,
-                            _lactate_dt,
-                            ROW_NUMBER() OVER (
-                                PARTITION BY _encounter
-                                ORDER BY
-                                    LEAST(_lactate_dt, _first_culture_dt),
-                                    _lactate_dt
-                            ) AS _episode_rank
-                        FROM qualifying_episodes
-                    )
-                    WHERE _episode_rank = 1
                 )
                 SELECT
                     matches._encounter,
@@ -193,14 +179,70 @@ class LactateCultureCriterion(SuspectedInfectionCriterion):
                     matches._culture_dt,
                     matches._culture_name
                 FROM matches
-                INNER JOIN chosen_episode
-                    ON matches._encounter = chosen_episode._encounter
-                    AND matches._lactate_dt = chosen_episode._lactate_dt
+                INNER JOIN qualifying_episodes
+                    ON matches._encounter = qualifying_episodes._encounter
+                    AND matches._lactate_dt = qualifying_episodes._lactate_dt
                 ORDER BY
                     matches._encounter,
+                    matches._lactate_dt,
                     matches._culture_dt,
                     matches._culture_name NULLS LAST
             """).pl()
+            # chosen_matches = connection.sql(f"""
+            #     WITH matches AS (
+            #         SELECT
+            #             l._encounter,
+            #             l._lactate_dt,
+            #             c._culture_dt,
+            #             c._culture_name
+            #         FROM lactates AS l
+            #         INNER JOIN cultures AS c
+            #             ON l._encounter = c._encounter
+            #             AND c._culture_dt >= l._lactate_dt
+            #                 - INTERVAL '{tolerance_minutes} minutes'
+            #             AND c._culture_dt <= l._lactate_dt
+            #                 + INTERVAL '{tolerance_minutes} minutes'
+            #     ),
+            #     qualifying_episodes AS (
+            #         SELECT
+            #             _encounter,
+            #             _lactate_dt,
+            #             MIN(_culture_dt) AS _first_culture_dt,
+            #             COUNT(*) AS _culture_count
+            #         FROM matches
+            #         GROUP BY _encounter, _lactate_dt
+            #         HAVING COUNT(*) >= {minimum_culture_orders}
+            #     ),
+            #     chosen_episode AS (
+            #         SELECT _encounter, _lactate_dt
+            #         FROM (
+            #             SELECT
+            #                 _encounter,
+            #                 _lactate_dt,
+            #                 ROW_NUMBER() OVER (
+            #                     PARTITION BY _encounter
+            #                     ORDER BY
+            #                         LEAST(_lactate_dt, _first_culture_dt),
+            #                         _lactate_dt
+            #                 ) AS _episode_rank
+            #             FROM qualifying_episodes
+            #         )
+            #         WHERE _episode_rank = 1
+            #     )
+            #     SELECT
+            #         matches._encounter,
+            #         matches._lactate_dt,
+            #         matches._culture_dt,
+            #         matches._culture_name
+            #     FROM matches
+            #     INNER JOIN chosen_episode
+            #         ON matches._encounter = chosen_episode._encounter
+            #         AND matches._lactate_dt = chosen_episode._lactate_dt
+            #     ORDER BY
+            #         matches._encounter,
+            #         matches._culture_dt,
+            #         matches._culture_name NULLS LAST
+            # """).pl()
 
         chosen_matches = chosen_matches.rename(
             {"_encounter": self.config.encounter_col}

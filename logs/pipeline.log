@@ -2175,3 +2175,732 @@
 2026-08-11 16:07:01 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming diagnoses ...
 2026-08-11 16:07:02 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming encounters ...
 2026-08-11 16:07:02 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-13 10:51:45 | INFO     | src_strategy.data_ingest.dataloader_1 | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase3
+2026-08-13 10:51:52 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-13 10:51:52 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: Original shape: (19007903, 8)
+2026-08-13 10:51:53 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: New shape: (19007903, 8)
+2026-08-13 10:51:53 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-13 10:51:53 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Original shape: (1988363, 8)
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: New shape: (1978664, 8)
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: Original shape: (985705, 8)
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: New shape: (979429, 8)
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: Original shape: (130186, 8)
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: New shape: (87929, 8)
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: Original shape: (1498475, 8)
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: New shape: (1494094, 8)
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | Running transformation pipelines on the loaded data ...
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-13 10:51:54 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming flowsheets ...
+2026-08-13 10:52:22 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming labs ...
+2026-08-13 10:52:27 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming meds ...
+2026-08-13 10:52:28 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming procedures ...
+2026-08-13 10:52:28 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming diagnoses ...
+2026-08-13 10:52:28 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming encounters ...
+2026-08-13 10:52:28 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-13 10:53:44 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-13 10:53:44 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-22 16:52:09 | INFO     | src_strategy.data_ingest.dataloader_1 | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase3
+2026-08-22 16:52:13 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-22 16:52:13 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: Original shape: (19007903, 8)
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: New shape: (19007903, 8)
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Original shape: (1988363, 8)
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: New shape: (1978664, 8)
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: Original shape: (985705, 8)
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: New shape: (979429, 8)
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: Original shape: (130186, 8)
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: New shape: (87929, 8)
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-22 16:52:14 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: Original shape: (1498475, 8)
+2026-08-22 16:52:15 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: New shape: (1494094, 8)
+2026-08-22 16:52:15 | INFO     | src_strategy.data_ingest.dataloader_1 | Running transformation pipelines on the loaded data ...
+2026-08-22 16:52:15 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-22 16:52:15 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming flowsheets ...
+2026-08-22 16:52:33 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-22 16:52:33 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-22 17:19:15 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming labs ...
+2026-08-22 17:19:17 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming meds ...
+2026-08-22 17:19:17 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming procedures ...
+2026-08-22 17:19:17 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming diagnoses ...
+2026-08-22 17:19:18 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming encounters ...
+2026-08-22 17:19:18 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-23 14:44:24 | INFO     | src_strategy.data_ingest.dataloader_1 | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase3
+2026-08-23 14:44:27 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 14:44:27 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: Original shape: (19007903, 8)
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: New shape: (19007903, 8)
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Original shape: (1988363, 8)
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: New shape: (1978664, 8)
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: Original shape: (985705, 8)
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: New shape: (979429, 8)
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: Original shape: (130186, 8)
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: New shape: (87929, 8)
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 14:44:29 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: Original shape: (1498475, 8)
+2026-08-23 14:44:30 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: New shape: (1494094, 8)
+2026-08-23 14:44:30 | INFO     | src_strategy.data_ingest.dataloader_1 | Running transformation pipelines on the loaded data ...
+2026-08-23 14:44:30 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-23 14:44:30 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming flowsheets ...
+2026-08-23 14:44:58 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming labs ...
+2026-08-23 14:45:02 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming meds ...
+2026-08-23 14:45:03 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming procedures ...
+2026-08-23 14:45:03 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming diagnoses ...
+2026-08-23 14:45:04 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming encounters ...
+2026-08-23 14:45:04 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-23 14:46:02 | INFO     | src_strategy.data_ingest.dataloader_1 | Combining all tables...
+2026-08-23 14:49:51 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Grouper by null_pct_Value
+2026-08-23 14:49:51 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌──────────────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Event_Grouper                ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                          ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                          ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞══════════════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ Weight                       ┆ 14528               ┆ 129101  ┆ 4444          ┆ 0.034423       │
+│ Oxygen Delivery              ┆ 5902                ┆ 154716  ┆ 3804          ┆ 0.024587       │
+│ Temperature                  ┆ 14908               ┆ 1378940 ┆ 13113         ┆ 0.009509       │
+│ Vent On/Off                  ┆ 2422                ┆ 154173  ┆ 1041          ┆ 0.006752       │
+│ O2 Flow Rate                 ┆ 10776               ┆ 468053  ┆ 3062          ┆ 0.006542       │
+│ Blood Pressure               ┆ 14919               ┆ 2695697 ┆ 11058         ┆ 0.004102       │
+│ BMI                          ┆ 12206               ┆ 15266   ┆ 45            ┆ 0.002948       │
+│ Respirations                 ┆ 14914               ┆ 4741046 ┆ 11341         ┆ 0.002392       │
+│ Glasgow Coma Score           ┆ 14745               ┆ 707852  ┆ 1468          ┆ 0.002074       │
+│ Arterial Blood Pressure Mean ┆ 3619                ┆ 1829615 ┆ 3779          ┆ 0.002065       │
+└──────────────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 14:49:51 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:53 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Type by null_pct_Value
+2026-08-23 14:49:53 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (1, 5)
+┌───────────┬─────────────────────┬──────────┬───────────────┬────────────────┐
+│ Type      ┆ n_unique_encounters ┆ n_rows   ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---       ┆ ---                 ┆ ---      ┆ ---           ┆ ---            │
+│ str       ┆ u64                 ┆ u64      ┆ u64           ┆ f64            │
+╞═══════════╪═════════════════════╪══════════╪═══════════════╪════════════════╡
+│ Flowsheet ┆ 14929               ┆ 19007903 ┆ 64885         ┆ 0.003414       │
+└───────────┴─────────────────────┴──────────┴───────────────┴────────────────┘
+2026-08-23 14:49:53 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Name by null_pct_Value
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Event_Name                      ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ CPM S25 R PRO OXYGEN THERAPY D… ┆ 24                  ┆ 27      ┆ 1             ┆ 0.037037       │
+│ WEIGHT/SCALE                    ┆ 14528               ┆ 129101  ┆ 4444          ┆ 0.034423       │
+│ TEMPERATURE                     ┆ 14908               ┆ 1378940 ┆ 13113         ┆ 0.009509       │
+│ UTSW UH R RT VENT MANAGEMENT S… ┆ 2468                ┆ 159102  ┆ 1041          ┆ 0.006543       │
+│ CPM S25 R INV O2 FLOW RATE (L/… ┆ 10776               ┆ 468053  ┆ 3062          ┆ 0.006542       │
+│ UTSW R ED PRE HOSPITAL CARE EM… ┆ 1046                ┆ 1082    ┆ 6             ┆ 0.005545       │
+│ CPM S25 R INV DEVICE.INV O2 DE… ┆ 13189               ┆ 874530  ┆ 3797          ┆ 0.004342       │
+│ BLOOD PRESSURE                  ┆ 14919               ┆ 2695697 ┆ 11058         ┆ 0.004102       │
+│ MODEL R BMI                     ┆ 12206               ┆ 15266   ┆ 45            ┆ 0.002948       │
+│ RESPIRATIONS                    ┆ 14914               ┆ 4741046 ┆ 11341         ┆ 0.002392       │
+└─────────────────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Grouper by null_pct_Value
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌───────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Grouper     ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---               ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str               ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═══════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ WBC in Urine      ┆ 7322                ┆ 11023  ┆ 1             ┆ 0.000091       │
+│ Bacteria in Urine ┆ 10262               ┆ 16850  ┆ 1             ┆ 0.000059       │
+│ Blood Culture     ┆ 13962               ┆ 45413  ┆ 0             ┆ 0.0            │
+│ Lactate           ┆ 13440               ┆ 88783  ┆ 0             ┆ 0.0            │
+│ Creatinine        ┆ 14909               ┆ 306756 ┆ 0             ┆ 0.0            │
+│ FIO2              ┆ 4672                ┆ 84402  ┆ 0             ┆ 0.0            │
+│ eGFR              ┆ 14878               ┆ 303088 ┆ 0             ┆ 0.0            │
+│ Platelets         ┆ 14906               ┆ 257846 ┆ 0             ┆ 0.0            │
+│ Bilirubin         ┆ 14442               ┆ 123228 ┆ 0             ┆ 0.0            │
+│ INR               ┆ 9268                ┆ 50503  ┆ 0             ┆ 0.0            │
+└───────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Type by null_pct_Value
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (2, 5)
+┌───────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Type                  ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                   ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                   ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞═══════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ Lab Results           ┆ 14915               ┆ 1974712 ┆ 2             ┆ 0.000001       │
+│ Blood Culture Results ┆ 14255               ┆ 54703   ┆ 0             ┆ 0.0            │
+└───────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Name by null_pct_Value
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Name          ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                 ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                 ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ BACTERIA UA         ┆ 12397               ┆ 21088  ┆ 1             ┆ 0.000047       │
+│ WBC, UA             ┆ 12433               ┆ 21304  ┆ 1             ┆ 0.000047       │
+│ EGFR CKD EPI CR POC ┆ 1037                ┆ 1739   ┆ 0             ┆ 0.0            │
+│ AFB SMEAR           ┆ 1                   ┆ 1      ┆ 0             ┆ 0.0            │
+│ LACTIC ACID (ISTAT) ┆ 1977                ┆ 6851   ┆ 0             ┆ 0.0            │
+│ BUN                 ┆ 14909               ┆ 304217 ┆ 0             ┆ 0.0            │
+│ GRAM ST             ┆ 2819                ┆ 6953   ┆ 0             ┆ 0.0            │
+│ FIO2                ┆ 4672                ┆ 84402  ┆ 0             ┆ 0.0            │
+│ BILIRUBIN, TOTAL    ┆ 14442               ┆ 123220 ┆ 0             ┆ 0.0            │
+│ WBC                 ┆ 14908               ┆ 255768 ┆ 0             ┆ 0.0            │
+└─────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 14:49:54 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:55 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Grouper by n_rows
+2026-08-23 14:49:55 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Grouper                   ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ Vent off Documentation          ┆ 1946                ┆ 2410   ┆ 0             ┆ 0.0            │
+│ Vent on Documentation           ┆ 1928                ┆ 2519   ┆ 0             ┆ 0.0            │
+│ O2 Delivery Non-Rebreather Mas… ┆ 1663                ┆ 4980   ┆ 0             ┆ 0.0            │
+│ O2 Delivery Simple Face Mask    ┆ 3348                ┆ 10694  ┆ 0             ┆ 0.0            │
+│ Suspected Infection             ┆ 10778               ┆ 13296  ┆ 24            ┆ 0.001805       │
+│ BMI                             ┆ 12206               ┆ 15266  ┆ 45            ┆ 0.002948       │
+│ O2 Delivery High-Flow           ┆ 3079                ┆ 60645  ┆ 0             ┆ 0.0            │
+│ O2 Delivery Mechanical Ventila… ┆ 3519                ┆ 123591 ┆ 0             ┆ 0.0            │
+│ Weight                          ┆ 14528               ┆ 129101 ┆ 4444          ┆ 0.034423       │
+│ Vent On/Off                     ┆ 2422                ┆ 154173 ┆ 1041          ┆ 0.006752       │
+└─────────────────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 14:49:55 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:56 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Type by n_rows
+2026-08-23 14:49:56 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (1, 5)
+┌───────────┬─────────────────────┬──────────┬───────────────┬────────────────┐
+│ Type      ┆ n_unique_encounters ┆ n_rows   ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---       ┆ ---                 ┆ ---      ┆ ---           ┆ ---            │
+│ str       ┆ u64                 ┆ u64      ┆ u64           ┆ f64            │
+╞═══════════╪═════════════════════╪══════════╪═══════════════╪════════════════╡
+│ Flowsheet ┆ 14929               ┆ 19007903 ┆ 64885         ┆ 0.003414       │
+└───────────┴─────────────────────┴──────────┴───────────────┴────────────────┘
+2026-08-23 14:49:56 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Name by n_rows
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Event_Name                      ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ R ED CLINICAL CALCULATOR - GLA… ┆ 55                  ┆ 74      ┆ 0             ┆ 0.0            │
+│ CPM S25 R AS SC BRADEN SCORE    ┆ 14873               ┆ 405029  ┆ 390           ┆ 0.000963       │
+│ UTSW UH R SEVERE SEPSIS Q SUSP… ┆ 10778               ┆ 13296   ┆ 24            ┆ 0.001805       │
+│ PULSE                           ┆ 14914               ┆ 5589267 ┆ 11316         ┆ 0.002025       │
+│ UTSW R ARTERIAL BLOOD PRESSURE… ┆ 3619                ┆ 1829615 ┆ 3779          ┆ 0.002065       │
+│ CPM S25 R AS SC SUM SCORE       ┆ 14745               ┆ 707778  ┆ 1468          ┆ 0.002074       │
+│ RESPIRATIONS                    ┆ 14914               ┆ 4741046 ┆ 11341         ┆ 0.002392       │
+│ MODEL R BMI                     ┆ 12206               ┆ 15266   ┆ 45            ┆ 0.002948       │
+│ BLOOD PRESSURE                  ┆ 14919               ┆ 2695697 ┆ 11058         ┆ 0.004102       │
+│ CPM S25 R INV DEVICE.INV O2 DE… ┆ 13189               ┆ 874530  ┆ 3797          ┆ 0.004342       │
+└─────────────────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Grouper by n_rows
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Grouper                   ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ Bacteria in Urine - Confirmed … ┆ 3524                ┆ 4238   ┆ 0             ┆ 0.0            │
+│ Sepsis Body Fluid Culture Orde… ┆ 2477                ┆ 5319   ┆ 0             ┆ 0.0            │
+│ Sepsis Body Fluid Culture Orde… ┆ 3435                ┆ 5678   ┆ 0             ┆ 0.0            │
+│ Blood Culture - Confirmed Infe… ┆ 4154                ┆ 9290   ┆ 0             ┆ 0.0            │
+│ WBC in Urine - Confirmed Infec… ┆ 6902                ┆ 10281  ┆ 0             ┆ 0.0            │
+│ WBC in Urine                    ┆ 7322                ┆ 11023  ┆ 1             ┆ 0.000091       │
+│ Bacteria in Urine               ┆ 10262               ┆ 16850  ┆ 1             ┆ 0.000059       │
+│ Blood Culture                   ┆ 13962               ┆ 45413  ┆ 0             ┆ 0.0            │
+│ INR                             ┆ 9268                ┆ 50503  ┆ 0             ┆ 0.0            │
+│ FIO2                            ┆ 4672                ┆ 84402  ┆ 0             ┆ 0.0            │
+└─────────────────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Type by n_rows
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (2, 5)
+┌───────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Type                  ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                   ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                   ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞═══════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ Blood Culture Results ┆ 14255               ┆ 54703   ┆ 0             ┆ 0.0            │
+│ Lab Results           ┆ 14915               ┆ 1974712 ┆ 2             ┆ 0.000001       │
+└───────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Name by n_rows
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Name          ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                 ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                 ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ BUN                 ┆ 14909               ┆ 304217 ┆ 0             ┆ 0.0            │
+│ WBC                 ┆ 14908               ┆ 255768 ┆ 0             ┆ 0.0            │
+│ CULTURE             ┆ 14309               ┆ 58743  ┆ 0             ┆ 0.0            │
+│ POC URINE PH        ┆ 1                   ┆ 1      ┆ 0             ┆ 0.0            │
+│ EGFR                ┆ 3                   ┆ 3      ┆ 0             ┆ 0.0            │
+│ LACTIC ACID (ISTAT) ┆ 1977                ┆ 6851   ┆ 0             ┆ 0.0            │
+│ PLATELETS           ┆ 14906               ┆ 257846 ┆ 0             ┆ 0.0            │
+│ FIO2                ┆ 4672                ┆ 84402  ┆ 0             ┆ 0.0            │
+│ TOTAL BILIRUBIN     ┆ 8                   ┆ 8      ┆ 0             ┆ 0.0            │
+│ INR                 ┆ 9268                ┆ 50503  ┆ 0             ┆ 0.0            │
+└─────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 14:49:57 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:20:58 | INFO     | src_strategy.data_ingest.dataloader_1 | Loading data from /work/InternalMedicine/s223850/Sepsis-data/data/raw_data_phase3
+2026-08-23 15:21:00 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 15:21:00 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: Original shape: (19007903, 8)
+2026-08-23 15:21:02 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheets: New shape: (19007903, 8)
+2026-08-23 15:21:02 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 15:21:02 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Original shape: (1988363, 8)
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: New shape: (1978664, 8)
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: Original shape: (985705, 8)
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | meds: New shape: (979429, 8)
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: Original shape: (130186, 8)
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | procedures: New shape: (87929, 8)
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: Removing duplicates using ['EncounterEpicCsn', 'Event_DateTime', 'Type', 'Event_Grouper', 'Event_Name', 'Value'] ...
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: Original shape: (1498475, 8)
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | diagnoses: New shape: (1494094, 8)
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | Running transformation pipelines on the loaded data ...
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-23 15:21:03 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming flowsheets ...
+2026-08-23 15:21:33 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming labs ...
+2026-08-23 15:21:37 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming meds ...
+2026-08-23 15:21:38 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming procedures ...
+2026-08-23 15:21:38 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming diagnoses ...
+2026-08-23 15:21:39 | INFO     | src_strategy.data_ingest.dataloader_1 | Transforming encounters ...
+2026-08-23 15:21:39 | INFO     | src_strategy.data_ingest.dataloader_1 | --------------------------------------------------
+2026-08-23 15:21:41 | INFO     | src_strategy.data_ingest.dataloader_1 | Combining all tables...
+2026-08-23 15:21:45 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Grouper by null_pct_Value
+2026-08-23 15:21:45 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌──────────────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Event_Grouper                ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                          ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                          ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞══════════════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ Weight                       ┆ 14528               ┆ 129101  ┆ 4444          ┆ 0.034423       │
+│ Oxygen Delivery              ┆ 5902                ┆ 154716  ┆ 3804          ┆ 0.024587       │
+│ Temperature                  ┆ 14908               ┆ 1378940 ┆ 13113         ┆ 0.009509       │
+│ Vent On/Off                  ┆ 2422                ┆ 154173  ┆ 1041          ┆ 0.006752       │
+│ O2 Flow Rate                 ┆ 10776               ┆ 468053  ┆ 3062          ┆ 0.006542       │
+│ Blood Pressure               ┆ 14919               ┆ 2695697 ┆ 11058         ┆ 0.004102       │
+│ BMI                          ┆ 12206               ┆ 15266   ┆ 45            ┆ 0.002948       │
+│ Respirations                 ┆ 14914               ┆ 4741046 ┆ 11341         ┆ 0.002392       │
+│ Glasgow Coma Score           ┆ 14745               ┆ 707852  ┆ 1468          ┆ 0.002074       │
+│ Arterial Blood Pressure Mean ┆ 3619                ┆ 1829615 ┆ 3779          ┆ 0.002065       │
+└──────────────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 15:21:45 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:46 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Type by null_pct_Value
+2026-08-23 15:21:46 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (1, 5)
+┌───────────┬─────────────────────┬──────────┬───────────────┬────────────────┐
+│ Type      ┆ n_unique_encounters ┆ n_rows   ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---       ┆ ---                 ┆ ---      ┆ ---           ┆ ---            │
+│ str       ┆ u64                 ┆ u64      ┆ u64           ┆ f64            │
+╞═══════════╪═════════════════════╪══════════╪═══════════════╪════════════════╡
+│ Flowsheet ┆ 14929               ┆ 19007903 ┆ 64885         ┆ 0.003414       │
+└───────────┴─────────────────────┴──────────┴───────────────┴────────────────┘
+2026-08-23 15:21:46 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Name by null_pct_Value
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Event_Name                      ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ CPM S25 R PRO OXYGEN THERAPY D… ┆ 24                  ┆ 27      ┆ 1             ┆ 0.037037       │
+│ WEIGHT/SCALE                    ┆ 14528               ┆ 129101  ┆ 4444          ┆ 0.034423       │
+│ TEMPERATURE                     ┆ 14908               ┆ 1378940 ┆ 13113         ┆ 0.009509       │
+│ UTSW UH R RT VENT MANAGEMENT S… ┆ 2468                ┆ 159102  ┆ 1041          ┆ 0.006543       │
+│ CPM S25 R INV O2 FLOW RATE (L/… ┆ 10776               ┆ 468053  ┆ 3062          ┆ 0.006542       │
+│ UTSW R ED PRE HOSPITAL CARE EM… ┆ 1046                ┆ 1082    ┆ 6             ┆ 0.005545       │
+│ CPM S25 R INV DEVICE.INV O2 DE… ┆ 13189               ┆ 874530  ┆ 3797          ┆ 0.004342       │
+│ BLOOD PRESSURE                  ┆ 14919               ┆ 2695697 ┆ 11058         ┆ 0.004102       │
+│ MODEL R BMI                     ┆ 12206               ┆ 15266   ┆ 45            ┆ 0.002948       │
+│ RESPIRATIONS                    ┆ 14914               ┆ 4741046 ┆ 11341         ┆ 0.002392       │
+└─────────────────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Grouper by null_pct_Value
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Grouper                   ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ WBC in Urine                    ┆ 7322                ┆ 11023  ┆ 1             ┆ 0.000091       │
+│ Bacteria in Urine               ┆ 10262               ┆ 16850  ┆ 1             ┆ 0.000059       │
+│ Bilirubin                       ┆ 14442               ┆ 123228 ┆ 0             ┆ 0.0            │
+│ PAO2                            ┆ 5267                ┆ 145088 ┆ 0             ┆ 0.0            │
+│ INR                             ┆ 9268                ┆ 50503  ┆ 0             ┆ 0.0            │
+│ eGFR                            ┆ 14878               ┆ 303088 ┆ 0             ┆ 0.0            │
+│ WBC                             ┆ 14908               ┆ 255768 ┆ 0             ┆ 0.0            │
+│ FIO2                            ┆ 4672                ┆ 84402  ┆ 0             ┆ 0.0            │
+│ Blood Culture - Confirmed Infe… ┆ 4154                ┆ 9290   ┆ 0             ┆ 0.0            │
+│ Lactate                         ┆ 13440               ┆ 88783  ┆ 0             ┆ 0.0            │
+└─────────────────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Type by null_pct_Value
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (2, 5)
+┌───────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Type                  ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                   ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                   ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞═══════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ Lab Results           ┆ 14915               ┆ 1974712 ┆ 2             ┆ 0.000001       │
+│ Blood Culture Results ┆ 14255               ┆ 54703   ┆ 0             ┆ 0.0            │
+└───────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Name by null_pct_Value
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌───────────────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Name                    ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                           ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                           ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═══════════════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ BACTERIA UA                   ┆ 12397               ┆ 21088  ┆ 1             ┆ 0.000047       │
+│ WBC, UA                       ┆ 12433               ┆ 21304  ┆ 1             ┆ 0.000047       │
+│ BILIRUBIN, TOTAL              ┆ 14442               ┆ 123220 ┆ 0             ┆ 0.0            │
+│ INR                           ┆ 9268                ┆ 50503  ┆ 0             ┆ 0.0            │
+│ UROBILINOGEN, UA              ┆ 1                   ┆ 1      ┆ 0             ┆ 0.0            │
+│ SPEC GRAV, UA                 ┆ 1                   ┆ 1      ┆ 0             ┆ 0.0            │
+│ WBC                           ┆ 14908               ┆ 255768 ┆ 0             ┆ 0.0            │
+│ EGFR CR BEDSIDE SCHWARTZ 2009 ┆ 2                   ┆ 13     ┆ 0             ┆ 0.0            │
+│ CULTURE                       ┆ 14309               ┆ 58743  ┆ 0             ┆ 0.0            │
+│ LACTATE                       ┆ 13390               ┆ 81932  ┆ 0             ┆ 0.0            │
+└───────────────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 15:21:47 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:48 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Grouper by n_rows
+2026-08-23 15:21:48 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Grouper                   ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ Vent off Documentation          ┆ 1946                ┆ 2410   ┆ 0             ┆ 0.0            │
+│ Vent on Documentation           ┆ 1928                ┆ 2519   ┆ 0             ┆ 0.0            │
+│ O2 Delivery Non-Rebreather Mas… ┆ 1663                ┆ 4980   ┆ 0             ┆ 0.0            │
+│ O2 Delivery Simple Face Mask    ┆ 3348                ┆ 10694  ┆ 0             ┆ 0.0            │
+│ Suspected Infection             ┆ 10778               ┆ 13296  ┆ 24            ┆ 0.001805       │
+│ BMI                             ┆ 12206               ┆ 15266  ┆ 45            ┆ 0.002948       │
+│ O2 Delivery High-Flow           ┆ 3079                ┆ 60645  ┆ 0             ┆ 0.0            │
+│ O2 Delivery Mechanical Ventila… ┆ 3519                ┆ 123591 ┆ 0             ┆ 0.0            │
+│ Weight                          ┆ 14528               ┆ 129101 ┆ 4444          ┆ 0.034423       │
+│ Vent On/Off                     ┆ 2422                ┆ 154173 ┆ 1041          ┆ 0.006752       │
+└─────────────────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 15:21:48 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:49 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Type by n_rows
+2026-08-23 15:21:49 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (1, 5)
+┌───────────┬─────────────────────┬──────────┬───────────────┬────────────────┐
+│ Type      ┆ n_unique_encounters ┆ n_rows   ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---       ┆ ---                 ┆ ---      ┆ ---           ┆ ---            │
+│ str       ┆ u64                 ┆ u64      ┆ u64           ┆ f64            │
+╞═══════════╪═════════════════════╪══════════╪═══════════════╪════════════════╡
+│ Flowsheet ┆ 14929               ┆ 19007903 ┆ 64885         ┆ 0.003414       │
+└───────────┴─────────────────────┴──────────┴───────────────┴────────────────┘
+2026-08-23 15:21:49 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | flowsheet: Event Name by n_rows
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Event_Name                      ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ R ED CLINICAL CALCULATOR - GLA… ┆ 55                  ┆ 74      ┆ 0             ┆ 0.0            │
+│ CPM S25 R AS SC BRADEN SCORE    ┆ 14873               ┆ 405029  ┆ 390           ┆ 0.000963       │
+│ UTSW UH R SEVERE SEPSIS Q SUSP… ┆ 10778               ┆ 13296   ┆ 24            ┆ 0.001805       │
+│ PULSE                           ┆ 14914               ┆ 5589267 ┆ 11316         ┆ 0.002025       │
+│ UTSW R ARTERIAL BLOOD PRESSURE… ┆ 3619                ┆ 1829615 ┆ 3779          ┆ 0.002065       │
+│ CPM S25 R AS SC SUM SCORE       ┆ 14745               ┆ 707778  ┆ 1468          ┆ 0.002074       │
+│ RESPIRATIONS                    ┆ 14914               ┆ 4741046 ┆ 11341         ┆ 0.002392       │
+│ MODEL R BMI                     ┆ 12206               ┆ 15266   ┆ 45            ┆ 0.002948       │
+│ BLOOD PRESSURE                  ┆ 14919               ┆ 2695697 ┆ 11058         ┆ 0.004102       │
+│ CPM S25 R INV DEVICE.INV O2 DE… ┆ 13189               ┆ 874530  ┆ 3797          ┆ 0.004342       │
+└─────────────────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Grouper by n_rows
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Grouper                   ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                             ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                             ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═════════════════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ Bacteria in Urine - Confirmed … ┆ 3524                ┆ 4238   ┆ 0             ┆ 0.0            │
+│ Sepsis Body Fluid Culture Orde… ┆ 2477                ┆ 5319   ┆ 0             ┆ 0.0            │
+│ Sepsis Body Fluid Culture Orde… ┆ 3435                ┆ 5678   ┆ 0             ┆ 0.0            │
+│ Blood Culture - Confirmed Infe… ┆ 4154                ┆ 9290   ┆ 0             ┆ 0.0            │
+│ WBC in Urine - Confirmed Infec… ┆ 6902                ┆ 10281  ┆ 0             ┆ 0.0            │
+│ WBC in Urine                    ┆ 7322                ┆ 11023  ┆ 1             ┆ 0.000091       │
+│ Bacteria in Urine               ┆ 10262               ┆ 16850  ┆ 1             ┆ 0.000059       │
+│ Blood Culture                   ┆ 13962               ┆ 45413  ┆ 0             ┆ 0.0            │
+│ INR                             ┆ 9268                ┆ 50503  ┆ 0             ┆ 0.0            │
+│ FIO2                            ┆ 4672                ┆ 84402  ┆ 0             ┆ 0.0            │
+└─────────────────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Type by n_rows
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (2, 5)
+┌───────────────────────┬─────────────────────┬─────────┬───────────────┬────────────────┐
+│ Type                  ┆ n_unique_encounters ┆ n_rows  ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                   ┆ ---                 ┆ ---     ┆ ---           ┆ ---            │
+│ str                   ┆ u64                 ┆ u64     ┆ u64           ┆ f64            │
+╞═══════════════════════╪═════════════════════╪═════════╪═══════════════╪════════════════╡
+│ Blood Culture Results ┆ 14255               ┆ 54703   ┆ 0             ┆ 0.0            │
+│ Lab Results           ┆ 14915               ┆ 1974712 ┆ 2             ┆ 0.000001       │
+└───────────────────────┴─────────────────────┴─────────┴───────────────┴────────────────┘
+2026-08-23 15:21:50 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:51 | INFO     | src_strategy.data_ingest.dataloader_1 | labs: Event Name by n_rows
+2026-08-23 15:21:51 | INFO     | src_strategy.data_ingest.dataloader_1 | shape: (10, 5)
+┌─────────────────────┬─────────────────────┬────────┬───────────────┬────────────────┐
+│ Event_Name          ┆ n_unique_encounters ┆ n_rows ┆ n_nulls_Value ┆ null_pct_Value │
+│ ---                 ┆ ---                 ┆ ---    ┆ ---           ┆ ---            │
+│ str                 ┆ u64                 ┆ u64    ┆ u64           ┆ f64            │
+╞═════════════════════╪═════════════════════╪════════╪═══════════════╪════════════════╡
+│ POC URINE PH        ┆ 1                   ┆ 1      ┆ 0             ┆ 0.0            │
+│ CREATININE          ┆ 14909               ┆ 305000 ┆ 0             ┆ 0.0            │
+│ INR                 ┆ 9268                ┆ 50503  ┆ 0             ┆ 0.0            │
+│ FIO2                ┆ 4672                ┆ 84402  ┆ 0             ┆ 0.0            │
+│ LACTIC ACID (ISTAT) ┆ 1977                ┆ 6851   ┆ 0             ┆ 0.0            │
+│ SPEC GRAV, UA       ┆ 1                   ┆ 1      ┆ 0             ┆ 0.0            │
+│ BILIRUBIN, TOTAL    ┆ 14442               ┆ 123220 ┆ 0             ┆ 0.0            │
+│ CULTURE             ┆ 14309               ┆ 58743  ┆ 0             ┆ 0.0            │
+│ TOTAL BILIRUBIN     ┆ 8                   ┆ 8      ┆ 0             ┆ 0.0            │
+│ AFB SMEAR           ┆ 1                   ┆ 1      ┆ 0             ┆ 0.0            │
+└─────────────────────┴─────────────────────┴────────┴───────────────┴────────────────┘
+2026-08-23 15:21:51 | INFO     | src_strategy.data_ingest.dataloader_1 | -------------------------
+2026-08-23 15:21:51 | INFO     | __main__ | Data injestion & Preprocessing completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_all_map_measured_only.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_all_map_measured_only.parquet
+2026-08-23 15:21:52 | INFO     | __main__ | Encounters data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_encounters.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_encounters.parquet
+2026-08-23 15:21:53 | INFO     | src_strategy.data_preparation.resolvecollision | Resolving collisions in groupers: ['Bilirubin', 'Creatinine', 'Glasgow Coma Score', 'INR', 'Lactate', 'PAO2', 'Platelets', 'Pulse', 'Respirations', 'Temperature', 'WBC', 'eGFR', 'map', 'sys']...
+2026-08-23 15:21:58 | INFO     | src_strategy.data_preparation.resolvecollision | Counting collisions ...
+2026-08-23 15:21:58 | INFO     | src_strategy.data_preparation.resolvecollision | # of collisions: 373969 ...
+2026-08-23 15:21:58 | INFO     | src_strategy.data_preparation.resolvecollision | Maximum # of collisions per encounter: 144 for Event_Grouper Blood Pressure for encounter 714445951 to 2024-11-04 01:00:00...
+2026-08-23 15:21:58 | INFO     | src_strategy.data_preparation.resolvecollision | There are 1 encounters with maximum # of collisions...
+2026-08-23 15:21:58 | INFO     | src_strategy.data_preparation.resolvecollision | Collisions counts by Event_Grouper: shape: (10, 2)
+┌────────────────────┬────────┐
+│ Event_Grouper      ┆ count  │
+│ ---                ┆ ---    │
+│ str                ┆ u64    │
+╞════════════════════╪════════╡
+│ Blood Pressure     ┆ 342084 │
+│ PAO2               ┆ 29549  │
+│ Creatinine         ┆ 846    │
+│ eGFR               ┆ 594    │
+│ Platelets          ┆ 351    │
+│ WBC                ┆ 307    │
+│ Lactate            ┆ 95     │
+│ Bilirubin          ┆ 89     │
+│ INR                ┆ 51     │
+│ Glasgow Coma Score ┆ 3      │
+└────────────────────┴────────┘
+2026-08-23 15:21:58 | INFO     | src_strategy.data_preparation.resolvecollision | Groupers with no collisions: {'sys', 'Pulse', 'map', 'Respirations', 'Temperature'}
+2026-08-23 15:21:59 | INFO     | src_strategy.data_preparation.resolvecollision | Mean Arterial blood pressure at extreme values ratio of 0.5: shape: (110, 14)
+┌──────────────────┬─────────────────────┬───────────┬────────────────┬───┬──────────┬───────────────┬───────────┬───────────┐
+│ EncounterEpicCsn ┆ Event_DateTime      ┆ Type      ┆ Event_Grouper  ┆ … ┆ pf_ratio ┆ PF_Ratio_Flag ┆ sys_right ┆ map_right │
+│ ---              ┆ ---                 ┆ ---       ┆ ---            ┆   ┆ ---      ┆ ---           ┆ ---       ┆ ---       │
+│ i64              ┆ datetime[μs]        ┆ str       ┆ str            ┆   ┆ f64      ┆ i32           ┆ f64       ┆ f64       │
+╞══════════════════╪═════════════════════╪═══════════╪════════════════╪═══╪══════════╪═══════════════╪═══════════╪═══════════╡
+│ 662715699        ┆ 2022-06-29 15:55:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 78.0      ┆ 0.0       │
+│ 663117991        ┆ 2022-06-18 05:00:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 126.0     ┆ 0.0       │
+│ 663504699        ┆ 2022-06-16 01:58:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ null      ┆ 0.0       │
+│ 664010526        ┆ 2022-06-27 10:00:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 144.0     ┆ 0.0       │
+│ 664010653        ┆ 2022-07-25 10:00:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 135.0     ┆ 0.0       │
+│ …                ┆ …                   ┆ …         ┆ …              ┆ … ┆ …        ┆ …             ┆ …         ┆ …         │
+│ 737760174        ┆ 2025-11-09 04:30:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 115.0     ┆ 0.0       │
+│ 740132091        ┆ 2025-11-25 21:45:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 108.0     ┆ 0.0       │
+│ 741584594        ┆ 2025-12-19 23:12:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 135.0     ┆ 0.0       │
+│ 745002378        ┆ 2026-01-31 19:15:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 136.0     ┆ 0.0       │
+│ 745708951        ┆ 2026-02-04 11:47:00 ┆ Flowsheet ┆ Blood Pressure ┆ … ┆ null     ┆ null          ┆ 78.0      ┆ 0.0       │
+└──────────────────┴─────────────────────┴───────────┴────────────────┴───┴──────────┴───────────────┴───────────┴───────────┘ 
+2026-08-23 15:21:59 | INFO     | src_strategy.data_preparation.resolvecollision | Saving Mean Arterial blood pressure extreme values to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/meta/map_extreme.csv
+2026-08-23 15:21:59 | INFO     | src_strategy.data_preparation.resolvecollision | No Systolic blood pressure extreme values found
+2026-08-23 15:22:01 | INFO     | src_strategy.data_preparation.resolvecollision | Resolved collisions stats: shape: (8, 4)
+┌───────────────┬────────────────┬────────────────┬────────────────────────┐
+│ Event_Grouper ┆ resoled_to_max ┆ resoled_to_min ┆ resoled_to_same(error) │
+│ ---           ┆ ---            ┆ ---            ┆ ---                    │
+│ str           ┆ u64            ┆ u64            ┆ u64                    │
+╞═══════════════╪════════════════╪════════════════╪════════════════════════╡
+│ PAO2          ┆ 0              ┆ 104            ┆ 0                      │
+│ INR           ┆ 102            ┆ 0              ┆ 0                      │
+│ Lactate       ┆ 165            ┆ 0              ┆ 0                      │
+│ Bilirubin     ┆ 176            ┆ 0              ┆ 0                      │
+│ Creatinine    ┆ 1682           ┆ 0              ┆ 0                      │
+│ Platelets     ┆ 0              ┆ 710            ┆ 0                      │
+│ eGFR          ┆ 0              ┆ 1171           ┆ 0                      │
+│ WBC           ┆ 422            ┆ 204            ┆ 0                      │
+└───────────────┴────────────────┴────────────────┴────────────────────────┘
+2026-08-23 15:22:01 | INFO     | src_strategy.data_preparation.resolvecollision | Resolved Systolic blood pressure collisions stats: shape: (0, 4)
+┌───────────────┬────────────────┬────────────────┬────────────────────────┐
+│ Event_Grouper ┆ resoled_to_max ┆ resoled_to_min ┆ resoled_to_same(error) │
+│ ---           ┆ ---            ┆ ---            ┆ ---                    │
+│ str           ┆ u64            ┆ u64            ┆ u64                    │
+╞═══════════════╪════════════════╪════════════════╪════════════════════════╡
+└───────────────┴────────────────┴────────────────┴────────────────────────┘
+2026-08-23 15:22:01 | INFO     | src_strategy.data_preparation.resolvecollision | Resolved Mean Arterial blood pressure collisions stats: shape: (0, 4)
+┌───────────────┬────────────────┬────────────────┬────────────────────────┐
+│ Event_Grouper ┆ resoled_to_max ┆ resoled_to_min ┆ resoled_to_same(error) │
+│ ---           ┆ ---            ┆ ---            ┆ ---                    │
+│ str           ┆ u64            ┆ u64            ┆ u64                    │
+╞═══════════════╪════════════════╪════════════════╪════════════════════════╡
+└───────────────┴────────────────┴────────────────┴────────────────────────┘
+2026-08-23 15:22:10 | INFO     | src_strategy.data_preparation.resolvecollision | Duplicates with numerical value in resolved_collisions_all: shape: (36, 2)
+┌───────────────────────────┬─────────────────────────────────┐
+│ Type                      ┆ Event_Grouper                   │
+│ ---                       ┆ ---                             │
+│ str                       ┆ str                             │
+╞═══════════════════════════╪═════════════════════════════════╡
+│ IV Antibiotics - First    ┆ Antibiotics                     │
+│ IV Antibiotics            ┆ Antibiotics                     │
+│ Procedure Order           ┆ Lactate-Procedure-Order         │
+│ Medication Administration ┆ Analgesic Non-Narcotics         │
+│ IV Antibiotics - Single   ┆ Antibiotics                     │
+│ …                         ┆ …                               │
+│ Flowsheet                 ┆ O2 Delivery Mechanical Ventila… │
+│ Diagnosis Event           ┆ Problem List - Confirmed Infec… │
+│ Flowsheet                 ┆ O2 Delivery Non-Rebreather Mas… │
+│ Medication Administration ┆ Antibiotics                     │
+│ IV Antibiotics - Last     ┆ Antibiotics                     │
+└───────────────────────────┴─────────────────────────────────┘. NOTE: Lactate is allowed to exist since it can be duplicated with Lactate (Type=Procedure)
+2026-08-23 15:22:11 | INFO     | __main__ | Handling numerical value collisions completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_all_no_collisions_map_measured_only.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_all_no_collisions_map_measured_only.parquet
+2026-08-23 15:22:12 | INFO     | __main__ | Backbone (unique encounter, event_dt) is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/backbone.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/backbone.parquet
+2026-08-23 15:22:14 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-23 15:22:14 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-23 15:22:16 | INFO     | __main__ | Suspected-infection detection completed Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_suspected_infection.parquet
+2026-08-23 15:22:16 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_temp_8h using last over last 480.0 minutes for events in Temperature
+2026-08-23 15:22:21 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h pre-aggregation: 1365823
+2026-08-23 15:22:21 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h post-aggregation: 7814119
+2026-08-23 15:22:21 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h has 5.721179830768701 ratio of post to pre aggregation
+2026-08-23 15:22:21 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:22:21 | INFO     | src_strategy.data_preparation.aggregator | Feature last_temp_8h aggregated and joined. Current backbone table now has 8029837 rows and 4 columns.
+2026-08-23 15:22:21 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:22:21 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pulse_8h using last over last 480.0 minutes for events in Pulse
+2026-08-23 15:22:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h pre-aggregation: 5577936
+2026-08-23 15:22:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h post-aggregation: 7906482
+2026-08-23 15:22:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h has 1.4174565645787258 ratio of post to pre aggregation
+2026-08-23 15:22:58 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:22:58 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pulse_8h aggregated and joined. Current backbone table now has 8029837 rows and 6 columns.
+2026-08-23 15:22:58 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:22:58 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_resp_8h using last over last 480.0 minutes for events in Respirations
+2026-08-23 15:23:32 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h pre-aggregation: 4729102
+2026-08-23 15:23:32 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h post-aggregation: 7864110
+2026-08-23 15:23:32 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h has 1.662918245366668 ratio of post to pre aggregation
+2026-08-23 15:23:32 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:23:32 | INFO     | src_strategy.data_preparation.aggregator | Feature last_resp_8h aggregated and joined. Current backbone table now has 8029837 rows and 8 columns.
+2026-08-23 15:23:32 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:23:32 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_sbp_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-23 15:23:50 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h pre-aggregation: 2343548
+2026-08-23 15:23:50 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h post-aggregation: 5889965
+2026-08-23 15:23:50 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h has 2.5132683435543033 ratio of post to pre aggregation
+2026-08-23 15:23:50 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:23:50 | INFO     | src_strategy.data_preparation.aggregator | Feature last_sbp_8h aggregated and joined. Current backbone table now has 8029837 rows and 10 columns.
+2026-08-23 15:23:50 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:23:50 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_map_8h using last over last 480.0 minutes for events in Blood Pressure
+2026-08-23 15:24:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h pre-aggregation: 1485836
+2026-08-23 15:24:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h post-aggregation: 2452224
+2026-08-23 15:24:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h has 1.6504001787545866 ratio of post to pre aggregation
+2026-08-23 15:24:00 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:00 | INFO     | src_strategy.data_preparation.aggregator | Feature last_map_8h aggregated and joined. Current backbone table now has 8029837 rows and 12 columns.
+2026-08-23 15:24:00 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:00 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_wbc_12h using last over last 720.0 minutes for events in WBC
+2026-08-23 15:24:02 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h pre-aggregation: 255458
+2026-08-23 15:24:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h post-aggregation: 5265054
+2026-08-23 15:24:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h has 20.610252957433318 ratio of post to pre aggregation
+2026-08-23 15:24:03 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:03 | INFO     | src_strategy.data_preparation.aggregator | Feature last_wbc_12h aggregated and joined. Current backbone table now has 8029837 rows and 14 columns.
+2026-08-23 15:24:03 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:03 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_creatinine_12h using last over last 720.0 minutes for events in Creatinine
+2026-08-23 15:24:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h pre-aggregation: 305906
+2026-08-23 15:24:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h post-aggregation: 5947495
+2026-08-23 15:24:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h has 19.44223061986362 ratio of post to pre aggregation
+2026-08-23 15:24:05 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:05 | INFO     | src_strategy.data_preparation.aggregator | Feature last_creatinine_12h aggregated and joined. Current backbone table now has 8029837 rows and 16 columns.
+2026-08-23 15:24:05 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:05 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_egfr_12h using last over last 720.0 minutes for events in eGFR
+2026-08-23 15:24:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h pre-aggregation: 302491
+2026-08-23 15:24:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h post-aggregation: 5869136
+2026-08-23 15:24:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h has 19.402679749149563 ratio of post to pre aggregation
+2026-08-23 15:24:08 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:08 | INFO     | src_strategy.data_preparation.aggregator | Feature last_egfr_12h aggregated and joined. Current backbone table now has 8029837 rows and 18 columns.
+2026-08-23 15:24:08 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:08 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_bilirubin_12h using last over last 720.0 minutes for events in Bilirubin
+2026-08-23 15:24:10 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h pre-aggregation: 123139
+2026-08-23 15:24:10 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h post-aggregation: 2956094
+2026-08-23 15:24:10 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h has 24.00615564524643 ratio of post to pre aggregation
+2026-08-23 15:24:10 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:10 | INFO     | src_strategy.data_preparation.aggregator | Feature last_bilirubin_12h aggregated and joined. Current backbone table now has 8029837 rows and 20 columns.
+2026-08-23 15:24:10 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:10 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_lactate_6h using last over last 360.0 minutes for events in Lactate
+2026-08-23 15:24:12 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h pre-aggregation: 88688
+2026-08-23 15:24:12 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h post-aggregation: 1557971
+2026-08-23 15:24:12 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h has 17.566874887245174 ratio of post to pre aggregation
+2026-08-23 15:24:12 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:12 | INFO     | src_strategy.data_preparation.aggregator | Feature last_lactate_6h aggregated and joined. Current backbone table now has 8029837 rows and 22 columns.
+2026-08-23 15:24:12 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:12 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_platelets_24h using last over last 1440.0 minutes for events in Platelets
+2026-08-23 15:24:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h pre-aggregation: 257493
+2026-08-23 15:24:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h post-aggregation: 7480941
+2026-08-23 15:24:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h has 29.05298784821335 ratio of post to pre aggregation
+2026-08-23 15:24:14 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:14 | INFO     | src_strategy.data_preparation.aggregator | Feature last_platelets_24h aggregated and joined. Current backbone table now has 8029837 rows and 24 columns.
+2026-08-23 15:24:14 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:14 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_inr_12h using last over last 720.0 minutes for events in INR
+2026-08-23 15:24:16 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h pre-aggregation: 50452
+2026-08-23 15:24:16 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h post-aggregation: 1417529
+2026-08-23 15:24:16 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h has 28.096586854832317 ratio of post to pre aggregation
+2026-08-23 15:24:16 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:16 | INFO     | src_strategy.data_preparation.aggregator | Feature last_inr_12h aggregated and joined. Current backbone table now has 8029837 rows and 26 columns.
+2026-08-23 15:24:16 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:16 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_aptt_24h using last over last 1440.0 minutes for events in APTT
+2026-08-23 15:24:18 | WARNING  | src_strategy.data_preparation.aggregator | Feature last_aptt_24h has no events to aggregate. Check if the event_grouper 'APTT' is correct and if the input data has any events for this feature.
+2026-08-23 15:24:18 | INFO     | src_strategy.data_preparation.aggregator | Feature last_aptt_24h aggregated and joined. Current backbone table now has 8029837 rows and 28 columns.
+2026-08-23 15:24:18 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:18 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_gcs_12h using last over last 720.0 minutes for events in Glasgow Coma Score
+2026-08-23 15:24:23 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h pre-aggregation: 706381
+2026-08-23 15:24:23 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h post-aggregation: 7347918
+2026-08-23 15:24:23 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h has 10.40220221098812 ratio of post to pre aggregation
+2026-08-23 15:24:23 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:23 | INFO     | src_strategy.data_preparation.aggregator | Feature last_gcs_12h aggregated and joined. Current backbone table now has 8029837 rows and 30 columns.
+2026-08-23 15:24:23 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:23 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_vasopressin_24h over last 1440.0 minutes for events in Vasopressin
+2026-08-23 15:24:24 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h pre-aggregation: 24534
+2026-08-23 15:24:24 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h post-aggregation: 1197623
+2026-08-23 15:24:24 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h has 48.81482840140214 ratio of post to pre aggregation
+2026-08-23 15:24:24 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:24 | INFO     | src_strategy.data_preparation.aggregator | Feature last_vasopressin_24h aggregated and joined. Current backbone table now has 8029837 rows and 32 columns.
+2026-08-23 15:24:24 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:24 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_phenylephrine_24h over last 1440.0 minutes for events in Phenylephrine
+2026-08-23 15:24:26 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h pre-aggregation: 2165
+2026-08-23 15:24:26 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h post-aggregation: 107867
+2026-08-23 15:24:26 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h has 49.82309468822171 ratio of post to pre aggregation
+2026-08-23 15:24:26 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:26 | INFO     | src_strategy.data_preparation.aggregator | Feature last_phenylephrine_24h aggregated and joined. Current backbone table now has 8029837 rows and 34 columns.
+2026-08-23 15:24:26 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:26 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_norepinephrine_24h over last 1440.0 minutes for events in Norepinephrine
+2026-08-23 15:24:27 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h pre-aggregation: 26400
+2026-08-23 15:24:27 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h post-aggregation: 1675240
+2026-08-23 15:24:27 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h has 63.4560606060606 ratio of post to pre aggregation
+2026-08-23 15:24:27 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:27 | INFO     | src_strategy.data_preparation.aggregator | Feature last_norepinephrine_24h aggregated and joined. Current backbone table now has 8029837 rows and 36 columns.
+2026-08-23 15:24:27 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:27 | INFO     | src_strategy.data_preparation.aggregator | Aggregating flag feature last_epinephrine_24h over last 1440.0 minutes for events in Epinephrine
+2026-08-23 15:24:29 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h pre-aggregation: 12520
+2026-08-23 15:24:29 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h post-aggregation: 465204
+2026-08-23 15:24:29 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h has 37.15686900958467 ratio of post to pre aggregation
+2026-08-23 15:24:29 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:29 | INFO     | src_strategy.data_preparation.aggregator | Feature last_epinephrine_24h aggregated and joined. Current backbone table now has 8029837 rows and 38 columns.
+2026-08-23 15:24:29 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:29 | INFO     | src_strategy.data_preparation.aggregator | Aggregating numeric feature last_pfratio_2h using last over last 120.0 minutes for events in FIO2
+2026-08-23 15:24:31 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h pre-aggregation: 84402
+2026-08-23 15:24:31 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h post-aggregation: 659563
+2026-08-23 15:24:31 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h has 7.814542309423947 ratio of post to pre aggregation
+2026-08-23 15:24:31 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:31 | INFO     | src_strategy.data_preparation.aggregator | Feature last_pfratio_2h aggregated and joined. Current backbone table now has 8029837 rows and 40 columns.
+2026-08-23 15:24:31 | INFO     | src_strategy.data_preparation.aggregator | --------------------------------------------------------------------------------
+2026-08-23 15:24:31 | INFO     | __main__ | Aggregation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_aggregated_map_measured_only.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_aggregated_map_measured_only.parquet
+2026-08-23 15:24:32 | INFO     | __main__ | SIRS calculation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet
+2026-08-24 14:58:54 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-24 14:58:54 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-24 18:15:42 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-24 18:15:42 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-08-24 18:36:04 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-08-24 18:36:04 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.

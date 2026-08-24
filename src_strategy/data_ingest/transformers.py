@@ -67,61 +67,62 @@ class PFRatioCalculator:
 
 class BloodPressureBounds:
     name='bp_bounds'
-    def __init__(self, bp_config: BloodPressureConfig, bp_bounds_config: PhysiologicalBoundsConfig,
-                # outliers_replace_value:float|str=None,
-                outlier_column_name:str=None,
-                 ):
+    def __init__(self, bp_config: BloodPressureConfig, bp_bounds_config: PhysiologicalBoundsConfig):
         self.bp_bounds_config = bp_bounds_config
         self.bp_config = bp_config
-        # self.outliers_replace_value = outliers_replace_value
-        self.outlier_column_name = outlier_column_name
 
     def _get_sys_expr(self):
         # Detect outlier in systolic blood pressure
-        expr_sys = pl.col(self.bp_config.sys_col)
-        expr_sys = pl.when(
-            pl.col(self.bp_config.sys_col).is_not_null()
-            &
-            (
-                (pl.col(self.bp_config.sys_col)<self.bp_bounds_config.thresholds[self.bp_config.sys_col].lower_bound)
-                |
-                (pl.col(self.bp_config.sys_col)>self.bp_bounds_config.thresholds[self.bp_config.sys_col].upper_bound)
+        column = self.bp_config.sys_col
+        bounds = self.bp_bounds_config.thresholds[column]
+        return (
+            pl.when(
+                pl.col(column).is_not_null()
+                & (
+                    (pl.col(column) < bounds.lower_bound)
+                    | (pl.col(column) > bounds.upper_bound)
+                )
             )
-            # ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_sys).alias(self.outlier_column_name+'_sys')
-            ).then(pl.lit(self.bp_bounds_config.thresholds[self.bp_config.sys_col].outlier_holder)).otherwise(expr_sys).alias(self.outlier_column_name+'_sys')
-        return expr_sys
+            .then(pl.lit(True))
+            .otherwise(pl.lit(False))
+            .alias(f"{column}_is_outlier")
+        )
 
     def _get_dia_expr(self):
         # Detect outlier in diastolic blood pressure
-        expr_dia = pl.col(self.bp_config.dia_col)
-        expr_dia = pl.when(
-            pl.col(self.bp_config.dia_col).is_not_null()
-            &
-            (
-                (pl.col(self.bp_config.dia_col)<self.bp_bounds_config.thresholds[self.bp_config.dia_col].lower_bound)
-                |
-                (pl.col(self.bp_config.dia_col)>self.bp_bounds_config.thresholds[self.bp_config.dia_col].upper_bound)
-                |
-                (pl.col(self.bp_config.dia_col)>=pl.col(self.bp_config.sys_col))
+        dia_column = self.bp_config.dia_col
+        sys_column = self.bp_config.sys_col
+        bounds = self.bp_bounds_config.thresholds[dia_column]
+        return (
+            pl.when(
+                pl.col(dia_column).is_not_null()
+                & (
+                    (pl.col(dia_column) < bounds.lower_bound)
+                    | (pl.col(dia_column) > bounds.upper_bound)
+                    | (pl.col(dia_column) >= pl.col(sys_column))
+                )
             )
-            # ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_dia).alias(self.outlier_column_name+'_dia')
-            ).then(pl.lit(self.bp_bounds_config.thresholds[self.bp_config.dia_col].outlier_holder)).otherwise(expr_dia).alias(self.outlier_column_name+'_dia')
-        return expr_dia 
+            .then(pl.lit(True))
+            .otherwise(pl.lit(False))
+            .alias(f"{dia_column}_is_outlier")
+        )
 
     def _get_map_expr(self):
         # Detect outlier in mean arterial blood pressure
-        expr_map = pl.col(self.bp_config.map_col)
-        expr_map = pl.when(
-            pl.col(self.bp_config.map_col).is_not_null()
-            &
-            (
-                (pl.col(self.bp_config.map_col)<self.bp_bounds_config.thresholds[self.bp_config.map_col].lower_bound)
-                |
-                (pl.col(self.bp_config.map_col)>self.bp_bounds_config.thresholds[self.bp_config.map_col].upper_bound)
+        column = self.bp_config.map_col
+        bounds = self.bp_bounds_config.thresholds[column]
+        return (
+            pl.when(
+                pl.col(column).is_not_null()
+                & (
+                    (pl.col(column) < bounds.lower_bound)
+                    | (pl.col(column) > bounds.upper_bound)
+                )
             )
-            # ).then(pl.lit(self.outliers_replace_value)).otherwise(expr_map).alias(self.outlier_column_name+'_map')
-            ).then(pl.lit(self.bp_bounds_config.thresholds[self.bp_config.map_col].outlier_holder)).otherwise(expr_map).alias(self.outlier_column_name+'_map')
-        return expr_map
+            .then(pl.lit(True))
+            .otherwise(pl.lit(False))
+            .alias(f"{column}_is_outlier")
+        )
 
     def apply(self, df: pl.DataFrame, logger=None):
         if logger:
