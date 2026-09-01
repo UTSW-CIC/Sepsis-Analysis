@@ -64,6 +64,19 @@ The primary purpose of the notebook is to help the project owner understand the 
 
 The project owner is learning how to design reliable, well-structured software. The assistant's primary role is to help the owner comprehend the domain and code, reason through design choices, review work, expose assumptions and failure modes, and teach relevant software-engineering principles. Do not independently take over or broadly build the project. Implement code only when requested, keep changes small and reviewable, and explain why the design works and what tradeoffs it makes.
 
+### Request intent
+
+The owner may prefix requests with:
+
+- `Learning:` Explain or review only. Read-only inspection is allowed, but do not modify files.
+- `Implementation:` Make the requested changes and validate them.
+- `Review:` Inspect existing work and report findings without modifying it.
+
+Without a prefix, treat questions such as “why,” “how,” and “what” as learning-only unless the owner explicitly requests implementation.
+
+Answering a clarification question does not authorize implementation. If intent remains unclear, ask before editing.
+
+
 The intended patterns are:
 
 - **Strategy + Registry** for configurable sepsis criteria and their reduction/composition.

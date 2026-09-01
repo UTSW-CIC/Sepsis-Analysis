@@ -70,29 +70,29 @@ else:
 #          message=f"Handling numerical value collisions completed, and data is saved to {input_output_config_3_1.output_path+'/'+df_all_no_collisions_file_name}")
 # save_df(backbone, input_output_config_3_1.output_path, "backbone.parquet", logger,
 #          message=f"Backbone (unique encounter, event_dt) is saved to {input_output_config_3_1.output_path+'/backbone.parquet'}")
-df_all_no_collisions = load_df(input_output_config_3_1.output_path, df_all_no_collisions_file_name)
+# df_all_no_collisions = load_df(input_output_config_3_1.output_path, df_all_no_collisions_file_name)
 # backbone = load_df(input_output_config_3_1.output_path, "backbone.parquet")
 
-suspected_infection_pipeline = build_suspected_infection_pipeline(
-    suspected_infection_config
-)
-df_suspected_infection = suspected_infection_pipeline.process(
-    df_all_no_collisions
-)
-save_df(
-    df_suspected_infection,
-    input_output_config_3_1.output_path,
-    "df_suspected_infection.parquet",
-    logger,
-    message="Suspected-infection detection completed",
-)
-agg = Aggregator(
-    agg_config,
-    feature_config
-)
-df_aggregated = agg.aggregate(df_all_no_collisions, backbone)
-save_df(df_aggregated, input_output_config_3_1.output_path, df_aggregated_file_name, logger,
-         message=f"Aggregation completed, and data is saved to {input_output_config_3_1.output_path+'/'+df_aggregated_file_name}")
+# suspected_infection_pipeline = build_suspected_infection_pipeline(
+#     suspected_infection_config
+# )
+# df_suspected_infection = suspected_infection_pipeline.process(
+#     df_all_no_collisions
+# )
+# save_df(
+#     df_suspected_infection,
+#     input_output_config_3_1.output_path,
+#     "df_suspected_infection.parquet",
+#     logger,
+#     message="Suspected-infection detection completed",
+# )
+# agg = Aggregator(
+#     agg_config,
+#     feature_config
+# )
+# df_aggregated = agg.aggregate(df_all_no_collisions, backbone)
+# save_df(df_aggregated, input_output_config_3_1.output_path, df_aggregated_file_name, logger,
+#          message=f"Aggregation completed, and data is saved to {input_output_config_3_1.output_path+'/'+df_aggregated_file_name}")
 
 df_aggregated = load_df(input_output_config_3_1.output_path, df_aggregated_file_name)
 
