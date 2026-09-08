@@ -2,13 +2,15 @@
 
 The helpers in this module operate on explicit, half-open state segments.  They
 do not decide how a clinical state is calculated or how an encounter ends.
-Those decisions belong to the SIRS and hypotension adapters that create the
-input segments.
+Those decisions belong to the status-specific adapters that create the input
+segments.
 """
 
 from math import isfinite
 
 import polars as pl
+
+from ..configs.shortdurationfilter import EpisodeFilterConfig
 
 
 UNKNOWN_STATE = -1
@@ -21,6 +23,39 @@ def _require_columns(df: pl.DataFrame, required: set[str]) -> None:
     missing = sorted(required.difference(df.columns))
     if missing:
         raise ValueError(f"State segments are missing required columns: {missing}")
+
+
+def _validate_and_cast_states(
+    df: pl.DataFrame,
+    *,
+    state_col: str,
+    subject: str,
+) -> pl.DataFrame:
+    """Validate state values before converting them to the common Int8 dtype."""
+    numeric_state_col = "_episode_filter_numeric_state"
+    try:
+        validated = df.with_columns(
+            pl.col(state_col)
+            .cast(pl.Float64, strict=True)
+            .alias(numeric_state_col)
+        )
+    except Exception as exc:
+        raise ValueError(
+            f"{subject} states must be integers in {{-1, 0, 1}}"
+        ) from exc
+
+    invalid_state_count = validated.filter(
+        ~pl.col(numeric_state_col).is_finite()
+        | ~pl.col(numeric_state_col).is_in(VALID_STATES)
+    ).height
+    if invalid_state_count:
+        raise ValueError(
+            f"{subject} contain {invalid_state_count} values outside {{-1, 0, 1}}"
+        )
+
+    return validated.drop(numeric_state_col).with_columns(
+        pl.col(state_col).cast(pl.Int8, strict=True)
+    )
 
 
 def build_state_episodes(
@@ -75,22 +110,11 @@ def build_state_episodes(
     ).item():
         raise ValueError("State segment keys, boundaries, and states cannot be null")
 
-    try:
-        ordered = (
-            segments.select(required_cols)
-            .with_columns(pl.col(state_col).cast(pl.Int8, strict=True))
-            .sort(encounter_col, segment_start_col, segment_end_col)
-        )
-    except Exception as exc:
-        raise ValueError("State values must be integers in {-1, 0, 1}") from exc
-
-    invalid_state_count = ordered.filter(
-        ~pl.col(state_col).is_in(VALID_STATES)
-    ).height
-    if invalid_state_count:
-        raise ValueError(
-            f"State segments contain {invalid_state_count} values outside {{-1, 0, 1}}"
-        )
+    ordered = _validate_and_cast_states(
+        segments.select(required_cols),
+        state_col=state_col,
+        subject="State segments",
+    ).sort(encounter_col, segment_start_col, segment_end_col)
 
     invalid_duration_count = ordered.filter(
         pl.col(segment_end_col) <= pl.col(segment_start_col)
@@ -161,6 +185,7 @@ def bridge_equal_states_across_unknown(
     episode_start_col: str = "episode_start",
     episode_end_col: str = "episode_end",
     source_segment_count_col: str = "source_segment_count",
+    bridge_unknown: bool = True,
 ) -> pl.DataFrame:
     """Bridge internal unknown episodes surrounded by the same known state.
 
@@ -172,6 +197,8 @@ def bridge_equal_states_across_unknown(
 
     The output receives new encounter-local episode IDs. ``source_episode_ids``
     and ``bridged_unknown_gap_count`` preserve the transformation provenance.
+    When ``bridge_unknown`` is false, no unknown episode is absorbed, but the
+    same lineage columns are initialized for later transformations.
     """
     required_cols = {
         encounter_col,
@@ -211,22 +238,11 @@ def bridge_equal_states_across_unknown(
     ).item():
         raise ValueError("Episode keys, boundaries, states, and counts cannot be null")
 
-    try:
-        ordered = (
-            episodes.select(selected_cols)
-            .with_columns(pl.col(state_col).cast(pl.Int8, strict=True))
-            .sort(encounter_col, episode_start_col, episode_end_col)
-        )
-    except Exception as exc:
-        raise ValueError("Episode states must be integers in {-1, 0, 1}") from exc
-
-    invalid_state_count = ordered.filter(
-        ~pl.col(state_col).is_in(VALID_STATES)
-    ).height
-    if invalid_state_count:
-        raise ValueError(
-            f"Episodes contain {invalid_state_count} values outside {{-1, 0, 1}}"
-        )
+    ordered = _validate_and_cast_states(
+        episodes.select(selected_cols),
+        state_col=state_col,
+        subject="Episodes",
+    ).sort(encounter_col, episode_start_col, episode_end_col)
 
     duplicate_id_count = (
         ordered.group_by(encounter_col, episode_id_col)
@@ -237,6 +253,14 @@ def bridge_equal_states_across_unknown(
     if duplicate_id_count:
         raise ValueError(
             f"Episodes contain {duplicate_id_count} duplicate encounter/episode IDs"
+        )
+
+    invalid_duration_count = ordered.filter(
+        pl.col(episode_end_col) <= pl.col(episode_start_col)
+    ).height
+    if invalid_duration_count:
+        raise ValueError(
+            f"Episodes contain {invalid_duration_count} non-positive intervals"
         )
 
     ordered = ordered.with_columns(
@@ -272,7 +296,7 @@ def bridge_equal_states_across_unknown(
             f"found {adjacent_equal_count} adjacent equal-state pairs"
         )
 
-    marked = ordered.with_columns(
+    bridge_expression = (
         (
             (pl.col(state_col) == UNKNOWN_STATE)
             & pl.col("_previous_state").is_in(
@@ -281,9 +305,12 @@ def bridge_equal_states_across_unknown(
             & (pl.col("_previous_state") == pl.col("_next_state"))
             & (pl.col("_previous_end") == pl.col(episode_start_col))
             & (pl.col(episode_end_col) == pl.col("_next_start"))
-        )
-        .fill_null(False)
-        .alias("_bridge_unknown")
+        ).fill_null(False)
+        if bridge_unknown
+        else pl.lit(False)
+    )
+    marked = ordered.with_columns(
+        bridge_expression.alias("_bridge_unknown")
     )
     marked = marked.with_columns(
         (
@@ -420,22 +447,11 @@ def merge_positive_across_short_negative_gaps(
     ).item():
         raise ValueError("Episode keys, boundaries, states, and lineage cannot be null")
 
-    try:
-        ordered = (
-            episodes.select(selected_cols)
-            .with_columns(pl.col(state_col).cast(pl.Int8, strict=True))
-            .sort(encounter_col, episode_start_col, episode_end_col)
-        )
-    except Exception as exc:
-        raise ValueError("Episode states must be integers in {-1, 0, 1}") from exc
-
-    invalid_state_count = ordered.filter(
-        ~pl.col(state_col).is_in(VALID_STATES)
-    ).height
-    if invalid_state_count:
-        raise ValueError(
-            f"Episodes contain {invalid_state_count} values outside {{-1, 0, 1}}"
-        )
+    ordered = _validate_and_cast_states(
+        episodes.select(selected_cols),
+        state_col=state_col,
+        subject="Episodes",
+    ).sort(encounter_col, episode_start_col, episode_end_col)
 
     duplicate_id_count = (
         ordered.group_by(encounter_col, episode_id_col)
@@ -565,3 +581,88 @@ def merge_positive_across_short_negative_gaps(
         .select(output_schema.keys())
         .sort(encounter_col, episode_id_col)
     )
+
+
+def filter_short_positive_episodes(
+    episodes: pl.DataFrame,
+    *,
+    threshold_minutes: float,
+    state_col: str = "state",
+    duration_col: str = "episode_duration_minutes",
+) -> pl.DataFrame:
+    """Return positive episodes meeting the minimum-duration threshold.
+
+    An episode is retained when its duration is greater than or equal to
+    ``threshold_minutes``. Negative and unknown episodes are not part of the
+    retained-positive output. All input columns, episode IDs, and lineage are
+    preserved so callers can compare this result with the unfiltered input.
+    """
+    try:
+        threshold_minutes = float(threshold_minutes)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "threshold_minutes must be a finite non-negative number"
+        ) from exc
+    if not isfinite(threshold_minutes) or threshold_minutes < 0:
+        raise ValueError("threshold_minutes must be a finite non-negative number")
+
+    _require_columns(episodes, {state_col, duration_col})
+    if episodes.is_empty():
+        return episodes.clone()
+
+    if episodes.select(
+        pl.any_horizontal(pl.col([state_col, duration_col]).is_null()).any()
+    ).item():
+        raise ValueError("Episode states and durations cannot be null")
+
+    validated = _validate_and_cast_states(
+        episodes,
+        state_col=state_col,
+        subject="Episodes",
+    )
+    try:
+        validated = validated.with_columns(
+            pl.col(duration_col).cast(pl.Float64, strict=True)
+        )
+    except Exception as exc:
+        raise ValueError("Episode durations must be numeric") from exc
+
+    invalid_duration_count = validated.filter(
+        ~pl.col(duration_col).is_finite() | (pl.col(duration_col) <= 0)
+    ).height
+    if invalid_duration_count:
+        raise ValueError(
+            f"Episodes contain {invalid_duration_count} non-positive or non-finite durations"
+        )
+
+    return validated.filter(
+        (pl.col(state_col) == POSITIVE_STATE)
+        & (pl.col(duration_col) >= threshold_minutes)
+    )
+
+
+def run_episode_filter(
+    segments: pl.DataFrame,
+    *,
+    config: EpisodeFilterConfig,
+) -> dict[str, pl.DataFrame]:
+    """Run the shared episode transformations for one normalized status."""
+    raw = build_state_episodes(segments)
+    bridged = bridge_equal_states_across_unknown(
+        raw,
+        bridge_unknown=config.bridge_unknown,
+    )
+    merged = merge_positive_across_short_negative_gaps(
+        bridged,
+        threshold_minutes=config.negative_gap_minutes,
+    )
+    filtered = filter_short_positive_episodes(
+        merged,
+        threshold_minutes=config.minimum_positive_minutes,
+    )
+    return {
+        "raw": raw,
+        "bridged": bridged,
+        "merged": merged,
+        "filtered": filtered,
+    }

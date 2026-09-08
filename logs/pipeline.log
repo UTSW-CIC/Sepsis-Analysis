@@ -2904,3 +2904,8 @@
 2026-08-24 18:15:42 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
 2026-08-24 18:36:04 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
 2026-08-24 18:36:04 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-09-08 17:56:29 | INFO     | __main__ | SIRS calculation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet
+2026-09-08 17:56:51 | INFO     | __main__ | SIRS calculation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet
+2026-09-08 17:57:15 | INFO     | __main__ | SIRS calculation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet
+2026-09-08 18:00:17 | INFO     | numexpr.utils | Note: NumExpr detected 64 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-09-08 18:00:17 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.

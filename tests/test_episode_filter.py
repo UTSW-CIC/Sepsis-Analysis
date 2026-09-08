@@ -6,8 +6,11 @@ import pytest
 from src_strategy.events.episode_filter import (
     bridge_equal_states_across_unknown,
     build_state_episodes,
+    filter_short_positive_episodes,
     merge_positive_across_short_negative_gaps,
+    run_episode_filter,
 )
+from src_strategy.configs.shortdurationfilter import EpisodeFilterConfig
 
 
 def _segment_frame(rows: list[tuple[int, int, int, int]]) -> pl.DataFrame:
@@ -496,3 +499,138 @@ def test_short_gap_merge_rejects_discontinuous_episode_timeline() -> None:
             bridged,
             threshold_minutes=5,
         )
+
+
+def test_positive_duration_filter_retains_equal_and_longer_episodes() -> None:
+    merged = merge_positive_across_short_negative_gaps(
+        bridge_equal_states_across_unknown(
+            build_state_episodes(
+                _segment_frame(
+                    [
+                        (1, 1, 0, 5),
+                        (1, 0, 5, 10),
+                        (1, 1, 10, 20),
+                        (1, 0, 20, 25),
+                        (1, 1, 25, 40),
+                    ]
+                )
+            )
+        ),
+        threshold_minutes=0,
+    )
+
+    result = filter_short_positive_episodes(
+        merged,
+        threshold_minutes=10,
+    )
+
+    assert result["episode_id"].to_list() == [3, 5]
+    assert result["state"].to_list() == [1, 1]
+    assert result["episode_duration_minutes"].to_list() == [10.0, 15.0]
+    assert result["source_episode_ids"].to_list() == [[3], [5]]
+
+
+def test_zero_positive_duration_threshold_retains_every_positive_episode() -> None:
+    merged = merge_positive_across_short_negative_gaps(
+        bridge_equal_states_across_unknown(
+            build_state_episodes(
+                _segment_frame(
+                    [
+                        (1, 0, 0, 2),
+                        (1, 1, 2, 5),
+                        (1, -1, 5, 7),
+                    ]
+                )
+            )
+        ),
+        threshold_minutes=0,
+    )
+
+    result = filter_short_positive_episodes(
+        merged,
+        threshold_minutes=0,
+    )
+
+    assert result["episode_id"].to_list() == [2]
+    assert result["episode_duration_minutes"].to_list() == [3.0]
+
+
+@pytest.mark.parametrize("threshold", [-1, float("inf"), float("nan"), "bad"])
+def test_rejects_invalid_positive_duration_thresholds(threshold: object) -> None:
+    merged = merge_positive_across_short_negative_gaps(
+        bridge_equal_states_across_unknown(
+            build_state_episodes(_segment_frame([(1, 1, 0, 10)]))
+        ),
+        threshold_minutes=0,
+    )
+
+    with pytest.raises(ValueError, match="finite non-negative"):
+        filter_short_positive_episodes(
+            merged,
+            threshold_minutes=threshold,  # type: ignore[arg-type]
+        )
+
+
+def test_positive_duration_filter_empty_input_preserves_schema() -> None:
+    merged = merge_positive_across_short_negative_gaps(
+        bridge_equal_states_across_unknown(
+            build_state_episodes(_segment_frame([]))
+        ),
+        threshold_minutes=0,
+    )
+
+    result = filter_short_positive_episodes(
+        merged,
+        threshold_minutes=10,
+    )
+
+    assert result.is_empty()
+    assert result.schema == merged.schema
+
+
+@pytest.mark.parametrize("state", [0.5, 1.9, float("inf"), float("nan")])
+def test_rejects_non_integer_state_values(state: float) -> None:
+    with pytest.raises(ValueError, match="outside"):
+        build_state_episodes(_segment_frame([(1, state, 0, 5)]))
+
+
+def test_unknown_bridge_rejects_non_positive_episode_intervals() -> None:
+    raw = build_state_episodes(_segment_frame([(1, 1, 0, 5)]))
+    invalid = raw.with_columns(
+        pl.col("episode_start").alias("episode_end")
+    )
+
+    with pytest.raises(ValueError, match="non-positive"):
+        bridge_equal_states_across_unknown(invalid)
+
+
+def test_generic_runner_uses_independent_status_settings() -> None:
+    segments = _segment_frame(
+        [
+            (1, 1, 0, 10),
+            (1, -1, 10, 12),
+            (1, 1, 12, 25),
+        ]
+    )
+    bridged_config = EpisodeFilterConfig(
+        status_name="status_a",
+        bridge_unknown=True,
+        negative_gap_minutes=20,
+        minimum_positive_minutes=20,
+    )
+    unbridged_config = EpisodeFilterConfig(
+        status_name="status_b",
+        bridge_unknown=False,
+        negative_gap_minutes=5,
+        minimum_positive_minutes=12,
+    )
+
+    status_a = run_episode_filter(segments, config=bridged_config)
+    status_b = run_episode_filter(segments, config=unbridged_config)
+
+    assert list(status_a) == ["raw", "bridged", "merged", "filtered"]
+    assert status_a["bridged"]["state"].to_list() == [1]
+    assert status_a["filtered"]["episode_duration_minutes"].to_list() == [25.0]
+    assert status_b["bridged"]["state"].to_list() == [1, -1, 1]
+    assert status_b["bridged"]["bridged_unknown_gap_count"].to_list() == [0, 0, 0]
+    assert status_b["filtered"]["episode_duration_minutes"].to_list() == [13.0]

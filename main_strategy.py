@@ -9,7 +9,12 @@ from src_strategy.data_preparation.aggregator import Aggregator
 from src_strategy.configs.aggregator import feature_config, agg_config
 from src_strategy.configs.pulmonarydysfunction import pf_config 
 from src_strategy.configs.sirscalculator import sirs_config
-from src_strategy.events.sirs import build_sirs_pipeline
+from src_strategy.configs.shortdurationfilter import sirs_episode_filter_config
+from src_strategy.events.episode_filter import run_episode_filter
+from src_strategy.events.sirs import (
+    build_sirs_pipeline,
+    build_sirs_state_segments,
+)
 from src_strategy.configs.suspected_infection import suspected_infection_config
 from src_strategy.events.suspected_infection import (
     build_suspected_infection_pipeline,
@@ -100,5 +105,42 @@ sirs_pipeline = build_sirs_pipeline(sirs_config)
 df_sirs = sirs_pipeline.process(df_aggregated)
 save_df(df_sirs, input_output_config_3_1.output_path, "df_sirs.parquet", logger,
          message=f"SIRS calculation completed, and data is saved to {input_output_config_3_1.output_path+'/df_sirs.parquet'}")
+
+# Short-duration filtering is an exploratory, status-level analysis. It remains
+# disabled by default and does not replace df_sirs or feed classification.
+if sirs_episode_filter_config.enabled:
+    df_sirs_segments = build_sirs_state_segments(df_sirs, config=sirs_config)
+    sirs_episode_results = run_episode_filter(
+        df_sirs_segments,
+        config=sirs_episode_filter_config,
+    )
+    save_df(
+        sirs_episode_results['raw'], input_output_config_3_1.output_path, "df_sirs_segments_raw.parquet", logger, message="SIRS state-segment reconstruction completed"
+    )
+    save_df(
+        sirs_episode_results['merged'], input_output_config_3_1.output_path, "df_sirs_segments_merged.parquet", logger, message="SIRS state-segment merge completed"
+    )
+    save_df(
+        sirs_episode_results['filtered'], input_output_config_3_1.output_path, "df_sirs_segments_filtered.parquet", logger, message="SIRS state-segment filtering completed"
+    )
+    # save_df(
+    #     df_sirs_segments,
+    #     input_output_config_3_1.output_path,
+    #     "df_sirs_segments.parquet",
+    #     logger,
+    #     message="SIRS state-segment reconstruction completed",
+    # )
+    # for stage, episode_df in sirs_episode_results.items():
+    #     output_name = (
+    #         f"df_{sirs_episode_filter_config.status_name}"
+    #         f"_episodes_{stage}.parquet"
+    #     )
+    #     save_df(
+    #         episode_df,
+    #         input_output_config_3_1.output_path,
+    #         output_name,
+    #         logger,
+    #         message=f"SIRS episode-filter stage '{stage}' completed",
+    #     )
 
 x = 0
