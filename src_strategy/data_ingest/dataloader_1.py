@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from src_strategy.utils.logger import get_logger
 from .transformers import (Transform, TransformPipeline, CastColumns,
-                           BloodPressureExtractor, ApplyBounds, BloodPressureBounds, PFRatioCalculator)
+                           BloodPressureExtractor, ApplyBounds, BloodPressureBounds)
 
 from src_strategy.configs.dataconfig import DataInputOutputConfig, DataConfig, BloodPressureConfig
 from .bloodpressure import BloodPressureProcessor
@@ -12,7 +12,6 @@ from .bloodpressure import BloodPressureProcessor
 from src_strategy.configs.outlierdetection.extremeoutliers import (
     FlowsheetBoundsConfig, LabBoundsConfig, BloodPressureBoundsConfig
     )
-from ..configs.pulmonarydysfunction import PFConfig
 
 from .data_inject_validation import ValidationLogger
 from .datainject import DataInjectMonitor, SORT_BY
@@ -25,14 +24,13 @@ class DataLoader:
                 data_config: DataConfig, bp_config: BloodPressureConfig,
                 physiological_bounds_config: FlowsheetBoundsConfig = None,
                 lab_bounds_config: LabBoundsConfig = None,
-                bp_bounds_config: BloodPressureBoundsConfig = None, pf_config: PFConfig = None):
+                bp_bounds_config: BloodPressureBoundsConfig = None):
         self.input_output_dataconfig = input_output_dataconfig
         self.data_config = data_config
         self.bp_config = bp_config
         self.physiological_bounds_config = physiological_bounds_config
         self.lab_bounds_config = lab_bounds_config
         self.bp_bounds_config = bp_bounds_config
-        self.pf_config = pf_config
         
 
     def _load_labs(self) -> pl.DataFrame:
@@ -60,10 +58,6 @@ class DataLoader:
         if self.lab_bounds_config:
             # labs_pipeline.append(ApplyBounds(self.lab_bounds_config, outliers_replace_value=-1, outlier_column_name="lab_outlier"))
             labs_pipeline.append(ApplyBounds(self.lab_bounds_config, outlier_column_name="lab_outlier"))
-
-        if self.pf_config:
-            # labs_pipeline.append(ApplyBounds(self.pf_config, outliers_replace_value=-1, outlier_column_name="pf_outlier"))
-            labs_pipeline.append(PFRatioCalculator(self.pf_config))
 
         return {
             "flowsheets": TransformPipeline(flowsheets_pipeline),
@@ -444,11 +438,6 @@ class DataLoader:
                 self.data_config.base_cols + [self.bp_config.sys_col, self.bp_config.dia_col, self.bp_config.map_col]
             ),
              on=[self.data_config.encounter_col, self.data_config.event_dt_col, self.data_config.event_name_col], how="left"
-        ).join(
-            df_list['labs'].select(
-                self.data_config.base_cols + [self.pf_config.pf_ratio_col,  self.pf_config.pf_flag]
-            ),
-             on=[self.data_config.encounter_col, self.data_config.event_dt_col, self.data_config.event_name_col], how="left", suffix='_labs'
         )
 
         for c in [c for c in df_all_joined.columns if c.endswith('_right')]:

@@ -13,7 +13,6 @@ from src_strategy.configs.outlierdetection.extremeoutliers import (
     FlowsheetBoundsConfig,
     LabBoundsConfig,
 )
-from src_strategy.configs.pulmonarydysfunction import PFConfig
 from src_strategy.utils.logger import get_logger
 
 from .datainject import DataInjectMonitor, SORT_BY
@@ -23,7 +22,6 @@ from .transformers import (
     BloodPressureBounds,
     BloodPressureExtractor,
     CastColumns,
-    PFRatioCalculator,
     TransformPipeline,
 )
 
@@ -49,17 +47,15 @@ class DataLoader:
         physiological_bounds_config: FlowsheetBoundsConfig = None,
         lab_bounds_config: LabBoundsConfig = None,
         bp_bounds_config: BloodPressureBoundsConfig = None,
-        pf_config: PFConfig = None,
     ) -> None:
         # The optional annotations match V1. The active composition currently
-        # supplies every bounds config and PF config.
+        # supplies every bounds configuration.
         self.input_output_dataconfig = input_output_dataconfig
         self.data_config = data_config
         self.bp_config = bp_config
         self.physiological_bounds_config = physiological_bounds_config
         self.lab_bounds_config = lab_bounds_config
         self.bp_bounds_config = bp_bounds_config
-        self.pf_config = pf_config
 
     def _read_csv(self, filename: str) -> pl.DataFrame:
         input_path = Path(self.input_output_dataconfig.data_path) / filename
@@ -134,9 +130,6 @@ class DataLoader:
                     outlier_column_name="lab_outlier",
                 )
             )
-        if self.pf_config:
-            lab_transforms.append(PFRatioCalculator(self.pf_config))
-
         return {
             "flowsheets": TransformPipeline(flowsheet_transforms),
             "labs": TransformPipeline(lab_transforms),
@@ -331,14 +324,6 @@ class DataLoader:
             ),
             on=join_keys,
             how="left",
-        ).join(
-            sources["labs"].select(
-                self.data_config.base_cols
-                + [self.pf_config.pf_ratio_col, self.pf_config.pf_flag]
-            ),
-            on=join_keys,
-            how="left",
-            suffix="_labs",
         )
 
         for duplicate_col in [

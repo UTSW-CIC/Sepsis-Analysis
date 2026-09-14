@@ -2,10 +2,8 @@ from typing import Protocol, List
 import polars as pl
 from ..utils.utils import (cast_cols,
                            extract_sys_dia_from_flowsheets,
-                           extract_arterial_blood_pressure_mean_from_flowsheets,
-                           calculate_pf_ratio)
+                           extract_arterial_blood_pressure_mean_from_flowsheets)
 from ..configs.dataconfig import DataConfig, BloodPressureConfig
-from ..configs.pulmonarydysfunction import PFConfig
 from ..configs.outlierdetection.extremeoutliers import PhysiologicalBoundsConfig
 from ..outlierdetection.layer1 import Layer1PhysiologicalBound
 
@@ -51,17 +49,6 @@ class BloodPressureExtractor:
             logger.info('extracting blood pressure ...')
         df = extract_sys_dia_from_flowsheets(df, self.bp_config)
         df = extract_arterial_blood_pressure_mean_from_flowsheets(df, self.bp_config)
-        return df
-
-
-class PFRatioCalculator:
-    name='pfratio'
-    def __init__(self, pf_config: PFConfig):
-        self.pf_config = pf_config
-    def apply(self, df:pl.DataFrame, logger=None):
-        if logger:
-            logger.info('calculating calculating pf ratio ...')
-        df = calculate_pf_ratio(df, self.pf_config)
         return df
 
 

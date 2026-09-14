@@ -4,7 +4,6 @@ from typing import List
 from datetime import timedelta
 import datetime as dt
 from src_strategy.configs.dataconfig import BloodPressureConfig
-from src_strategy.configs.pulmonarydysfunction import PFConfig
 from src_strategy.configs.aggregator import AggregatorConfig
 import os
 import re
@@ -172,56 +171,6 @@ def rolling_agg(
                 reference_tbl.{ref_dt_col}
         """).pl()
     return result
-
-def calculate_pf_ratio(df_lab_results: pl.DataFrame, pf_config: PFConfig) -> pl.DataFrame:
-    if hasattr(pf_config, "fio2_suffix"):
-        fio2_suffix = pf_config.fio2_suffix
-    else:
-        fio2_suffix = "_fio2"
-
-    df_poa2 = df_lab_results.filter(
-        pl.col(pf_config.grouper_col) == pf_config.pao2_grouper_val
-    ).select(
-        pf_config.encounter_col, pf_config.event_dt_col, pf_config.type_col,
-        pf_config.event_name_col, pf_config.raw_val_col, pf_config.val_col
-    ).sort(by=[pf_config.encounter_col, pf_config.event_dt_col])
-
-    df_fio2 = df_lab_results.filter(
-        pl.col(pf_config.grouper_col) == pf_config.fio2_grouper_val
-    ).select(
-        pf_config.encounter_col, pf_config.event_dt_col, pf_config.type_col,
-        pf_config.event_name_col, pf_config.raw_val_col, pf_config.val_col
-    ).sort(by=[pf_config.encounter_col, pf_config.event_dt_col])
-    
-    df_poa2_fio2 = (
-        df_poa2
-        .join(df_fio2, on=pf_config.encounter_col, suffix=fio2_suffix)
-        .filter(
-            (pl.col(pf_config.event_dt_col)-pl.col(f"{pf_config.event_dt_col}{fio2_suffix}")).abs() < pl.duration(hours=pf_config.time_window_between_pao2_fio2_hrs)
-        )
-        .sort(by=[
-            pf_config.encounter_col,
-            pf_config.event_dt_col,
-            f"{pf_config.event_dt_col}{fio2_suffix}"
-        ])
-        
-    )
-
-    df_poa2_fio2 = df_poa2_fio2.with_columns(
-        (pl.col(pf_config.val_col)/(pl.col(f"{pf_config.val_col}{fio2_suffix}")/100.0)).alias(pf_config.pf_ratio_col)
-    ).with_columns(
-        pl.when(pl.col(pf_config.pf_ratio_col)<pf_config.pf_lower_threshold).then(pl.lit(1)).otherwise(pl.lit(None)).alias(pf_config.pf_flag)
-    )
-    df_lab_results = df_lab_results.join(
-        df_poa2_fio2.select(
-            pf_config.encounter_col, pf_config.event_dt_col, pf_config.event_name_col,
-            pf_config.pf_ratio_col, pf_config.pf_flag
-        ),
-        on=[pf_config.encounter_col, pf_config.event_dt_col, pf_config.event_name_col],
-        how="left"
-    )
-
-    return df_lab_results
 
 def extract_sys_dia_from_flowsheets(df_flowsheets: pl.DataFrame,
                                          bp_config: BloodPressureConfig) -> pl.DataFrame:

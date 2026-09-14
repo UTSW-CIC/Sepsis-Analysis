@@ -8,6 +8,18 @@ from src_strategy.data_preparation.resolvecollision import ResolveCollision
 from src_strategy.data_preparation.aggregator import Aggregator
 from src_strategy.configs.aggregator import feature_config, agg_config
 from src_strategy.configs.pulmonarydysfunction import pf_config 
+from src_strategy.configs.pulmonarydysfunction import pulmonary_dysfunction_config
+from src_strategy.configs.organdysfunction import organdysfunction_config
+from src_strategy.data_preparation import PFRatioBuilder
+from src_strategy.events.organdysfunction import (
+    build_organ_dysfunction_pipeline,
+    prepare_organ_dysfunction_input,
+)
+from src_strategy.events.pulmonarydysfunction import (
+    attach_pulmonary_state,
+    build_pulmonary_state_segments,
+    build_pulmonary_state_timeline,
+)
 from src_strategy.configs.sirscalculator import sirs_config
 from src_strategy.configs.shortdurationfilter import sirs_episode_filter_config
 from src_strategy.events.episode_filter import run_episode_filter
@@ -15,6 +27,15 @@ from src_strategy.events.sirs import (
     build_sirs_pipeline,
     build_sirs_state_segments,
 )
+from pathlib import Path
+
+from src_strategy.configs.septicshock import septicshock_config
+from src_strategy.configs.shortdurationfilter import (
+    bp_episode_filter_config,
+    sirs_episode_filter_config,
+)
+from src_strategy.events.hypotension import build_bp_state_segments
+
 from src_strategy.configs.suspected_infection import suspected_infection_config
 from src_strategy.events.suspected_infection import (
     build_suspected_infection_pipeline,
@@ -30,8 +51,7 @@ logger = get_logger(__name__)
 #                 bp_config,
 #                 flowsheet_bounds_config,
 #                 lab_bounds_config,
-#                 bp_bounds_config,
-#                 pf_config=pf_config)
+#                 bp_bounds_config)
 
 # df_all, df_encounters = dl.load_data()
 if bp_config.calculate_map:
@@ -70,6 +90,7 @@ else:
 
 # rc = ResolveCollision(collision_config, input_output_config_3_1)
 # df_all_no_collisions = rc.resolve(df_all)
+# df_pf_events = PFRatioBuilder(pf_config).build(df_all_no_collisions)
 # backbone = df_all_no_collisions.select([collision_config.encounter_col, collision_config.event_dt_col]).unique().sort(collision_config.encounter_col, collision_config.event_dt_col)
 # save_df(df_all_no_collisions, input_output_config_3_1.output_path, df_all_no_collisions_file_name, logger,
 #          message=f"Handling numerical value collisions completed, and data is saved to {input_output_config_3_1.output_path+'/'+df_all_no_collisions_file_name}")
@@ -101,10 +122,82 @@ else:
 
 df_aggregated = load_df(input_output_config_3_1.output_path, df_aggregated_file_name)
 
-sirs_pipeline = build_sirs_pipeline(sirs_config)
-df_sirs = sirs_pipeline.process(df_aggregated)
-save_df(df_sirs, input_output_config_3_1.output_path, "df_sirs.parquet", logger,
-         message=f"SIRS calculation completed, and data is saved to {input_output_config_3_1.output_path+'/df_sirs.parquet'}")
+# Pulmonary evidence must be constructed from the collision-free event table,
+# while its reconstructed state is attached to the temporal aggregate table.
+df_all_no_collisions = load_df(
+    input_output_config_3_1.output_path,
+    df_all_no_collisions_file_name,
+)
+df_pf_events = PFRatioBuilder(pf_config).build(df_all_no_collisions)
+df_pulmonary_state_timeline = build_pulmonary_state_timeline(
+    df_all_no_collisions,
+    df_pf_events,
+    config=pulmonary_dysfunction_config,
+)
+df_pulmonary_state_segments = build_pulmonary_state_segments(
+    df_all_no_collisions,
+    df_pf_events,
+    config=pulmonary_dysfunction_config,
+)
+df_aggregated_with_pulmonary = attach_pulmonary_state(
+    df_aggregated,
+    df_pulmonary_state_timeline,
+    config=pulmonary_dysfunction_config,
+)
+
+df_encounters = load_df(
+    input_output_config_3_1.output_path,
+    "df_encounters.parquet",
+)
+df_organ_dysfunction_input = prepare_organ_dysfunction_input(
+    df_aggregated_with_pulmonary,
+    df_encounters,
+    config=organdysfunction_config,
+)
+df_organ_dysfunction = build_organ_dysfunction_pipeline(
+    organdysfunction_config
+).process(df_organ_dysfunction_input)
+
+pulmonary_outputs = {
+    "df_pf_events_v1.parquet": df_pf_events,
+    "df_pulmonary_state_timeline_v1.parquet": df_pulmonary_state_timeline,
+    "df_pulmonary_state_segments_v1.parquet": df_pulmonary_state_segments,
+    "df_aggregated_with_pulmonary_v1.parquet": df_aggregated_with_pulmonary,
+    "df_organ_dysfunction_v1.parquet": df_organ_dysfunction,
+}
+
+# Safety decision: pulmonary integration uses new versioned filenames and
+# refuses the entire save operation if any target exists. No output is partly
+# updated due to an existing target, and no prior artifact is overwritten.
+existing_pulmonary_outputs = [
+    filename
+    for filename in pulmonary_outputs
+    if (Path(input_output_config_3_1.output_path) / filename).exists()
+]
+if existing_pulmonary_outputs:
+    raise FileExistsError(
+        "Refusing to overwrite existing pulmonary outputs: "
+        f"{existing_pulmonary_outputs}"
+    )
+
+for filename, dataframe in pulmonary_outputs.items():
+    save_df(
+        dataframe,
+        input_output_config_3_1.output_path,
+        filename,
+        logger,
+        message=f"Pulmonary/organ-dysfunction output completed: {filename}",
+    )
+
+# Downstream stages retain their row set and now also carry pulmonary state.
+df_aggregated = df_aggregated_with_pulmonary
+
+# sirs_pipeline = build_sirs_pipeline(sirs_config)
+# df_sirs = sirs_pipeline.process(df_aggregated)
+# save_df(df_sirs, input_output_config_3_1.output_path, "df_sirs.parquet", logger,
+#          message=f"SIRS calculation completed, and data is saved to {input_output_config_3_1.output_path+'/df_sirs.parquet'}")
+
+df_sirs = load_df(input_output_config_3_1.output_path, "df_sirs.parquet")
 
 # Short-duration filtering is an exploratory, status-level analysis. It remains
 # disabled by default and does not replace df_sirs or feed classification.
@@ -142,5 +235,55 @@ if sirs_episode_filter_config.enabled:
     #         logger,
     #         message=f"SIRS episode-filter stage '{stage}' completed",
     #     )
+    # df_sirs_filtered = load_df(input_output_config_3_1.output_path, "df_sirs_segments_filtered.parquet")
+
+if bp_episode_filter_config.enabled:
+    df_encounters = load_df(
+        input_output_config_3_1.output_path,
+        "df_encounters.parquet",
+    )
+
+    df_bp_segments = build_bp_state_segments(
+        df_aggregated,
+        df_encounters,
+        config=septicshock_config,
+    )
+
+    bp_episode_results = run_episode_filter(
+        df_bp_segments,
+        config=bp_episode_filter_config,
+    )
+
+    outputs = {
+        "df_hypotension_segments_v1.parquet": df_bp_segments,
+        "df_hypotension_episodes_raw_v1.parquet": bp_episode_results["raw"],
+        "df_hypotension_episodes_bridged_v1.parquet": bp_episode_results["bridged"],
+        "df_hypotension_episodes_merged_v1.parquet": bp_episode_results["merged"],
+        "df_hypotension_episodes_filtered_v1.parquet": bp_episode_results["filtered"],
+    }
+
+    # Prevent accidental overwriting.
+    # existing = [
+    #     filename
+    #     for filename in outputs
+    #     if (
+    #         Path(input_output_config_3_1.output_path) / filename
+    #     ).exists()
+    # ]
+    # if existing:
+    #     raise FileExistsError(
+    #         f"Refusing to overwrite existing BP outputs: {existing}"
+    #     )
+
+    for filename, dataframe in outputs.items():
+        save_df(
+            dataframe,
+            input_output_config_3_1.output_path,
+            filename,
+            logger,
+            message=f"Hypotension output completed: {filename}",
+        )
+
+    df_bp_filtered = load_df(input_output_config_3_1.output_path, "df_hypotension_episodes_filtered_v1.parquet")
 
 x = 0

@@ -32,3 +32,14 @@ sirs_episode_filter_config = EpisodeFilterConfig(
     negative_gap_minutes=20.0,
     minimum_positive_minutes=20.0,
 )
+
+
+# Hypotension duration filtering remains exploratory. The adapter and its
+# independent settings can be tested without changing encounter classification.
+bp_episode_filter_config = EpisodeFilterConfig(
+    status_name="hypotension",
+    enabled=True,
+    bridge_unknown=True,
+    negative_gap_minutes=20.0,
+    minimum_positive_minutes=20.0,
+)

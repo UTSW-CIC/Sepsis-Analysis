@@ -50,12 +50,6 @@ class FeatureColumn(str, Enum):
     LAST_NOREPINEPHRINE_24H  = auto()
     LAST_EPINEPHRINE_24H     = auto()
 
-    # Pulmonary
-    # VENT_STATUS_FLAG        = auto()
-    # VENT_STATUS_TIME        = auto()    
-    # O2_DELIVERY_FLAG        = auto()
-    LAST_PFRATIO_2H           = auto()
-
 class BaselineColumn(str, Enum):
     BASELINE_CREATININE     = "Baseline_Creatinine"
     BASELINE_SBP            = "Baseline_SBP"
@@ -267,13 +261,6 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
         agg="last",
         lookback_period=24*60
     ),
-    FeatureColumn.LAST_PFRATIO_2H: FeatureDefinition(
-        event_grouper="FIO2",
-        alias=FeatureColumn.LAST_PFRATIO_2H,
-        agg="last",
-        lookback_period=2*60
-    )
-
 }
 
 class FeatureConfig(DataConfig):

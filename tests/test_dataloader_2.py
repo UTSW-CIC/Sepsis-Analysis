@@ -18,6 +18,7 @@ from src_strategy.configs.outlierdetection.extremeoutliers import (
 from src_strategy.configs.pulmonarydysfunction import PFConfig
 from src_strategy.data_ingest.dataloader_1 import DataLoader as DataLoaderV1
 from src_strategy.data_ingest.dataloader_2 import DataLoader as DataLoaderV2
+from src_strategy.data_preparation import PFRatioBuilder
 
 
 FILENAMES = InputFileNames(
@@ -108,7 +109,6 @@ def make_loader(loader_class, io_config: DataInputOutputConfig):
         FlowsheetBoundsConfig.with_defaults(),
         LabBoundsConfig.with_defaults(),
         BloodPressureBoundsConfig.with_defaults(),
-        pf_config=PFConfig(),
     )
 
 
@@ -160,9 +160,10 @@ def test_dataloader_v2_matches_v1_end_to_end() -> None:
         )
         assert measured_map["map"].to_list() == [60.0]
 
-        pao2 = v2_events.filter(pl.col("Event_Grouper") == "PAO2")
-        assert pao2["pf_ratio"].to_list() == [200.0]
-        assert pao2["PF_Ratio_Flag"].to_list() == [None]
+        assert "pf_ratio" not in v2_events.columns
+        pf_events = PFRatioBuilder(PFConfig()).build(v2_events)
+        assert pf_events["pf_ratio"].to_list() == [200.0]
+        assert pf_events["pf_pair_status"].to_list() == ["paired"]
 
         assert csv_schema_map(Path(v2_io.meta_output_path)) == csv_schema_map(
             Path(v1_io.meta_output_path)

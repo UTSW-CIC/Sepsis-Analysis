@@ -2909,3 +2909,8 @@
 2026-09-08 17:57:15 | INFO     | __main__ | SIRS calculation completed, and data is saved to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs.parquet
 2026-09-08 18:00:17 | INFO     | numexpr.utils | Note: NumExpr detected 64 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
 2026-09-08 18:00:17 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.
+2026-09-10 13:07:37 | INFO     | __main__ | SIRS state-segment reconstruction completed Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs_segments_raw.parquet
+2026-09-10 13:07:37 | INFO     | __main__ | SIRS state-segment merge completed Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs_segments_merged.parquet
+2026-09-10 13:07:37 | INFO     | __main__ | SIRS state-segment filtering completed Saving dataframe to /work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase3_1/df_sirs_segments_filtered.parquet
+2026-09-11 14:33:27 | INFO     | numexpr.utils | Note: NumExpr detected 56 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2026-09-11 14:33:27 | INFO     | numexpr.utils | NumExpr defaulting to 8 threads.

@@ -39,6 +39,14 @@ FEATURE_RESOLUTION_REGISTERY: dict[str, FeatureResolusionConfig] = {
     "map": FeatureResolusionConfig(type_col_val="Flowsheet", grouper_col_val=["Blood Pressure"], val_col="map", strategy=ResolutionStrategy.MIN),
     "Lactate": FeatureResolusionConfig(type_col_val="Lab Results", grouper_col_val=["Lactate"], val_col="NumericValue", strategy=ResolutionStrategy.MAX),
     "PAO2": FeatureResolusionConfig(type_col_val="Lab Results", grouper_col_val=["PAO2"], val_col="NumericValue", strategy=ResolutionStrategy.MIN),
+    # Approved decision: maximum same-instant FiO2 produces the lowest,
+    # conservative P/F ratio after source-measurement collisions are resolved.
+    "FIO2": FeatureResolusionConfig(
+        type_col_val="Lab Results",
+        grouper_col_val=["FIO2"],
+        val_col="NumericValue",
+        strategy=ResolutionStrategy.MAX,
+    ),
     "Creatinine": FeatureResolusionConfig(type_col_val="Lab Results", grouper_col_val=["Creatinine"], val_col="NumericValue", strategy=ResolutionStrategy.MAX),
 
 }

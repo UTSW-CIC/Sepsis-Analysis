@@ -1,21 +1,43 @@
-from pydantic import BaseModel, Field
-from typing import List 
+from enum import Enum
+from typing import List
+
+from pydantic import BaseModel, Field, model_validator
+
 from .dataconfig import DataConfig
-from .aggregator import FeatureColumn, BaselineColumn, vent_config, VentConfig
+from .aggregator import FeatureColumn, BaselineColumn
+
+
+class OrganDysfunctionCriterionName(str, Enum):
+    CARDIOVASCULAR = "cardiovascular"
+    PULMONARY = "pulmonary"
+    RENAL = "renal"
+    HEPATIC = "hepatic"
+    COAGULATION = "coagulation"
+    NEUROLOGICAL = "neurological"
 
 class CardiovascularConfig(BaseModel):
     lactate_col: FeatureColumn      = FeatureColumn.LAST_LACTATE_6H
     lactate_threshold: float            = 2
     flag_col: str = "cardiovascular_failure_flag"
 
+
+class PulmonaryOrganConfig(BaseModel):
+    input_flag_col: str = "pulmonary_dysfunction_flag"
+    flag_col: str = "pulmonary_failure_flag"
+
 class RenalConfig(BaseModel):
     creatinine_col: FeatureColumn   = FeatureColumn.LAST_CREATININE_12H
     egfr_col: FeatureColumn         = FeatureColumn.LAST_EGFR_12H
-    baseline_creatinine_col: str    = BaselineColumn.BASELINE_CREATININE
-    baseline_egfr_col: str          = BaselineColumn.BASELINE_eGFR
+    baseline_creatinine_col: BaselineColumn = BaselineColumn.BASELINE_CREATININE
+    baseline_egfr_col: BaselineColumn = BaselineColumn.BASELINE_eGFR
     creatinine_threshold: float     = 2.0
     egfr_multiplier: float             = 0.5
     creatinine_multiplier: float    = 2.0
+    creatinine2x_flag: str = "creatinine2x_criteria_flag"
+    creatinine_gt2_no_baseline_flag: str = (
+        "creatinine_gt2_no_baseline_criteria_flag"
+    )
+    egfr50_flag: str = "egfr50_criteria_flag"
     flag_col: str = "renal_failure_flag"
 
 class HepaticConfig(BaseModel):
@@ -23,6 +45,10 @@ class HepaticConfig(BaseModel):
     baseline_bilirubin_col: BaselineColumn     = BaselineColumn.BASELINE_BILIRUBIN
     bilirubin_threshold: float      = 2.0
     bilirubin_multiplier: float     = 2.0
+    bilirubin2x_flag: str = "bilirubin2x_criteria_flag"
+    bilirubin_gt2_no_baseline_flag: str = (
+        "bilirubin_gt2_no_baseline_criteria_flag"
+    )
     flag_col: str = "hepatic_failure_flag"
 
 class CoagulationConfig(BaseModel):
@@ -47,15 +73,6 @@ class NeurologicalConfig(BaseModel):
     gcs_col: FeatureColumn          = FeatureColumn.LAST_GCS_12H
     gcs_threshold: float            = 15.0
     flag_col: str = "neurological_failure_flag"
-
-#TODO: Remove that class. Pulmonary dysfunction has its own class now
-# PulmonaryDysfunction has its own class and config now
-class PulmonaryConfig(BaseModel):
-    vent_config: VentConfig = vent_config
-    vent_col: FeatureColumn         = FeatureColumn.VENT_STATUS_FLAG
-    vent_on_status: str = "Vent on Documentation"
-    vent_off_status: str = "Vent off Documentation"
-    flag_col: str = "pulmonary_failure_flag"
 
 class BaselineConfig(BaseModel):
     baseline_creatinine_col: str = "Baseline_Creatinine"
@@ -84,13 +101,26 @@ class BaselineConfig(BaseModel):
 
 class OrganDysfunctionConfig(DataConfig):
     cardiovascular: CardiovascularConfig    = CardiovascularConfig()
+    pulmonary: PulmonaryOrganConfig          = PulmonaryOrganConfig()
     renal: RenalConfig                      = RenalConfig()
     hepatic: HepaticConfig                  = HepaticConfig()
     coagulation: CoagulationConfig          = CoagulationConfig()
     neurological: NeurologicalConfig        = NeurologicalConfig()
-    # pulmonary: PulmonaryConfig              = PulmonaryConfig() # Pulmonary dysfunction has its own class now
     baseline: BaselineConfig                = BaselineConfig()
+    selected: List[OrganDysfunctionCriterionName] = Field(
+        default_factory=lambda: list(OrganDysfunctionCriterionName)
+    )
     flag_col: str = "organ_dysfunction_total"
+
+    @model_validator(mode="after")
+    def validate_selected(self) -> "OrganDysfunctionConfig":
+        if len(self.selected) != len(set(self.selected)):
+            raise ValueError("selected organ dysfunction criteria must be unique")
+        if not self.selected:
+            raise ValueError(
+                "at least one organ dysfunction criterion must be selected"
+            )
+        return self
 
 
 organdysfunction_config = OrganDysfunctionConfig()
