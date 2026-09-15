@@ -31,9 +31,10 @@ class VentOnOffConfig(BaseModel):
         ]
     )
     termination_values: list[str] = Field(
-        default_factory=lambda: ["Standby"]
+        # default_factory=lambda: ["Standby", "$ Extubation"]
+        default_factory=lambda: ["$ Extubation"]
     )
-    null_value_terminates: bool = True
+    null_value_terminates: bool = False 
     start_flag_col: str = "vent_onoff_start_flag"
     termination_flag_col: str = "vent_onoff_termination_flag"
 
@@ -100,8 +101,36 @@ class O2DeliveryConfig(BaseModel):
             "O2 Delivery Room Air",
         ]
     )
+    high_flow_termination_grouper: str = "O2 Delivery High-Flow"
+    high_flow_termination_values: list[str] = Field(
+        default_factory=lambda: [
+            "high-flow nasal cannula",
+            "high-flow nasal cannula;heated",
+            "high-flow nasal cannula;humidified",
+            "humidified;high-flow nasal cannula",
+            "high-flow mask",
+        ]
+    )
+    non_rebreather_termination_grouper: str = (
+        "O2 Delivery Non-Rebreather Mask"
+    )
+    non_rebreather_termination_values: list[str] = Field(
+        default_factory=lambda: [
+            "nonrebreather mask",
+            "partial rebreather mask",
+            "blender system",
+        ]
+    )
     start_flag_col: str = "mechanical_o2_start_flag"
     termination_flag_col: str = "o2_delivery_termination_flag"
+
+    @property
+    def all_termination_groupers(self) -> list[str]:
+        return [
+            *self.termination_groupers,
+            self.high_flow_termination_grouper,
+            self.non_rebreather_termination_grouper,
+        ]
 
 
 class ExcludedEncounterConfig(BaseModel):

@@ -7,7 +7,7 @@ class EpisodeFilterConfig(BaseModel):
     """Clinical-neutral settings for one normalized status timeline."""
 
     status_name: str
-    enabled: bool = True
+    enabled: bool = False
     bridge_unknown: bool = False
     negative_gap_minutes: float = Field(default=20.0, ge=0)
     minimum_positive_minutes: float = Field(default=20.0, ge=0)
@@ -38,7 +38,7 @@ sirs_episode_filter_config = EpisodeFilterConfig(
 # independent settings can be tested without changing encounter classification.
 bp_episode_filter_config = EpisodeFilterConfig(
     status_name="hypotension",
-    enabled=True,
+    enabled=False,
     bridge_unknown=True,
     negative_gap_minutes=20.0,
     minimum_positive_minutes=20.0,

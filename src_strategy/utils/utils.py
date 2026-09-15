@@ -409,7 +409,6 @@ def explore_encounter_around_datetime(
 
     return df_enc.sort(by=dt_col)
 
-
 def load_df( input_path: str, file_name: str, logger=None):
     if logger:
         logger.info(f"Loading dataframe from {input_path}/{file_name}") 

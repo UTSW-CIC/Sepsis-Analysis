@@ -186,14 +186,28 @@ class O2DeliveryTerminationCriterion(Criterion):
 
     def expressions(self, available: set[str]) -> list[pl.Expr]:
         grouper_col = self.config.grouper_col
+        value_col = self.config.raw_val_col
         _require_columns(
             available,
-            {grouper_col},
+            {grouper_col, value_col},
             "O2-delivery termination criterion",
         )
+        o2 = self.config.o2_delivery
+        low_support = pl.col(grouper_col).is_in(o2.termination_groupers)
+        high_flow = (
+            (pl.col(grouper_col) == o2.high_flow_termination_grouper)
+            & pl.col(value_col).is_in(o2.high_flow_termination_values)
+        )
+        non_rebreather = (
+            (pl.col(grouper_col) == o2.non_rebreather_termination_grouper)
+            & pl.col(value_col).is_in(
+                o2.non_rebreather_termination_values
+            )
+        )
         return [
-            pl.col(grouper_col)
-            .is_in(self.config.o2_delivery.termination_groupers)
+            # Approved project rule: Tier 3 high-flow and Tier 4
+            # non-rebreather support terminate pulmonary dysfunction.
+            (low_support | high_flow | non_rebreather)
             .cast(pl.Int8)
             .alias(self.flag_col)
         ]

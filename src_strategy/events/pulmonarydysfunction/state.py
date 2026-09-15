@@ -46,7 +46,7 @@ def _raw_transition_rows(
         config.vent_documentation.termination_grouper,
         config.vent_onoff.grouper,
         config.o2_delivery.mechanical_grouper,
-        *config.o2_delivery.termination_groupers,
+        *config.o2_delivery.all_termination_groupers,
     ]
     relevant = df_events.filter(
         pl.col(config.grouper_col).is_in(relevant_groupers)

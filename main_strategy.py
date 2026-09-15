@@ -12,7 +12,9 @@ from src_strategy.configs.pulmonarydysfunction import pulmonary_dysfunction_conf
 from src_strategy.configs.organdysfunction import organdysfunction_config
 from src_strategy.data_preparation import PFRatioBuilder
 from src_strategy.events.organdysfunction import (
+    build_organ_dysfunction_episodes,
     build_organ_dysfunction_pipeline,
+    build_organ_dysfunction_state_segments,
     prepare_organ_dysfunction_input,
 )
 from src_strategy.events.pulmonarydysfunction import (
@@ -20,10 +22,31 @@ from src_strategy.events.pulmonarydysfunction import (
     build_pulmonary_state_segments,
     build_pulmonary_state_timeline,
 )
+from src_strategy.events.septicshock import (
+    build_septic_shock_interval_episodes,
+    build_septic_shock_interval_segments,
+    build_septic_shock_pipeline,
+    build_septic_shock_point_evidence,
+    build_vasopressor_evidence,
+    prepare_septic_shock_input,
+)
 from src_strategy.configs.sirscalculator import sirs_config
-from src_strategy.configs.shortdurationfilter import sirs_episode_filter_config
-from src_strategy.events.episode_filter import run_episode_filter
+from src_strategy.configs.severitysepsis import severitysepsisconfig
+from src_strategy.events.episode_filter import (
+    build_state_episodes,
+    run_episode_filter,
+)
+from src_strategy.events.sepsis import (
+    build_infection_anchors,
+    build_sepsis1_associations,
+    build_sepsis1_encounter_summary,
+    build_sepsis2_associations,
+    build_sepsis2_encounter_summary,
+    build_sepsis3_associations,
+    build_sepsis3_encounter_summary,
+)
 from src_strategy.events.sirs import (
+    build_effective_sirs_episodes,
     build_sirs_pipeline,
     build_sirs_state_segments,
 )
@@ -34,7 +57,11 @@ from src_strategy.configs.shortdurationfilter import (
     bp_episode_filter_config,
     sirs_episode_filter_config,
 )
-from src_strategy.events.hypotension import build_bp_state_segments
+from src_strategy.events.hypotension import (
+    attach_effective_hypotension,
+    build_bp_state_segments,
+    build_effective_hypotension_episodes,
+)
 
 from src_strategy.configs.suspected_infection import suspected_infection_config
 from src_strategy.events.suspected_infection import (
@@ -66,7 +93,7 @@ else:
 # save_df(df_all, input_output_config_3_1.output_path, df_all_file_name, logger, message=f"Data injestion & Preprocessing completed, and data is saved to {input_output_config_3_1.output_path+'/'+df_all_file_name}")
 # save_df(df_encounters, input_output_config_3_1.output_path, "df_encounters.parquet", logger, message=f"Encounters data is saved to {input_output_config_3_1.output_path+'/df_encounters.parquet'}")
 
-# df_all = load_df(input_output_config_3_1.output_path, df_all_file_name)
+df_all = load_df(input_output_config_3_1.output_path, df_all_file_name)
 
 
 # #================================================================================
@@ -128,6 +155,9 @@ df_all_no_collisions = load_df(
     input_output_config_3_1.output_path,
     df_all_no_collisions_file_name,
 )
+df_suspected_infection = build_suspected_infection_pipeline(
+    suspected_infection_config
+).process(df_all_no_collisions)
 df_pf_events = PFRatioBuilder(pf_config).build(df_all_no_collisions)
 df_pulmonary_state_timeline = build_pulmonary_state_timeline(
     df_all_no_collisions,
@@ -157,133 +187,219 @@ df_organ_dysfunction_input = prepare_organ_dysfunction_input(
 df_organ_dysfunction = build_organ_dysfunction_pipeline(
     organdysfunction_config
 ).process(df_organ_dysfunction_input)
+df_organ_dysfunction_segments = build_organ_dysfunction_state_segments(
+    df_organ_dysfunction_input,
+    df_pulmonary_state_timeline,
+    config=organdysfunction_config,
+    pulmonary_config=pulmonary_dysfunction_config,
+)
+df_organ_dysfunction_episodes = build_organ_dysfunction_episodes(
+    df_organ_dysfunction_segments,
+    config=organdysfunction_config,
+)
 
-pulmonary_outputs = {
-    "df_pf_events_v1.parquet": df_pf_events,
-    "df_pulmonary_state_timeline_v1.parquet": df_pulmonary_state_timeline,
-    "df_pulmonary_state_segments_v1.parquet": df_pulmonary_state_segments,
-    "df_aggregated_with_pulmonary_v1.parquet": df_aggregated_with_pulmonary,
-    "df_organ_dysfunction_v1.parquet": df_organ_dysfunction,
-}
-
-# Safety decision: pulmonary integration uses new versioned filenames and
-# refuses the entire save operation if any target exists. No output is partly
-# updated due to an existing target, and no prior artifact is overwritten.
-existing_pulmonary_outputs = [
-    filename
-    for filename in pulmonary_outputs
-    if (Path(input_output_config_3_1.output_path) / filename).exists()
-]
-if existing_pulmonary_outputs:
-    raise FileExistsError(
-        "Refusing to overwrite existing pulmonary outputs: "
-        f"{existing_pulmonary_outputs}"
-    )
-
-for filename, dataframe in pulmonary_outputs.items():
-    save_df(
-        dataframe,
-        input_output_config_3_1.output_path,
-        filename,
-        logger,
-        message=f"Pulmonary/organ-dysfunction output completed: {filename}",
-    )
-
-# Downstream stages retain their row set and now also carry pulmonary state.
-df_aggregated = df_aggregated_with_pulmonary
-
-# sirs_pipeline = build_sirs_pipeline(sirs_config)
-# df_sirs = sirs_pipeline.process(df_aggregated)
-# save_df(df_sirs, input_output_config_3_1.output_path, "df_sirs.parquet", logger,
-#          message=f"SIRS calculation completed, and data is saved to {input_output_config_3_1.output_path+'/df_sirs.parquet'}")
-
-df_sirs = load_df(input_output_config_3_1.output_path, "df_sirs.parquet")
-
-# Short-duration filtering is an exploratory, status-level analysis. It remains
-# disabled by default and does not replace df_sirs or feed classification.
-if sirs_episode_filter_config.enabled:
-    df_sirs_segments = build_sirs_state_segments(df_sirs, config=sirs_config)
-    sirs_episode_results = run_episode_filter(
-        df_sirs_segments,
-        config=sirs_episode_filter_config,
-    )
-    save_df(
-        sirs_episode_results['raw'], input_output_config_3_1.output_path, "df_sirs_segments_raw.parquet", logger, message="SIRS state-segment reconstruction completed"
-    )
-    save_df(
-        sirs_episode_results['merged'], input_output_config_3_1.output_path, "df_sirs_segments_merged.parquet", logger, message="SIRS state-segment merge completed"
-    )
-    save_df(
-        sirs_episode_results['filtered'], input_output_config_3_1.output_path, "df_sirs_segments_filtered.parquet", logger, message="SIRS state-segment filtering completed"
-    )
-    # save_df(
-    #     df_sirs_segments,
-    #     input_output_config_3_1.output_path,
-    #     "df_sirs_segments.parquet",
-    #     logger,
-    #     message="SIRS state-segment reconstruction completed",
-    # )
-    # for stage, episode_df in sirs_episode_results.items():
-    #     output_name = (
-    #         f"df_{sirs_episode_filter_config.status_name}"
-    #         f"_episodes_{stage}.parquet"
-    #     )
-    #     save_df(
-    #         episode_df,
-    #         input_output_config_3_1.output_path,
-    #         output_name,
-    #         logger,
-    #         message=f"SIRS episode-filter stage '{stage}' completed",
-    #     )
-    # df_sirs_filtered = load_df(input_output_config_3_1.output_path, "df_sirs_segments_filtered.parquet")
-
+# Reuse the existing BP segment reconstruction and episode filter before shock
+# whenever duration filtering is enabled. Raw BP flags remain available for
+# audit, while the effective flag controls their contribution to shock.
+bp_episode_results = None
+df_effective_hypotension_episodes = None
 if bp_episode_filter_config.enabled:
-    df_encounters = load_df(
-        input_output_config_3_1.output_path,
-        "df_encounters.parquet",
-    )
-
     df_bp_segments = build_bp_state_segments(
         df_aggregated,
         df_encounters,
         config=septicshock_config,
     )
-
     bp_episode_results = run_episode_filter(
         df_bp_segments,
         config=bp_episode_filter_config,
     )
+    df_effective_hypotension_episodes = (
+        build_effective_hypotension_episodes(bp_episode_results)
+    )
 
-    outputs = {
-        "df_hypotension_segments_v1.parquet": df_bp_segments,
-        "df_hypotension_episodes_raw_v1.parquet": bp_episode_results["raw"],
-        "df_hypotension_episodes_bridged_v1.parquet": bp_episode_results["bridged"],
-        "df_hypotension_episodes_merged_v1.parquet": bp_episode_results["merged"],
-        "df_hypotension_episodes_filtered_v1.parquet": bp_episode_results["filtered"],
+df_vasopressor_evidence = build_vasopressor_evidence(
+    df_all_no_collisions,
+    config=septicshock_config,
+)
+df_septic_shock_base_input = prepare_septic_shock_input(
+    df_aggregated,
+    df_encounters,
+    df_vasopressor_evidence,
+    config=septicshock_config,
+)
+df_septic_shock_input = df_septic_shock_base_input
+if bp_episode_filter_config.enabled:
+    df_septic_shock_input = attach_effective_hypotension(
+        df_septic_shock_input,
+        df_effective_hypotension_episodes,
+    )
+df_septic_shock = build_septic_shock_pipeline(
+    septicshock_config,
+    use_filtered_hypotension=bp_episode_filter_config.enabled,
+).process(df_septic_shock_input)
+df_septic_shock_interval_segments = build_septic_shock_interval_segments(
+    df_septic_shock_base_input,
+    df_effective_hypotension_episodes,
+    use_filtered_hypotension=bp_episode_filter_config.enabled,
+    config=septicshock_config,
+)
+df_septic_shock_interval_episodes = build_septic_shock_interval_episodes(
+    df_septic_shock_interval_segments,
+    use_filtered_hypotension=bp_episode_filter_config.enabled,
+    config=septicshock_config,
+)
+df_septic_shock_point_evidence = build_septic_shock_point_evidence(
+    df_vasopressor_evidence,
+    config=septicshock_config,
+)
+
+# Sepsis 1 uses the same reconstructed SIRS episodes regardless of whether the
+# optional duration filter is enabled. The effective flag records which raw
+# positive episodes are eligible for classification under the configured mode.
+df_sirs = build_sirs_pipeline(sirs_config).process(df_aggregated)
+df_sirs_segments = build_sirs_state_segments(df_sirs, config=sirs_config)
+if sirs_episode_filter_config.enabled:
+    sirs_episode_results = run_episode_filter(
+        df_sirs_segments,
+        config=sirs_episode_filter_config,
+    )
+else:
+    sirs_episode_results = {
+        "raw": build_state_episodes(df_sirs_segments),
     }
+df_effective_sirs_episodes = build_effective_sirs_episodes(
+    sirs_episode_results,
+    filter_enabled=sirs_episode_filter_config.enabled,
+    config=severitysepsisconfig,
+)
+df_infection_anchors = build_infection_anchors(
+    df_suspected_infection,
+    config=severitysepsisconfig,
+)
+df_sepsis1_associations = build_sepsis1_associations(
+    df_infection_anchors,
+    df_effective_sirs_episodes,
+    use_filtered_sirs=sirs_episode_filter_config.enabled,
+    config=severitysepsisconfig,
+)
+df_sepsis1_encounters = build_sepsis1_encounter_summary(
+    df_encounters,
+    df_sepsis1_associations,
+    config=severitysepsisconfig,
+)
+df_sepsis2_associations = build_sepsis2_associations(
+    df_infection_anchors,
+    df_organ_dysfunction_episodes,
+    config=severitysepsisconfig,
+)
+df_sepsis2_encounters = build_sepsis2_encounter_summary(
+    df_encounters,
+    df_sepsis2_associations,
+    config=severitysepsisconfig,
+)
+df_sepsis3_associations = build_sepsis3_associations(
+    df_sepsis2_associations,
+    df_septic_shock_interval_episodes,
+    df_septic_shock_point_evidence,
+    config=severitysepsisconfig,
+)
+df_sepsis3_encounters = build_sepsis3_encounter_summary(
+    df_encounters,
+    df_sepsis3_associations,
+    config=severitysepsisconfig,
+)
 
-    # Prevent accidental overwriting.
-    # existing = [
-    #     filename
-    #     for filename in outputs
-    #     if (
-    #         Path(input_output_config_3_1.output_path) / filename
-    #     ).exists()
-    # ]
-    # if existing:
-    #     raise FileExistsError(
-    #         f"Refusing to overwrite existing BP outputs: {existing}"
-    #     )
+clinical_outputs = {
+    "df_suspected_infection_v1.parquet": df_suspected_infection,
+    "df_infection_anchors_v1.parquet": df_infection_anchors,
+    "df_pf_events_v1.parquet": df_pf_events,
+    "df_pulmonary_state_timeline_v1.parquet": df_pulmonary_state_timeline,
+    "df_pulmonary_state_segments_v1.parquet": df_pulmonary_state_segments,
+    "df_aggregated_with_pulmonary_v1.parquet": df_aggregated_with_pulmonary,
+    "df_organ_dysfunction_v1.parquet": df_organ_dysfunction,
+    "df_organ_dysfunction_segments_v1.parquet": (
+        df_organ_dysfunction_segments
+    ),
+    "df_organ_dysfunction_episodes_v1.parquet": (
+        df_organ_dysfunction_episodes
+    ),
+    "df_vasopressor_evidence_v1.parquet": df_vasopressor_evidence,
+    "df_septic_shock_v1.parquet": df_septic_shock,
+    "df_septic_shock_interval_segments_v1.parquet": (
+        df_septic_shock_interval_segments
+    ),
+    "df_septic_shock_interval_episodes_v1.parquet": (
+        df_septic_shock_interval_episodes
+    ),
+    "df_septic_shock_point_evidence_v1.parquet": (
+        df_septic_shock_point_evidence
+    ),
+    "df_sirs_v1.parquet": df_sirs,
+    "df_sirs_segments_v1.parquet": df_sirs_segments,
+    "df_sirs_episodes_raw_v1.parquet": sirs_episode_results["raw"],
+    "df_sirs_episodes_effective_v1.parquet": df_effective_sirs_episodes,
+    "df_sepsis1_associations_v1.parquet": df_sepsis1_associations,
+    "df_sepsis1_encounters_v1.parquet": df_sepsis1_encounters,
+    "df_sepsis2_associations_v1.parquet": df_sepsis2_associations,
+    "df_sepsis2_encounters_v1.parquet": df_sepsis2_encounters,
+    "df_sepsis3_associations_v1.parquet": df_sepsis3_associations,
+    "df_sepsis3_encounters_v1.parquet": df_sepsis3_encounters,
+}
+if bp_episode_filter_config.enabled:
+    clinical_outputs.update(
+        {
+            "df_hypotension_segments_v1.parquet": df_bp_segments,
+            "df_hypotension_episodes_raw_v1.parquet": (
+                bp_episode_results["raw"]
+            ),
+            "df_hypotension_episodes_bridged_v1.parquet": (
+                bp_episode_results["bridged"]
+            ),
+            "df_hypotension_episodes_merged_v1.parquet": (
+                bp_episode_results["merged"]
+            ),
+            "df_hypotension_episodes_filtered_v1.parquet": (
+                bp_episode_results["filtered"]
+            ),
+            "df_hypotension_episodes_effective_v1.parquet": (
+                df_effective_hypotension_episodes
+            ),
+        }
+    )
+if sirs_episode_filter_config.enabled:
+    clinical_outputs.update(
+        {
+            "df_sirs_episodes_bridged_v1.parquet": (
+                sirs_episode_results["bridged"]
+            ),
+            "df_sirs_episodes_merged_v1.parquet": (
+                sirs_episode_results["merged"]
+            ),
+            "df_sirs_episodes_filtered_v1.parquet": (
+                sirs_episode_results["filtered"]
+            ),
+        }
+    )
 
-    for filename, dataframe in outputs.items():
-        save_df(
-            dataframe,
-            input_output_config_3_1.output_path,
-            filename,
-            logger,
-            message=f"Hypotension output completed: {filename}",
-        )
+# Safety decision: clinical integration uses new versioned filenames and
+# refuses the entire save operation if any target exists. No output is partly
+# updated due to an existing target, and no prior artifact is overwritten.
+existing_clinical_outputs = [
+    filename
+    for filename in clinical_outputs
+    if (Path(input_output_config_3_1.output_path) / filename).exists()
+]
+if existing_clinical_outputs:
+    raise FileExistsError(
+        "Refusing to overwrite existing clinical outputs: "
+        f"{existing_clinical_outputs}"
+    )
 
-    df_bp_filtered = load_df(input_output_config_3_1.output_path, "df_hypotension_episodes_filtered_v1.parquet")
-
-x = 0
+for filename, dataframe in clinical_outputs.items():
+    save_df(
+        dataframe,
+        input_output_config_3_1.output_path,
+        filename,
+        logger,
+        message=f"Clinical criteria output completed: {filename}",
+    )

@@ -18,21 +18,39 @@ def test_raw_termination_strategies_recognize_documented_signals() -> None:
         {
             "Event_Grouper": [
                 "Vent off Documentation",
-                "Vent On/Off",
-                "Vent On/Off",
+                # "Vent On/Off",
+                # "Vent On/Off",
                 "O2 Delivery Nasal Cannula",
                 "O2 Delivery Simple Face Mask",
                 "O2 Delivery Room Air",
+                "O2 Delivery High-Flow",
+                "O2 Delivery Non-Rebreather Mask",
+                "O2 Delivery High-Flow",
+                "O2 Delivery Non-Rebreather Mask",
                 "Unrelated",
             ],
-            "Value": [None, "Standby", None, None, None, None, "Standby"],
-            "audit_marker": list(range(7)),
+            "Value": [
+                None,
+                # "Standby",
+                # None,
+                None,
+                None,
+                None,
+                "high-flow nasal cannula",
+                "nonrebreather mask",
+                "unexpected support",
+                "unexpected support",
+                "Standby",
+            ],
+            "audit_marker": list(range(11)),
         }
     )
 
     result = build_pulmonary_raw_termination_pipeline().process(source)
 
-    assert result["pulmonary_termination_flag"].to_list() == [1] * 6 + [0]
+    assert result["pulmonary_termination_flag"].to_list() == (
+        [1] * 8 + [0] * 3
+    )
     assert result.select(source.columns).equals(source)
 
 

@@ -131,6 +131,36 @@ def test_pf_ratio_events_start_and_terminate_state() -> None:
     ]
 
 
+@pytest.mark.parametrize(
+    ("grouper", "value"),
+    [
+        ("O2 Delivery High-Flow", "high-flow nasal cannula"),
+        ("O2 Delivery Non-Rebreather Mask", "nonrebreather mask"),
+    ],
+)
+def test_tier_3_and_tier_4_support_terminate_state(
+    grouper: str,
+    value: str,
+) -> None:
+    events = _events(
+        [
+            (1, 0, "Unrelated", None),
+            (1, 1, "Vent on Documentation", None),
+            (1, 2, grouper, value),
+            (1, 3, "Unrelated", None),
+        ]
+    )
+
+    segments = build_pulmonary_state_segments(events, _pf_events([]))
+
+    assert segments["pulmonary_dysfunction_flag"].to_list() == [None, 1, 0]
+    assert segments["pulmonary_transition_type"].to_list() == [
+        None,
+        ["vent_documentation_start"],
+        ["o2_delivery_termination"],
+    ]
+
+
 def test_pf_ratio_exactly_200_creates_no_transition() -> None:
     events = _events(
         [(1, 0, "Unrelated", None), (1, 2, "Unrelated", None)]

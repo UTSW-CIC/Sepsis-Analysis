@@ -21,8 +21,10 @@ def test_pulmonary_config_matches_documented_event_contract() -> None:
         "Initial",
         "$ On Going Hospital Vent",
     ]
-    assert config.vent_onoff.termination_values == ["Standby"]
-    assert config.vent_onoff.null_value_terminates is True
+    # assert config.vent_onoff.termination_values == ["Standby"]
+    # assert config.vent_onoff.null_value_terminates is True
+    assert config.vent_onoff.termination_values == ["$ Extubation"]
+    assert config.vent_onoff.null_value_terminates is False 
 
 
 def test_mechanical_o2_config_includes_every_documented_start_value() -> None:
@@ -44,6 +46,24 @@ def test_pulmonary_config_defines_termination_groupers_and_exclusions() -> None:
         "O2 Delivery Nasal Cannula",
         "O2 Delivery Simple Face Mask",
         "O2 Delivery Room Air",
+    ]
+    assert config.o2_delivery.high_flow_termination_grouper == (
+        "O2 Delivery High-Flow"
+    )
+    assert config.o2_delivery.high_flow_termination_values == [
+        "high-flow nasal cannula",
+        "high-flow nasal cannula;heated",
+        "high-flow nasal cannula;humidified",
+        "humidified;high-flow nasal cannula",
+        "high-flow mask",
+    ]
+    assert config.o2_delivery.non_rebreather_termination_grouper == (
+        "O2 Delivery Non-Rebreather Mask"
+    )
+    assert config.o2_delivery.non_rebreather_termination_values == [
+        "nonrebreather mask",
+        "partial rebreather mask",
+        "blender system",
     ]
     assert config.exclusions.diagnosis_codes == ["Z99.11", "Z93.0"]
     assert config.exclusions.home_vent_value == "$ Home Vent Used"

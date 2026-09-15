@@ -63,9 +63,6 @@ def build_bp_state_segments(
         raise ValueError(
             "SBP <90 and SBP decline criteria must use the same aggregated feature"
         )
-    if config.sbp90_criteria.baseline_sbp_col.value != baseline_col:
-        raise ValueError("SBP criteria must use the same baseline column")
-
     feature_details: list[tuple[str, str, float]] = []
     for feature_col in (config.sbp90_criteria.sbp_col, config.map65_criteria.map_col):
         definition = FEATURE_REGISTRY[feature_col]

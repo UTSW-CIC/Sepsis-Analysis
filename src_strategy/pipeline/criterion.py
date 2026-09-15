@@ -7,7 +7,7 @@ import polars as pl
 class Criterion(ABC):
     """Strategy contract for one clinical criterion."""
 
-    role: Literal["positive", "termination"] = "positive"
+    role: Literal["positive", "termination", "evidence"] = "positive"
 
     def __init__(self, config: Any):
         self.config = config
