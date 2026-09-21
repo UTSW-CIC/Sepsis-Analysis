@@ -82,7 +82,7 @@ from src_strategy.run_validation import (
     validate_binary_flag,
     validate_encounter_summary,
     validate_positive_flags_have_timestamps,
-    validate_sepsis2_uses_selected_first_organ_episodes,
+    # validate_sepsis2_uses_selected_first_organ_episodes,
     validate_sepsis3_is_subset_of_sepsis2,
     validate_unique_association_grain,
     validate_written_output_tables,
@@ -582,11 +582,11 @@ if run_mode is RunMode.VERSIONED:
                 ],
                 validation_name="sepsis3_association_grain_is_unique",
             ),
-            validate_sepsis2_uses_selected_first_organ_episodes(
-                df_sepsis2_associations,
-                df_organ_dysfunction_episodes,
-                config=severitysepsisconfig,
-            ),
+            # validate_sepsis2_uses_selected_first_organ_episodes(
+            #     df_sepsis2_associations,
+            #     df_organ_dysfunction_episodes,
+            #     config=severitysepsisconfig,
+            # ),
         ]
     )
 

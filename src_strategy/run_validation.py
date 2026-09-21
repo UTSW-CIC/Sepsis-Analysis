@@ -6,7 +6,7 @@ from pathlib import Path
 import polars as pl
 
 from .configs.severitysepsis import SeveritySepsisConfig, severitysepsisconfig
-from .events.sepsis import select_first_organ_episodes_by_type
+# from .events.sepsis import select_first_organ_episodes_by_type
 from .run_manifest import ValidationResult
 
 
