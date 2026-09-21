@@ -74,7 +74,7 @@ RAW_TERMINATION_CRITERION_REGISTRY = {
 }
 
 PF_TERMINATION_CRITERION_REGISTRY = {
-    # PulmonaryTerminationCriterionName.PF_RATIO: PFRatioTerminationCriterion,
+    PulmonaryTerminationCriterionName.PF_RATIO: PFRatioTerminationCriterion,
 }
 
 

@@ -158,7 +158,11 @@ class PulmonaryDysfunctionConfig(DataConfig):
         default_factory=lambda: list(PulmonaryStartCriterionName)
     )
     selected_termination: list[PulmonaryTerminationCriterionName] = Field(
-        default_factory=lambda: list(PulmonaryTerminationCriterionName)
+        default_factory=lambda: [
+            PulmonaryTerminationCriterionName.VENT_DOCUMENTATION,
+            PulmonaryTerminationCriterionName.VENT_ON_OFF,
+            PulmonaryTerminationCriterionName.O2_DELIVERY,
+        ]
     )
 
     start_flag_col: str = "pulmonary_start_flag"

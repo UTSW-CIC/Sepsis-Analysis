@@ -1,6 +1,7 @@
 import polars as pl
 
 from src_strategy.configs.pulmonarydysfunction import (
+    PulmonaryDysfunctionConfig,
     PulmonaryTerminationCriterionName,
 )
 from src_strategy.events.pulmonarydysfunction import (
@@ -73,7 +74,10 @@ def test_raw_termination_subflags_remain_auditable() -> None:
     assert result["o2_delivery_termination_flag"].to_list() == [0, 0, 1]
 
 
-def test_pf_termination_uses_strict_threshold_and_missingness() -> None:
+def test_enabled_pf_termination_uses_strict_threshold_and_missingness() -> None:
+    config = PulmonaryDysfunctionConfig(
+        selected_termination=[PulmonaryTerminationCriterionName.PF_RATIO]
+    )
     source = pl.DataFrame(
         {
             "pf_ratio": [199.9, 200.0, 200.1, None],
@@ -87,7 +91,7 @@ def test_pf_termination_uses_strict_threshold_and_missingness() -> None:
         schema_overrides={"pf_ratio": pl.Float64},
     )
 
-    result = build_pulmonary_pf_termination_pipeline().process(source)
+    result = build_pulmonary_pf_termination_pipeline(config).process(source)
 
     assert result["pf_ratio_termination_flag"].to_list() == [0, 0, 1, None]
     assert result["pulmonary_termination_flag"].to_list() == [0, 0, 1, None]
