@@ -8,6 +8,7 @@ from .sepsis1 import (
 from .sepsis2 import (
     build_sepsis2_associations,
     build_sepsis2_encounter_summary,
+    select_first_organ_episodes_by_type,
 )
 from .sepsis3 import (
     build_sepsis3_associations,
@@ -20,6 +21,7 @@ __all__ = [
     "build_sepsis1_encounter_summary",
     "build_sepsis2_associations",
     "build_sepsis2_encounter_summary",
+    "select_first_organ_episodes_by_type",
     "build_sepsis3_associations",
     "build_sepsis3_encounter_summary",
 ]

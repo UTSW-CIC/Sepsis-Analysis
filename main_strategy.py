@@ -1,3 +1,7 @@
+import argparse
+import json
+from pathlib import Path
+
 from src_strategy.data_ingest.dataloader_1 import DataLoader
 from src_strategy.configs.dataconfig import input_output_config_3_1, bp_config, data_config
 from src_strategy.configs.outlierdetection.extremeoutliers import flowsheet_bounds_config, lab_bounds_config, bp_bounds_config
@@ -32,6 +36,10 @@ from src_strategy.events.septicshock import (
 )
 from src_strategy.configs.sirscalculator import sirs_config
 from src_strategy.configs.severitysepsis import severitysepsisconfig
+from src_strategy.configs.run_configuration import (
+    active_run_configuration_sections,
+    run_identity_config,
+)
 from src_strategy.events.episode_filter import (
     build_state_episodes,
     run_episode_filter,
@@ -50,7 +58,35 @@ from src_strategy.events.sirs import (
     build_sirs_pipeline,
     build_sirs_state_segments,
 )
-from pathlib import Path
+from src_strategy.run_versioning import (
+    RunMode,
+    build_run_relative_path,
+    canonical_configuration_json,
+    configuration_sha256,
+    create_incomplete_run_bundle,
+    enforce_run_mode_preconditions,
+    finalize_run_bundle,
+    git_branch_name,
+    git_commit_sha,
+    utc_run_timestamp,
+    validate_output_table_names,
+)
+from src_strategy.run_manifest import (
+    ClinicalRunManifest,
+    current_software_versions,
+    describe_cached_input,
+    describe_output_table,
+    write_run_manifest,
+)
+from src_strategy.run_validation import (
+    validate_binary_flag,
+    validate_encounter_summary,
+    validate_positive_flags_have_timestamps,
+    validate_sepsis2_uses_selected_first_organ_episodes,
+    validate_sepsis3_is_subset_of_sepsis2,
+    validate_unique_association_grain,
+    validate_written_output_tables,
+)
 
 from src_strategy.configs.septicshock import septicshock_config
 from src_strategy.configs.shortdurationfilter import (
@@ -69,6 +105,58 @@ from src_strategy.events.suspected_infection import (
 )
 
 import polars as pl
+
+
+def parse_run_mode() -> RunMode:
+    """Require the caller to choose whether output writing is permitted."""
+    parser = argparse.ArgumentParser(
+        description="Calculate Sepsis clinical classification outputs."
+    )
+    parser.add_argument(
+        "--run-mode",
+        required=True,
+        choices=[mode.value for mode in RunMode],
+        help=(
+            "development calculates without saving clinical tables; "
+            "versioned requires clean Git state and permits saving"
+        ),
+    )
+    arguments = parser.parse_args()
+    return RunMode(arguments.run_mode)
+
+
+run_mode = parse_run_mode()
+repository_root = Path(__file__).resolve().parent
+enforce_run_mode_preconditions(run_mode, repository_root)
+
+# Reserve an immutable run identity before clinical processing starts. If the
+# pipeline later fails, the `.incomplete` directory is retained for review.
+run_bundle_paths = None
+run_timestamp = None
+run_git_commit = None
+run_git_branch = None
+run_configuration_hash = None
+run_configuration_snapshot = None
+if run_mode is RunMode.VERSIONED:
+    active_configuration = active_run_configuration_sections()
+    run_configuration_hash = configuration_sha256(active_configuration)
+    run_configuration_snapshot = json.loads(
+        canonical_configuration_json(active_configuration)
+    )
+    run_timestamp = utc_run_timestamp()
+    run_git_commit = git_commit_sha(repository_root)
+    run_git_branch = git_branch_name(repository_root)
+    relative_run_path = build_run_relative_path(
+        dataset_version=run_identity_config.dataset_version,
+        algorithm_variant=run_identity_config.algorithm_variant,
+        run_timestamp=run_timestamp,
+        git_commit=run_git_commit,
+        configuration_hash=run_configuration_hash,
+    )
+    run_bundle_paths = create_incomplete_run_bundle(
+        Path(input_output_config_3_1.output_path) / "clinical_runs",
+        relative_run_path,
+    )
 
 setup_root_logger(log_dir=input_output_config_3_1.logger_dir)
 logger = get_logger(__name__)
@@ -155,10 +243,14 @@ df_all_no_collisions = load_df(
     input_output_config_3_1.output_path,
     df_all_no_collisions_file_name,
 )
+
 df_suspected_infection = build_suspected_infection_pipeline(
     suspected_infection_config
 ).process(df_all_no_collisions)
+
 df_pf_events = PFRatioBuilder(pf_config).build(df_all_no_collisions)
+
+# =========================================================================================
 df_pulmonary_state_timeline = build_pulmonary_state_timeline(
     df_all_no_collisions,
     df_pf_events,
@@ -174,6 +266,7 @@ df_aggregated_with_pulmonary = attach_pulmonary_state(
     df_pulmonary_state_timeline,
     config=pulmonary_dysfunction_config,
 )
+# =========================================================================================
 
 df_encounters = load_df(
     input_output_config_3_1.output_path,
@@ -310,58 +403,58 @@ df_sepsis3_encounters = build_sepsis3_encounter_summary(
 )
 
 clinical_outputs = {
-    "df_suspected_infection_v1.parquet": df_suspected_infection,
-    "df_infection_anchors_v1.parquet": df_infection_anchors,
-    "df_pf_events_v1.parquet": df_pf_events,
-    "df_pulmonary_state_timeline_v1.parquet": df_pulmonary_state_timeline,
-    "df_pulmonary_state_segments_v1.parquet": df_pulmonary_state_segments,
-    "df_aggregated_with_pulmonary_v1.parquet": df_aggregated_with_pulmonary,
-    "df_organ_dysfunction_v1.parquet": df_organ_dysfunction,
-    "df_organ_dysfunction_segments_v1.parquet": (
+    "df_suspected_infection.parquet": df_suspected_infection,
+    "df_infection_anchors.parquet": df_infection_anchors,
+    "df_pf_events.parquet": df_pf_events,
+    "df_pulmonary_state_timeline.parquet": df_pulmonary_state_timeline,
+    "df_pulmonary_state_segments.parquet": df_pulmonary_state_segments,
+    "df_aggregated_with_pulmonary.parquet": df_aggregated_with_pulmonary,
+    "df_organ_dysfunction.parquet": df_organ_dysfunction,
+    "df_organ_dysfunction_segments.parquet": (
         df_organ_dysfunction_segments
     ),
-    "df_organ_dysfunction_episodes_v1.parquet": (
+    "df_organ_dysfunction_episodes.parquet": (
         df_organ_dysfunction_episodes
     ),
-    "df_vasopressor_evidence_v1.parquet": df_vasopressor_evidence,
-    "df_septic_shock_v1.parquet": df_septic_shock,
-    "df_septic_shock_interval_segments_v1.parquet": (
+    "df_vasopressor_evidence.parquet": df_vasopressor_evidence,
+    "df_septic_shock.parquet": df_septic_shock,
+    "df_septic_shock_interval_segments.parquet": (
         df_septic_shock_interval_segments
     ),
-    "df_septic_shock_interval_episodes_v1.parquet": (
+    "df_septic_shock_interval_episodes.parquet": (
         df_septic_shock_interval_episodes
     ),
-    "df_septic_shock_point_evidence_v1.parquet": (
+    "df_septic_shock_point_evidence.parquet": (
         df_septic_shock_point_evidence
     ),
-    "df_sirs_v1.parquet": df_sirs,
-    "df_sirs_segments_v1.parquet": df_sirs_segments,
-    "df_sirs_episodes_raw_v1.parquet": sirs_episode_results["raw"],
-    "df_sirs_episodes_effective_v1.parquet": df_effective_sirs_episodes,
-    "df_sepsis1_associations_v1.parquet": df_sepsis1_associations,
-    "df_sepsis1_encounters_v1.parquet": df_sepsis1_encounters,
-    "df_sepsis2_associations_v1.parquet": df_sepsis2_associations,
-    "df_sepsis2_encounters_v1.parquet": df_sepsis2_encounters,
-    "df_sepsis3_associations_v1.parquet": df_sepsis3_associations,
-    "df_sepsis3_encounters_v1.parquet": df_sepsis3_encounters,
+    "df_sirs.parquet": df_sirs,
+    "df_sirs_segments.parquet": df_sirs_segments,
+    "df_sirs_episodes_raw.parquet": sirs_episode_results["raw"],
+    "df_sirs_episodes_effective.parquet": df_effective_sirs_episodes,
+    "df_sepsis1_associations.parquet": df_sepsis1_associations,
+    "df_sepsis1_encounters.parquet": df_sepsis1_encounters,
+    "df_sepsis2_associations.parquet": df_sepsis2_associations,
+    "df_sepsis2_encounters.parquet": df_sepsis2_encounters,
+    "df_sepsis3_associations.parquet": df_sepsis3_associations,
+    "df_sepsis3_encounters.parquet": df_sepsis3_encounters,
 }
 if bp_episode_filter_config.enabled:
     clinical_outputs.update(
         {
-            "df_hypotension_segments_v1.parquet": df_bp_segments,
-            "df_hypotension_episodes_raw_v1.parquet": (
+            "df_hypotension_segments.parquet": df_bp_segments,
+            "df_hypotension_episodes_raw.parquet": (
                 bp_episode_results["raw"]
             ),
-            "df_hypotension_episodes_bridged_v1.parquet": (
+            "df_hypotension_episodes_bridged.parquet": (
                 bp_episode_results["bridged"]
             ),
-            "df_hypotension_episodes_merged_v1.parquet": (
+            "df_hypotension_episodes_merged.parquet": (
                 bp_episode_results["merged"]
             ),
-            "df_hypotension_episodes_filtered_v1.parquet": (
+            "df_hypotension_episodes_filtered.parquet": (
                 bp_episode_results["filtered"]
             ),
-            "df_hypotension_episodes_effective_v1.parquet": (
+            "df_hypotension_episodes_effective.parquet": (
                 df_effective_hypotension_episodes
             ),
         }
@@ -369,37 +462,188 @@ if bp_episode_filter_config.enabled:
 if sirs_episode_filter_config.enabled:
     clinical_outputs.update(
         {
-            "df_sirs_episodes_bridged_v1.parquet": (
+            "df_sirs_episodes_bridged.parquet": (
                 sirs_episode_results["bridged"]
             ),
-            "df_sirs_episodes_merged_v1.parquet": (
+            "df_sirs_episodes_merged.parquet": (
                 sirs_episode_results["merged"]
             ),
-            "df_sirs_episodes_filtered_v1.parquet": (
+            "df_sirs_episodes_filtered.parquet": (
                 sirs_episode_results["filtered"]
             ),
         }
     )
 
-# Safety decision: clinical integration uses new versioned filenames and
-# refuses the entire save operation if any target exists. No output is partly
-# updated due to an existing target, and no prior artifact is overwritten.
-existing_clinical_outputs = [
-    filename
-    for filename in clinical_outputs
-    if (Path(input_output_config_3_1.output_path) / filename).exists()
-]
-if existing_clinical_outputs:
-    raise FileExistsError(
-        "Refusing to overwrite existing clinical outputs: "
-        f"{existing_clinical_outputs}"
+validate_output_table_names(clinical_outputs)
+
+# The run directory supplies version identity, so filenames inside a bundle
+# remain stable and contain no `_vN` suffix.
+if run_mode is RunMode.VERSIONED:
+    if (
+        run_bundle_paths is None
+        or run_timestamp is None
+        or run_git_commit is None
+        or run_configuration_hash is None
+        or run_configuration_snapshot is None
+    ):
+        raise RuntimeError("Versioned run identity was not initialized")
+
+    validation_results = [
+        validate_encounter_summary(
+            df_encounters,
+            df_sepsis1_encounters,
+            encounter_col=severitysepsisconfig.encounter_col,
+            validation_name="sepsis1_one_row_per_input_encounter",
+        ),
+        validate_encounter_summary(
+            df_encounters,
+            df_sepsis2_encounters,
+            encounter_col=severitysepsisconfig.encounter_col,
+            validation_name="sepsis2_one_row_per_input_encounter",
+        ),
+        validate_encounter_summary(
+            df_encounters,
+            df_sepsis3_encounters,
+            encounter_col=severitysepsisconfig.encounter_col,
+            validation_name="sepsis3_one_row_per_input_encounter",
+        ),
+    ]
+
+    for severity_name, summary, flag_col, timestamp_col in [
+        (
+            "sepsis1",
+            df_sepsis1_encounters,
+            severitysepsisconfig.sepsis1_flag_col,
+            severitysepsisconfig.sepsis1_dt_col,
+        ),
+        (
+            "sepsis2",
+            df_sepsis2_encounters,
+            severitysepsisconfig.sepsis2_flag_col,
+            severitysepsisconfig.sepsis2_dt_col,
+        ),
+        (
+            "sepsis3",
+            df_sepsis3_encounters,
+            severitysepsisconfig.sepsis3_flag_col,
+            severitysepsisconfig.sepsis3_dt_col,
+        ),
+    ]:
+        validation_results.extend(
+            [
+                validate_binary_flag(
+                    summary,
+                    flag_col=flag_col,
+                    validation_name=f"{severity_name}_flag_is_binary_non_null",
+                ),
+                validate_positive_flags_have_timestamps(
+                    summary,
+                    flag_col=flag_col,
+                    timestamp_col=timestamp_col,
+                    validation_name=(
+                        f"{severity_name}_positive_has_onset_timestamp"
+                    ),
+                ),
+            ]
+        )
+
+    validation_results.extend(
+        [
+            validate_sepsis3_is_subset_of_sepsis2(
+                df_sepsis2_encounters,
+                df_sepsis3_encounters,
+                config=severitysepsisconfig,
+            ),
+            validate_unique_association_grain(
+                df_sepsis1_associations,
+                key_columns=[
+                    severitysepsisconfig.encounter_col,
+                    severitysepsisconfig.infection_anchor_id_col,
+                    severitysepsisconfig.sirs_episode_id_col,
+                ],
+                validation_name="sepsis1_association_grain_is_unique",
+            ),
+            validate_unique_association_grain(
+                df_sepsis2_associations,
+                key_columns=[
+                    severitysepsisconfig.encounter_col,
+                    severitysepsisconfig.infection_anchor_id_col,
+                    severitysepsisconfig.organ_episode_id_col,
+                ],
+                validation_name="sepsis2_association_grain_is_unique",
+            ),
+            validate_unique_association_grain(
+                df_sepsis3_associations,
+                key_columns=[
+                    severitysepsisconfig.encounter_col,
+                    severitysepsisconfig.infection_anchor_id_col,
+                    severitysepsisconfig.organ_episode_id_col,
+                    "shock_evidence_key",
+                ],
+                validation_name="sepsis3_association_grain_is_unique",
+            ),
+            validate_sepsis2_uses_selected_first_organ_episodes(
+                df_sepsis2_associations,
+                df_organ_dysfunction_episodes,
+                config=severitysepsisconfig,
+            ),
+        ]
     )
 
-for filename, dataframe in clinical_outputs.items():
-    save_df(
-        dataframe,
-        input_output_config_3_1.output_path,
-        filename,
-        logger,
-        message=f"Clinical criteria output completed: {filename}",
+    for filename, dataframe in clinical_outputs.items():
+        save_df(
+            dataframe,
+            str(run_bundle_paths.incomplete),
+            filename,
+            logger,
+            message=f"Clinical criteria output completed: {filename}",
+        )
+
+    validation_results.append(
+        validate_written_output_tables(
+            run_bundle_paths.incomplete,
+            clinical_outputs,
+        )
+    )
+
+    cached_input_directory = Path(input_output_config_3_1.output_path)
+    cached_inputs = [
+        describe_cached_input(cached_input_directory / filename)
+        for filename in [
+            df_all_file_name,
+            df_aggregated_file_name,
+            df_all_no_collisions_file_name,
+            "df_encounters.parquet",
+        ]
+    ]
+    output_tables = [
+        describe_output_table(
+            run_bundle_paths.incomplete / filename,
+            dataframe,
+        )
+        for filename, dataframe in clinical_outputs.items()
+    ]
+    manifest = ClinicalRunManifest(
+        dataset_version=run_identity_config.dataset_version,
+        algorithm_variant=run_identity_config.algorithm_variant,
+        run_timestamp_utc=run_timestamp,
+        git_commit=run_git_commit,
+        git_branch=run_git_branch,
+        git_worktree_clean=True,
+        configuration_sha256=run_configuration_hash,
+        configuration_snapshot=run_configuration_snapshot,
+        clinical_definition_version=(
+            run_identity_config.clinical_definition_version
+        ),
+        cached_inputs=cached_inputs,
+        output_tables=output_tables,
+        software_versions=current_software_versions(),
+        validations=validation_results,
+    )
+    write_run_manifest(manifest, run_bundle_paths.incomplete)
+    completed_run_path = finalize_run_bundle(run_bundle_paths)
+    logger.info("Versioned clinical run published: %s", completed_run_path)
+else:
+    logger.info(
+        "Development run completed; clinical output saving was disabled."
     )

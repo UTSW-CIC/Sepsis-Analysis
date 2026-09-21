@@ -7,16 +7,71 @@ import polars as pl
 from ...configs.severitysepsis import SeveritySepsisConfig, severitysepsisconfig
 
 
-def _organ_failure_cols(config: SeveritySepsisConfig) -> list[str]:
+def _organ_failure_items(
+    config: SeveritySepsisConfig,
+) -> list[tuple[str, str]]:
     organ = config.organdysfunction_config
     return [
-        organ.cardiovascular.flag_col,
-        organ.pulmonary.flag_col,
-        organ.renal.flag_col,
-        organ.hepatic.flag_col,
-        organ.coagulation.flag_col,
-        organ.neurological.flag_col,
+        (criterion.value, getattr(organ, criterion.value).flag_col)
+        for criterion in organ.selected
     ]
+
+
+def select_first_organ_episodes_by_type(
+    df_organ_episodes: pl.DataFrame,
+    *,
+    config: SeveritySepsisConfig = severitysepsisconfig,
+) -> pl.DataFrame:
+    """Keep the earliest positive episode for each configured organ type."""
+    encounter_col = config.encounter_col
+    episode_id_col = config.organ_episode_id_col
+    organ_items = _organ_failure_items(config)
+    required = {
+        encounter_col,
+        episode_id_col,
+        "organ_episode_state",
+        "organ_episode_start",
+        *[flag_col for _, flag_col in organ_items],
+    }
+    missing = sorted(required.difference(df_organ_episodes.columns))
+    if missing:
+        raise ValueError(f"Organ episodes are missing columns: {missing}")
+
+    positive = df_organ_episodes.filter(pl.col("organ_episode_state") == 1)
+    type_col = config.sepsis2_first_organ_types_col
+    candidates = pl.concat(
+        [
+            positive.filter(pl.col(flag_col) == 1).with_columns(
+                pl.lit(organ_type).alias(type_col)
+            )
+            for organ_type, flag_col in organ_items
+        ],
+        how="vertical",
+    )
+    first_per_type = (
+        candidates.sort(
+            encounter_col,
+            type_col,
+            "organ_episode_start",
+            episode_id_col,
+        )
+        .unique(
+            subset=[encounter_col, type_col],
+            keep="first",
+            maintain_order=True,
+        )
+        .group_by(encounter_col, episode_id_col, maintain_order=True)
+        .agg(pl.col(type_col).sort())
+    )
+
+    # One combined organ episode can be the first episode for several organ
+    # types. Keep one evidence row and record every selected type in a list.
+    return positive.join(
+        first_per_type,
+        on=[encounter_col, episode_id_col],
+        how="inner",
+        validate="1:1",
+    ).sort(encounter_col, "organ_episode_start", episode_id_col)
 
 
 def build_sepsis2_associations(
@@ -48,6 +103,7 @@ def build_sepsis2_associations(
         "organ_episode_end",
         "organ_episode_duration_minutes",
         "max_organ_dysfunction_total",
+        *[flag_col for _, flag_col in _organ_failure_items(config)],
     }
     missing_episodes = sorted(
         required_episodes.difference(df_organ_episodes.columns)
@@ -66,9 +122,13 @@ def build_sepsis2_associations(
     window_start_col = "infection_organ_window_start"
     window_end_col = "infection_organ_window_end"
     infect_dt_col = infection.value_name_dt_col
+    first_organ_episodes = select_first_organ_episodes_by_type(
+        df_organ_episodes,
+        config=config,
+    )
     association = (
         df_infection_anchors.join(
-            df_organ_episodes.filter(pl.col("organ_episode_state") == 1),
+            first_organ_episodes,
             on=config.encounter_col,
             how="inner",
             validate="m:m",
@@ -106,7 +166,7 @@ def build_sepsis2_associations(
     )
     evidence_cols = [
         column
-        for column in _organ_failure_cols(config)
+        for _, column in _organ_failure_items(config)
         if column in association.columns
     ]
     return association.select(
@@ -122,6 +182,7 @@ def build_sepsis2_associations(
         "organ_episode_end",
         "organ_episode_duration_minutes",
         "max_organ_dysfunction_total",
+        config.sepsis2_first_organ_types_col,
         *evidence_cols,
         config.sepsis2_flag_col,
         config.sepsis2_earliest_evidence_dt_col,

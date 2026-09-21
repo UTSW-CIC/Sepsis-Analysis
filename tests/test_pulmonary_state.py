@@ -3,6 +3,10 @@ from datetime import datetime, timedelta
 import polars as pl
 import pytest
 
+from src_strategy.configs.pulmonarydysfunction import (
+    PulmonaryDysfunctionConfig,
+    PulmonaryTerminationCriterionName,
+)
 from src_strategy.events.pulmonarydysfunction import (
     build_pulmonary_state_segments,
     build_pulmonary_state_timeline,
@@ -113,7 +117,7 @@ def test_exclusion_forces_zero_for_entire_encounter(value: str) -> None:
     assert timeline["pulmonary_exclusion_flag"].to_list() == [1, 1, 1]
 
 
-def test_pf_ratio_events_start_and_terminate_state() -> None:
+def test_pf_ratio_recovery_does_not_terminate_state_by_default() -> None:
     events = _events(
         [(1, 0, "Unrelated", None), (1, 4, "Unrelated", None)]
     )
@@ -122,6 +126,30 @@ def test_pf_ratio_events_start_and_terminate_state() -> None:
     )
 
     segments = build_pulmonary_state_segments(events, pf_events)
+
+    assert segments["pulmonary_dysfunction_flag"].to_list() == [None, 1]
+    assert segments["pulmonary_transition_type"].to_list() == [
+        None,
+        ["pf_ratio_start"],
+    ]
+
+
+def test_pf_ratio_recovery_terminates_state_when_explicitly_enabled() -> None:
+    config = PulmonaryDysfunctionConfig(
+        selected_termination=list(PulmonaryTerminationCriterionName)
+    )
+    events = _events(
+        [(1, 0, "Unrelated", None), (1, 4, "Unrelated", None)]
+    )
+    pf_events = _pf_events(
+        [(1, 1, 199.9, "paired"), (1, 3, 200.1, "paired")]
+    )
+
+    segments = build_pulmonary_state_segments(
+        events,
+        pf_events,
+        config=config,
+    )
 
     assert segments["pulmonary_dysfunction_flag"].to_list() == [None, 1, 0]
     assert segments["pulmonary_transition_type"].to_list() == [

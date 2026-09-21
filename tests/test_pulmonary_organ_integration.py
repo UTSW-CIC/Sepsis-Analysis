@@ -63,6 +63,6 @@ def test_pf_evidence_flows_through_pulmonary_and_organ_state() -> None:
     result = build_organ_dysfunction_pipeline(organ_config).process(attached)
 
     assert pf_events["pf_ratio"].to_list() == [160.0, 250.0]
-    assert result["pulmonary_dysfunction_flag"].to_list() == [None, 1, 1, 0]
-    assert result["pulmonary_failure_flag"].to_list() == [None, 1, 1, 0]
-    assert result["organ_dysfunction_total"].to_list() == [0, 1, 1, 0]
+    assert result["pulmonary_dysfunction_flag"].to_list() == [None, 1, 1, 1]
+    assert result["pulmonary_failure_flag"].to_list() == [None, 1, 1, 1]
+    assert result["organ_dysfunction_total"].to_list() == [0, 1, 1, 1]

@@ -4,6 +4,7 @@ import polars as pl
 
 from ...configs.pulmonarydysfunction import (
     PulmonaryDysfunctionConfig,
+    PulmonaryTerminationCriterionName,
     pulmonary_dysfunction_config,
 )
 from .exclusions import build_pulmonary_exclusion_evidence
@@ -92,21 +93,43 @@ def _pf_transition_rows(
     df_pf_events: pl.DataFrame,
     config: PulmonaryDysfunctionConfig,
 ) -> pl.DataFrame:
-    started = build_pulmonary_pf_start_pipeline(config).process(df_pf_events)
-    scored = build_pulmonary_pf_termination_pipeline(config).process(started)
     pf = config.pf
+    pf_termination_enabled = (
+        PulmonaryTerminationCriterionName.PF_RATIO
+        in config.selected_termination
+    )
+    started = build_pulmonary_pf_start_pipeline(config).process(df_pf_events)
+    if pf_termination_enabled:
+        scored = build_pulmonary_pf_termination_pipeline(config).process(
+            started
+        )
+        transition_type = (
+            pl.when(pl.col(pf.termination_flag_col) == 1)
+            .then(pl.lit("pf_ratio_termination"))
+            .when(pl.col(pf.start_flag_col) == 1)
+            .then(pl.lit("pf_ratio_start"))
+            .otherwise(pl.lit(None, dtype=pl.String))
+        )
+    else:
+        # P/F recovery is not a termination criterion. Supply the neutral
+        # combined flag needed by the common transition-row filter without
+        # creating a P/F termination evidence column.
+        scored = started.with_columns(
+            pl.lit(0, dtype=pl.Int8).alias(config.termination_flag_col)
+        )
+        transition_type = (
+            pl.when(pl.col(pf.start_flag_col) == 1)
+            .then(pl.lit("pf_ratio_start"))
+            .otherwise(pl.lit(None, dtype=pl.String))
+        )
+
     return (
         scored.filter(
             (pl.col(config.start_flag_col) == 1)
             | (pl.col(config.termination_flag_col) == 1)
         )
         .with_columns(
-            pl.when(pl.col(pf.termination_flag_col) == 1)
-            .then(pl.lit("pf_ratio_termination"))
-            .when(pl.col(pf.start_flag_col) == 1)
-            .then(pl.lit("pf_ratio_start"))
-            .otherwise(pl.lit(None, dtype=pl.String))
-            .alias(_TRANSITION_TYPE)
+            transition_type.alias(_TRANSITION_TYPE)
         )
         .select(
             config.encounter_col,

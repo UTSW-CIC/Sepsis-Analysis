@@ -62,6 +62,7 @@ class SeveritySepsisConfig(DataConfig):
         description="Number of hours to look backward for sepsis 2",
     )
     organ_episode_id_col: str = "organ_episode_id"
+    sepsis2_first_organ_types_col: str = "first_organ_dysfunction_types"
     sepsis2_flag_col: str = "sepsis_2_flag"
     sepsis2_dt_col: str = "sepsis_2_dt"
     sepsis2_earliest_evidence_dt_col: str = (
