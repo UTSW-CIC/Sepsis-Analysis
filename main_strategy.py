@@ -107,68 +107,68 @@ from src_strategy.events.suspected_infection import (
 import polars as pl
 
 
-def parse_run_mode() -> RunMode:
-    """Require the caller to choose whether output writing is permitted."""
-    parser = argparse.ArgumentParser(
-        description="Calculate Sepsis clinical classification outputs."
-    )
-    parser.add_argument(
-        "--run-mode",
-        required=True,
-        choices=[mode.value for mode in RunMode],
-        help=(
-            "development calculates without saving clinical tables; "
-            "versioned requires clean Git state and permits saving"
-        ),
-    )
-    arguments = parser.parse_args()
-    return RunMode(arguments.run_mode)
+# def parse_run_mode() -> RunMode:
+#     """Require the caller to choose whether output writing is permitted."""
+#     parser = argparse.ArgumentParser(
+#         description="Calculate Sepsis clinical classification outputs."
+#     )
+#     parser.add_argument(
+#         "--run-mode",
+#         required=True,
+#         choices=[mode.value for mode in RunMode],
+#         help=(
+#             "development calculates without saving clinical tables; "
+#             "versioned requires clean Git state and permits saving"
+#         ),
+#     )
+#     arguments = parser.parse_args()
+#     return RunMode(arguments.run_mode)
 
 
-run_mode = parse_run_mode()
-repository_root = Path(__file__).resolve().parent
-enforce_run_mode_preconditions(run_mode, repository_root)
+# run_mode = parse_run_mode()
+# repository_root = Path(__file__).resolve().parent
+# enforce_run_mode_preconditions(run_mode, repository_root)
 
 # Reserve an immutable run identity before clinical processing starts. If the
 # pipeline later fails, the `.incomplete` directory is retained for review.
-run_bundle_paths = None
-run_timestamp = None
-run_git_commit = None
-run_git_branch = None
-run_configuration_hash = None
-run_configuration_snapshot = None
-if run_mode is RunMode.VERSIONED:
-    active_configuration = active_run_configuration_sections()
-    run_configuration_hash = configuration_sha256(active_configuration)
-    run_configuration_snapshot = json.loads(
-        canonical_configuration_json(active_configuration)
-    )
-    run_timestamp = utc_run_timestamp()
-    run_git_commit = git_commit_sha(repository_root)
-    run_git_branch = git_branch_name(repository_root)
-    relative_run_path = build_run_relative_path(
-        dataset_version=run_identity_config.dataset_version,
-        algorithm_variant=run_identity_config.algorithm_variant,
-        run_timestamp=run_timestamp,
-        git_commit=run_git_commit,
-        configuration_hash=run_configuration_hash,
-    )
-    run_bundle_paths = create_incomplete_run_bundle(
-        Path(input_output_config_3_1.output_path) / "clinical_runs",
-        relative_run_path,
-    )
+# run_bundle_paths = None
+# run_timestamp = None
+# run_git_commit = None
+# run_git_branch = None
+# run_configuration_hash = None
+# run_configuration_snapshot = None
+# if run_mode is RunMode.VERSIONED:
+#     active_configuration = active_run_configuration_sections()
+#     run_configuration_hash = configuration_sha256(active_configuration)
+#     run_configuration_snapshot = json.loads(
+#         canonical_configuration_json(active_configuration)
+#     )
+#     run_timestamp = utc_run_timestamp()
+#     run_git_commit = git_commit_sha(repository_root)
+#     run_git_branch = git_branch_name(repository_root)
+#     relative_run_path = build_run_relative_path(
+#         dataset_version=run_identity_config.dataset_version,
+#         algorithm_variant=run_identity_config.algorithm_variant,
+#         run_timestamp=run_timestamp,
+#         git_commit=run_git_commit,
+#         configuration_hash=run_configuration_hash,
+#     )
+#     run_bundle_paths = create_incomplete_run_bundle(
+#         Path(input_output_config_3_1.output_path) / "clinical_runs",
+#         relative_run_path,
+#     )
 
 setup_root_logger(log_dir=input_output_config_3_1.logger_dir)
 logger = get_logger(__name__)
 
-# dl = DataLoader(input_output_config_3_1,
-#                 data_config,
-#                 bp_config,
-#                 flowsheet_bounds_config,
-#                 lab_bounds_config,
-#                 bp_bounds_config)
+dl = DataLoader(input_output_config_3_1,
+                data_config,
+                bp_config,
+                flowsheet_bounds_config,
+                lab_bounds_config,
+                bp_bounds_config)
 
-# df_all, df_encounters = dl.load_data()
+df_all, df_encounters = dl.load_data()
 if bp_config.calculate_map:
     df_all_file_name = "df_all.parquet"
     df_all_no_collisions_file_name = "df_all_no_collisions.parquet"

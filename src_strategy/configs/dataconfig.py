@@ -185,6 +185,16 @@ input_filenames_v3 = InputFileNames(
     DIAGNOSIS = "Diagnoses - 6.5.26.csv",
 )
 
+input_filenames_v4 = InputFileNames(
+    ENCOUNTER_BASELINE_SCORES = "Encounter Table with Baseline Values - June 2022 - May 2026 - 6.5.26.csv",
+    FLOWSHEETS = "flowsheets_bp - 6.8.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
+    LABS = "Lab Results - 10.8.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
+    MEDS_ADMIN = "Med Admin - 10.8.26.csv",
+    MEDS_ORDERS = "Med Orders - 10.8.26.csv",
+    PROCEDURES = "Procedure Orders - 10.8.26.csv",
+    DIAGNOSIS = "Diagnosis Events - 10.8.26.csv",
+)
+
 input_output_config_3 = DataInputOutputConfig(
     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
     output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3',
@@ -196,6 +206,12 @@ input_output_config_3_1 = DataInputOutputConfig(
     output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3_1',
     input_file_names=input_filenames_v3
 )
+
+# input_output_config_4 = DataInputOutputConfig(
+#     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase4",
+#     output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase4',
+#     input_file_names=input_filenames_v3
+# )
 data_config = DataConfig()
 
 bp_config = BloodPressureConfig()
