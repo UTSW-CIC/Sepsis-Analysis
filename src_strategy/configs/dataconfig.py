@@ -26,20 +26,28 @@ from typing import List
 class InputFileNames(BaseModel):
     ENCOUNTER_BASELINE_SCORES: str = "Encounter Table with Baseline Values - June 2022 - May 2026 - 6.5.26.csv" 
     # FLOWSHEETS: str = "Flowsheet Events Feb 2025 - Mar 2026 - 3.31.26.csv"
-    FLOWSHEETS: str = "Flowsheet Events - 6.5.26.csv"
+    # FLOWSHEETS: str = "Flowsheet Events - 6.5.26.csv"
     # LABS: str = "Lab Results - 3.9.26.csv"
+    FLOWSHEETS_OTHER: str = ""
+    FLOWSHEETS_SIRS: str = ""
+    INFECT_QUEST: str = ""
     LABS: str = "Lab Results - 6.5.26.csv"
     # MEDS: str = "Med Admin - 3.9.26.csv"
-    MEDS: str = "Med Admin Events - 6.5.26.csv"
+    MEDS_ORDER: str = "Med Admin Events - 6.5.26.csv"
+    MEDS_ADMIN: str = "Med Admin Events - 6.5.26.csv"
     # PROCEDURES: str = "Procedure Orders - 3.9.26.csv"
     PROCEDURES: str = "Procedure Order Events - 6.5.26.csv"
     DIAGNOSIS: str = "Diagnoses - 6.5.26.csv"
+    EVENTS: str = ""
+    HEADERS: List[str] = [""]
+
 
 class DataConfig(BaseModel):
     encounter_col: str = Field(default="EncounterEpicCsn", description="Column name for encounter identifier")
     event_dt_col: str = Field(default="Event_DateTime", description="Column name for timestamp")
     event_name_col: str = Field(default="Event_Name", description="Column name for name")
     grouper_col: str = Field(default="Event_Grouper", description="Column name for grouper")
+    event_id: str = Field(default="Event_ID", description="Column id for events that connect parent orders with children orders/results")
     type_col: str = Field(default="Type", description="Column name for events type")
     val_col: str = Field(default="NumericValue", description="Column name for value")
     raw_val_col: str = Field(default="Value", description="Column name for raw value (Numeric and non-numeric values)")
@@ -70,14 +78,13 @@ class DataConfig(BaseModel):
     @computed_field
     @property
     def unique_subset_with_all(self) -> List[str]:
-        return [self.encounter_col, self.event_dt_col, self.type_col, self.grouper_col, self.event_name_col, self.raw_val_col]
+        return [self.encounter_col, self.event_dt_col, self.type_col, self.grouper_col, self.event_id, self.event_name_col, self.raw_val_col]
 
     @computed_field
     @property
     def base_cols(self) -> List[str]:
-        return [self.encounter_col, self.event_dt_col, self.type_col,
+        return [self.encounter_col, self.event_dt_col, self.type_col, self.event_id,
                  self.grouper_col, self.event_name_col, self.val_col, self.raw_val_col]
-
 
 class DataInputOutputConfig(DataConfig):
     data_path: str = Field(..., description="Path to the data directory")
@@ -92,6 +99,7 @@ class DataInputOutputConfig(DataConfig):
     cast_schema: dict = Field(default_factory=lambda: {
         "EncounterEpicCsn": pl.Int64,
         "NumericValue": pl.Float64,
+        "Event_ID": pl.Int64,
         "Event_DateTime": ("datetime", "%Y-%m-%d %H:%M:%S%.f"),
         "PrimaryMrn": pl.Int64,
         "Death_Flag": pl.Int64,
@@ -131,11 +139,11 @@ class DataInputOutputConfig(DataConfig):
     @model_validator(mode="after")
     def ensure_files_exist(self) -> "DataInputOutputConfig":
         for filename in self.input_file_names.model_dump().values():
+            if isinstance(filename, list): continue
             file_path = Path(self.data_path) / filename
             if not file_path.is_file():
                 raise FileNotFoundError(f"Required input file '{filename}' not found in '{self.data_path}'")
         return self
-
 
 class BloodPressureConfig(DataConfig):
     bp_grouper_val: str = Field(default="Blood Pressure", description="Grouper value for blood pressure") #
@@ -145,8 +153,6 @@ class BloodPressureConfig(DataConfig):
     map_col: str = Field(default="map", description="Column name for mean arterial pressure")
     map_event_grouper: str = Field(default="Arterial Blood Pressure Mean", description="Grouper value for mean arterial pressure")
     calculate_map: bool = False
-
-
 
 class VasopressorsConfig(DataConfig):
     grouper_vals: list[str] = Field(default_factory=lambda: ["Norepinephrine", "Epinephrine", "Vasopressin", "Dopamine", "Phenylephrine", "Dobutamine"],
@@ -160,41 +166,58 @@ class VasopressorsConfig(DataConfig):
 #     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase2_v2"
 # )
 
+# input_filenames_v2 = InputFileNames(
+#     ENCOUNTER_BASELINE_SCORES = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.13.26 v2.csv" ,
+#     FLOWSHEETS = "Flowsheets - Mar 2025 - Feb 2026 - 4.9.26.csv",
+#     PROCEDURES  = "Procedure Orders - Mar 2025 - Feb 2026 - 4.9.26.csv",
+#     DIAGNOSIS  = "Diagnoses - 3.9.26.csv",
+#     MEDS = "Med Admin - Mar 2025 - Feb 2026 - 4.8.26.csv",
+#     LABS = "Lab Results - Mar 2025 - Feb 2026 - 4.8.26.csv"
+# )
+# input_output_config_2 = DataInputOutputConfig(
+#     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase2_v2",
+#     output_path=f'{env_settings.DATA_ABS_PATH}/data/output_data_phase2_v2_iteration2',
+#     input_file_names=input_filenames_v2
+# )
+# input_filenames_v3 = InputFileNames(
+#     ENCOUNTER_BASELINE_SCORES = "Encounter Table with Baseline Values - June 2022 - May 2026 - 6.5.26.csv",
+#     FLOWSHEETS = "flowsheets_bp - 6.8.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
+#     LABS = "labs_with_fio2 - 6.9.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
+#     MEDS = "Med Admin Events - 6.5.26.csv",
+#     PROCEDURES = "Procedure Order Events - 6.5.26.csv",
+#     DIAGNOSIS = "Diagnoses - 6.5.26.csv",
+# )
+# input_output_config_3 = DataInputOutputConfig(
+#     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
+#     output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3',
+#     input_file_names=input_filenames_v3
+# )
 
-input_filenames_v2 = InputFileNames(
-    ENCOUNTER_BASELINE_SCORES = "Encounter Table with Baseline Values - Mar 2025 - Feb 2026 - 4.13.26 v2.csv" ,
-    FLOWSHEETS = "Flowsheets - Mar 2025 - Feb 2026 - 4.9.26.csv",
-    PROCEDURES  = "Procedure Orders - Mar 2025 - Feb 2026 - 4.9.26.csv",
-    DIAGNOSIS  = "Diagnoses - 3.9.26.csv",
-    MEDS = "Med Admin - Mar 2025 - Feb 2026 - 4.8.26.csv",
-    LABS = "Lab Results - Mar 2025 - Feb 2026 - 4.8.26.csv"
+# input_output_config_3_1 = DataInputOutputConfig(
+#     data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
+#     output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3_1',
+#     input_file_names=input_filenames_v3
+# )
+
+
+input_filenames_v4 = InputFileNames(
+    ENCOUNTER_BASELINE_SCORES = "Encounter Attributes - 10.28.26.csv",
+    FLOWSHEETS_OTHER = "Flowsheet Other - 10.8.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
+    FLOWSHEETS_SIRS = "Flowsheet SIRS Vitals - 10.8.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
+    LABS = "Lab Results - 10.8.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
+    MEDS_ADMIN = "Med Admin - 10.8.26.csv",
+    MEDS_ORDER = "Med Orders - 10.8.26.csv",
+    PROCEDURES = "Procedure Orders - 10.8.26.csv",
+    DIAGNOSIS = "Diagnosis Events - 10.8.26.csv",
+    EVENTS = "Sepsis Events - 10.8.26.csv",
+    INFECT_QUEST = "Source of Infection Questions - 10.8.26.csv",
+    HEADERS = ["EncounterEpicCsn", "Event_DateTime", "Event_ID", "Type", "Event_Grouper", "Event_Name", "NumericValue", "Value"]
+
 )
-input_output_config_2 = DataInputOutputConfig(
-    data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase2_v2",
-    output_path=f'{env_settings.DATA_ABS_PATH}/data/output_data_phase2_v2_iteration2',
-    input_file_names=input_filenames_v2
-)
-
-
-input_filenames_v3 = InputFileNames(
-    ENCOUNTER_BASELINE_SCORES = "Encounter Table with Baseline Values - June 2022 - May 2026 - 6.5.26.csv",
-    FLOWSHEETS = "flowsheets_bp - 6.8.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
-    LABS = "labs_with_fio2 - 6.9.26.csv", # Created in notebooks/18_eda_datasetv3.ipynb
-    MEDS = "Med Admin Events - 6.5.26.csv",
-    PROCEDURES = "Procedure Order Events - 6.5.26.csv",
-    DIAGNOSIS = "Diagnoses - 6.5.26.csv",
-)
-
-input_output_config_3 = DataInputOutputConfig(
-    data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
-    output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3',
-    input_file_names=input_filenames_v3
-)
-
-input_output_config_3_1 = DataInputOutputConfig(
-    data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase3",
-    output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase3_1',
-    input_file_names=input_filenames_v3
+input_output_config_4 = DataInputOutputConfig(
+    data_path=f"{env_settings.DATA_ABS_PATH}/data/raw_data_phase4",
+    output_path=f'{env_settings.DATA_ABS_PATH}/data/output/output_data_phase4',
+    input_file_names=input_filenames_v4
 )
 data_config = DataConfig()
 

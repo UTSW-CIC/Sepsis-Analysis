@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Mapping
+from typing import Mapping, List
 
 import polars as pl
 
@@ -32,11 +32,15 @@ class DataLoader:
     """Load and prepare EHR source tables for the strategy pipeline."""
 
     TRANSACTIONAL_SOURCES = (
-        "flowsheets",
+        "flowsheets_other",
+        "flowsheets_sirs",
         "labs",
-        "meds",
+        "meds_admin",
+        "meds_orders",
         "procedures",
         "diagnoses",
+        "events",
+        "infect_quest"
     )
 
     def __init__(
@@ -57,23 +61,36 @@ class DataLoader:
         self.lab_bounds_config = lab_bounds_config
         self.bp_bounds_config = bp_bounds_config
 
-    def _read_csv(self, filename: str) -> pl.DataFrame:
+    def _read_csv(self, filename: str, headers:List[str]=None) -> pl.DataFrame:
         input_path = Path(self.input_output_dataconfig.data_path) / filename
+        if headers:
+            return pl.read_csv(
+                input_path,
+                infer_schema=False,
+                null_values=["Null", "NULL", "null"],
+                has_header=False,
+                new_columns=headers
+            )
         return pl.read_csv(
             input_path,
             infer_schema=False,
-            null_values=["Null", "NULL", "null"],
+            null_values=["Null", "NULL", "null"]
         )
+        
 
     def _read_sources(self) -> dict[str, pl.DataFrame]:
         filenames = self.input_output_dataconfig.input_file_names
         return {
-            "flowsheets": self._read_csv(filenames.FLOWSHEETS),
-            "labs": self._read_csv(filenames.LABS),
-            "meds": self._read_csv(filenames.MEDS),
-            "procedures": self._read_csv(filenames.PROCEDURES),
-            "diagnoses": self._read_csv(filenames.DIAGNOSIS),
-            "encounters": self._read_csv(filenames.ENCOUNTER_BASELINE_SCORES),
+            "flowsheets_other": self._read_csv(filename=filenames.FLOWSHEETS_OTHER, headers=filenames.HEADERS),
+            "infect_quest": self._read_csv(filename=filenames.INFECT_QUEST, headers=filenames.HEADERS),
+            "flowsheets_sirs": self._read_csv(filename=filenames.FLOWSHEETS_SIRS, headers=filenames.HEADERS),
+            "labs": self._read_csv(filename=filenames.LABS, headers=filenames.HEADERS),
+            "meds_admin":self._read_csv(filename=filenames.MEDS_ADMIN, headers=filenames.HEADERS),
+            "meds_orders":self._read_csv(filename=filenames.MEDS_ORDER, headers=filenames.HEADERS),
+            "procedures":self._read_csv(filename=filenames.PROCEDURES, headers=filenames.HEADERS),
+            "diagnoses":self._read_csv(filename=filenames.DIAGNOSIS, headers=filenames.HEADERS),
+            "events":self._read_csv(filename=filenames.EVENTS, headers=filenames.HEADERS),
+            "encounters": self._read_csv(filename=filenames.ENCOUNTER_BASELINE_SCORES)
         }
 
     def _deduplicate_sources(
@@ -130,13 +147,25 @@ class DataLoader:
                     outlier_column_name="lab_outlier",
                 )
             )
+        # return {
+        #     "flowsheets": TransformPipeline(flowsheet_transforms),
+        #     "labs": TransformPipeline(lab_transforms),
+        #     "meds": TransformPipeline([CastColumns(schema)]),
+        #     "procedures": TransformPipeline([CastColumns(schema)]),
+        #     "diagnoses": TransformPipeline([CastColumns(schema)]),
+        #     "encounters": TransformPipeline([CastColumns(schema)]),
+        # }
         return {
-            "flowsheets": TransformPipeline(flowsheet_transforms),
+            "flowsheets_other": TransformPipeline(flowsheet_transforms),
+            "flowsheets_sirs": TransformPipeline([CastColumns(schema), ApplyBounds(self.physiological_bounds_config, outlier_column_name="flowsheet_outlier")]),
             "labs": TransformPipeline(lab_transforms),
-            "meds": TransformPipeline([CastColumns(schema)]),
+            "meds_admin": TransformPipeline([CastColumns(schema)]),
+            "meds_orders": TransformPipeline([CastColumns(schema)]),
             "procedures": TransformPipeline([CastColumns(schema)]),
+            "events": TransformPipeline([CastColumns(schema)]),
             "diagnoses": TransformPipeline([CastColumns(schema)]),
             "encounters": TransformPipeline([CastColumns(schema)]),
+            "infect_quest": TransformPipeline([CastColumns(schema)])
         }
 
     def _transform_sources(
@@ -293,8 +322,9 @@ class DataLoader:
         logger.info("Combining all tables...")
         event_tables = [
             sources[name].select(self.data_config.base_cols)
-            for name in self.TRANSACTIONAL_SOURCES
+            for name in self.TRANSACTIONAL_SOURCES if name not in ['flowsheets_other', 'flowsheets_sirs']
         ]
+        event_tables.append(sources['flowsheets'].select(self.data_config.base_cols))
         return pl.concat(event_tables, how="vertical").drop_nulls(
             subset=[
                 self.data_config.encounter_col,
@@ -311,6 +341,8 @@ class DataLoader:
         join_keys = [
             self.data_config.encounter_col,
             self.data_config.event_dt_col,
+            self.data_config.type_col,
+            self.data_config.event_id,
             self.data_config.event_name_col,
         ]
         events = events.join(
@@ -381,6 +413,36 @@ class DataLoader:
         sources = self._read_sources()
         sources = self._deduplicate_sources(sources)
         sources = self._transform_sources(sources)
+
+        if 'flowsheets' not in sources:
+            sources['flowsheets'] = pl.concat([
+                sources['flowsheets_other'].select(sources['flowsheets_sirs'].columns), sources['flowsheets_sirs']
+            ], how='vertical')
+
+            sources['flowsheets'] = sources['flowsheets'].join(
+                sources['flowsheets_other'].select(
+                    [
+                        'EncounterEpicCsn', 'Event_DateTime', 'Event_ID',
+                        'Type', 'Event_Grouper', 'Event_Name', 'sys', 'map', 'dia',
+                        'sys_is_outlier', 'map_is_outlier', 'dia_is_outlier', 'flowsheet_outlier'
+                    ]
+                ),
+                on=['EncounterEpicCsn', 'Event_DateTime', 'Event_ID', 'Event_Name'],
+                how='left',
+                suffix='_other'
+            )
+
+        for c in sources['flowsheets'].columns:
+            if not c.endswith('_other'):
+                continue
+            if sources['flowsheets'].filter(
+                pl.col(c) != pl.col(c.split('_other')[0])
+            ).shape[0] > 0:
+                raise ValueError(f"flowsheets columns {c} and {c.split('_other')[0]} do not match ")
+        del sources['flowsheets_other']
+        del sources['flowsheets_sirs']
+        sources['flowsheets'] = sources['flowsheets'].drop([c for c in sources['flowsheets'].columns if c.endswith('_other')])
+        
         sources = self._audit_and_clean_sources(sources)
         sources, encounters = self._finalize_source_columns(sources)
 

@@ -181,6 +181,7 @@ def extract_sys_dia_from_flowsheets(df_flowsheets: pl.DataFrame,
     sys_col_name = bp_config.sys_col
     dia_col_name = bp_config.dia_col
     val_col = bp_config.raw_val_col
+    event_id = bp_config.event_id
 
     df_bp = df_flowsheets.filter(pl.col(event_grouper_col) == bp_grouper_val).with_columns(
         # Strip whitespace, then split
@@ -199,8 +200,8 @@ def extract_sys_dia_from_flowsheets(df_flowsheets: pl.DataFrame,
     )
 
     return df_flowsheets.join( 
-        df_bp.select([encounter_col, event_dt_col, event_grouper_col, val_col, sys_col_name, dia_col_name]),
-        on=[encounter_col, event_dt_col, event_grouper_col, val_col],
+        df_bp.select([encounter_col, event_dt_col, event_id, event_grouper_col, val_col, sys_col_name, dia_col_name]),
+        on=[encounter_col, event_dt_col, event_id, event_grouper_col, val_col],
         how="left"
     )
 
