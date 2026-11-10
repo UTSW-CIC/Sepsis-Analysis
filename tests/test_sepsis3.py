@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 import polars as pl
 
-from src_strategy.configs.severitysepsis import SeveritySepsisConfig
 from src_strategy.events.sepsis import (
     build_sepsis3_associations,
     build_sepsis3_encounter_summary,
@@ -12,174 +11,229 @@ from src_strategy.events.sepsis import (
 START = datetime(2026, 1, 3)
 
 
-def _sepsis2(
-    *,
-    organ_start_hours: float = 10,
-    organ_end_hours: float = 30,
-) -> pl.DataFrame:
+def _anchors() -> pl.DataFrame:
     return pl.DataFrame(
         {
             "EncounterEpicCsn": [1],
             "infection_anchor_id": [1],
+            "infection_episode_id": [10],
             "criterion": ["iv_dt"],
             "infect_dt": [START],
+            "criterion_met_dt": [START + timedelta(hours=1)],
             "suspicion_infection_type": ["IV+Culture"],
-            "organ_episode_id": [1],
-            "organ_episode_start": [
-                START + timedelta(hours=organ_start_hours)
-            ],
-            "organ_episode_end": [
-                START + timedelta(hours=organ_end_hours)
-            ],
-            "sepsis_2_flag": [1],
-            "sepsis_2_earliest_evidence_dt": [START],
-            "sepsis_2_dt": [
-                max(START, START + timedelta(hours=organ_start_hours))
-            ],
-            "last_lactate_6h_source_evidence": [
-                [
-                    {
-                        "value": 3.0,
-                        "result_dt": START + timedelta(
-                            hours=organ_start_hours
-                        ),
-                        "type": "Lab Results",
-                        "event_id": 100,
-                        "event_name": "LACTATE",
-                    }
-                ]
-            ],
-        },
-        schema_overrides={"sepsis_2_flag": pl.Int8},
+        }
     )
 
 
-def _shock_episodes(
-    rows: list[tuple[int, float, float]],
-) -> pl.DataFrame:
+def _sepsis2(hours: list[float]) -> pl.DataFrame:
     return pl.DataFrame(
         {
-            "EncounterEpicCsn": [1] * len(rows),
-            "shock_episode_id": [row[0] for row in rows],
-            "shock_episode_state": [1] * len(rows),
-            "shock_episode_start": [
-                START + timedelta(hours=row[1]) for row in rows
+            "EncounterEpicCsn": [1] * len(hours),
+            "infection_anchor_id": [1] * len(hours),
+            "criterion": ["iv_dt"] * len(hours),
+            "infect_dt": [START] * len(hours),
+            "criterion_met_dt": [START + timedelta(hours=1)] * len(hours),
+            "suspicion_infection_type": ["IV+Culture"] * len(hours),
+            "organ_episode_id": list(range(1, len(hours) + 1)),
+            "sepsis_2_flag": [1] * len(hours),
+            "sepsis_2_dt": [
+                START + timedelta(hours=value) for value in hours
             ],
-            "shock_episode_end": [
-                START + timedelta(hours=row[2]) for row in rows
-            ],
-            "shock_episode_duration_minutes": [
-                (row[2] - row[1]) * 60 for row in rows
-            ],
-            "lactate4_flag": [1] * len(rows),
         },
         schema_overrides={
             "EncounterEpicCsn": pl.Int64,
-            "shock_episode_id": pl.Int64,
-            "shock_episode_state": pl.Int8,
-            "shock_episode_start": pl.Datetime,
-            "shock_episode_end": pl.Datetime,
-            "shock_episode_duration_minutes": pl.Float64,
-            "lactate4_flag": pl.Int8,
+            "infection_anchor_id": pl.Int64,
+            "organ_episode_id": pl.Int64,
+            "sepsis_2_flag": pl.Int8,
+            "sepsis_2_dt": pl.Datetime,
         },
     )
 
 
-def _shock_points(times: list[float]) -> pl.DataFrame:
+def _hypotension(hours: list[float]) -> pl.DataFrame:
     return pl.DataFrame(
         {
-            "EncounterEpicCsn": [1] * len(times),
-            "shock_point_id": list(range(1, len(times) + 1)),
-            "shock_point_time": [
-                START + timedelta(hours=value) for value in times
+            "EncounterEpicCsn": [1] * len(hours),
+            "raw_hypotension_episode_id": list(range(1, len(hours) + 1)),
+            "hypotension_episode_start": [
+                START + timedelta(hours=value) for value in hours
             ],
-            "shock_point_type": ["vasopressor_administration"] * len(times),
-            "qualifying_vasopressor_dose_count": [1] * len(times),
+            "hypotension_episode_end": [
+                START + timedelta(hours=value, minutes=30)
+                for value in hours
+            ],
+            "effective_hypotension_flag": [1] * len(hours),
+        },
+        schema_overrides={
+            "EncounterEpicCsn": pl.Int64,
+            "raw_hypotension_episode_id": pl.Int64,
+            "hypotension_episode_start": pl.Datetime,
+            "hypotension_episode_end": pl.Datetime,
+            "effective_hypotension_flag": pl.Int8,
+        },
+    )
+
+
+def _lactate(hours: list[float]) -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "EncounterEpicCsn": [1] * len(hours),
+            "lactate_gt2_evidence_id": list(range(1, len(hours) + 1)),
+            "lactate_gt2_dt": [
+                START + timedelta(hours=value) for value in hours
+            ],
+            "lactate_gt2_value": [3.0] * len(hours),
+        },
+        schema_overrides={
+            "EncounterEpicCsn": pl.Int64,
+            "lactate_gt2_evidence_id": pl.Int64,
+            "lactate_gt2_dt": pl.Datetime,
+            "lactate_gt2_value": pl.Float64,
+        },
+    )
+
+
+def _vasopressors(rows: list[tuple[float, float]]) -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "EncounterEpicCsn": [1] * len(rows),
+            "shock_point_id": list(range(1, len(rows) + 1)),
+            "shock_point_time": [
+                START + timedelta(hours=admin) for _, admin in rows
+            ],
+            "vasopressor_order_time": [
+                START + timedelta(hours=anchor) for anchor, _ in rows
+            ],
+            "vasopressor_administration_time": [
+                START + timedelta(hours=admin) for _, admin in rows
+            ],
+            "vasopressor_anchor_time": [
+                START + timedelta(hours=anchor) for anchor, _ in rows
+            ],
+            "qualifying_vasopressor_dose_count": [1] * len(rows),
             "qualifying_vasopressor_groupers": [
-                ["Norepinephrine"] for _ in times
+                ["Norepinephrine"] for _ in rows
             ],
         },
         schema_overrides={
             "EncounterEpicCsn": pl.Int64,
             "shock_point_id": pl.Int64,
             "shock_point_time": pl.Datetime,
-            "shock_point_type": pl.String,
+            "vasopressor_order_time": pl.Datetime,
+            "vasopressor_administration_time": pl.Datetime,
+            "vasopressor_anchor_time": pl.Datetime,
             "qualifying_vasopressor_dose_count": pl.Int64,
             "qualifying_vasopressor_groupers": pl.List(pl.String),
         },
     )
 
 
-def test_interval_shock_must_overlap_organ_and_infection_window() -> None:
-    associations = build_sepsis3_associations(
-        _sepsis2(),
-        _shock_episodes([(1, 20, 25), (2, 30, 35)]),
-        _shock_points([]),
+def _associations(
+    *,
+    sepsis2_hours: list[float] | None = None,
+    hypotension_hours: list[float] | None = None,
+    lactate_hours: list[float] | None = None,
+    vasopressor_rows: list[tuple[float, float]] | None = None,
+) -> pl.DataFrame:
+    return build_sepsis3_associations(
+        _anchors(),
+        _sepsis2(sepsis2_hours or []),
+        _hypotension(hypotension_hours or []),
+        _lactate(lactate_hours or []),
+        _vasopressors(vasopressor_rows or []),
+    )
+
+
+def test_pathway_a_requires_occurrences_but_not_temporal_overlap() -> None:
+    associations = _associations(
+        sepsis2_hours=[10],
+        hypotension_hours=[20],
+        lactate_hours=[30],
     )
 
     assert associations.height == 1
-    assert associations["shock_episode_id"].to_list() == [1]
-    assert associations["sepsis_3_dt"].to_list() == [
-        START + timedelta(hours=20)
+    assert associations["sepsis_3_pathway"].to_list() == [
+        "hypotension_lactate_sepsis2"
     ]
-    assert associations["sepsis_3_earliest_evidence_dt"].to_list() == [START]
-    assert associations["last_lactate_6h_source_evidence"].to_list()[0][0][
-        "event_id"
-    ] == 100
+    assert associations["sepsis_3_dt"].to_list() == [START]
+    assert associations["sepsis_3_criterion_met_dt"].to_list() == [
+        START + timedelta(hours=30)
+    ]
 
 
-def test_interval_touching_window_end_is_excluded() -> None:
-    associations = build_sepsis3_associations(
-        _sepsis2(organ_start_hours=40, organ_end_hours=70),
-        _shock_episodes([(1, 48, 55)]),
-        _shock_points([]),
+def test_pathway_a_window_boundaries_are_inclusive() -> None:
+    associations = _associations(
+        sepsis2_hours=[-48],
+        hypotension_hours=[48],
+        lactate_hours=[-48],
+    )
+
+    assert associations.height == 1
+    assert associations["sepsis_3_dt"].to_list() == [
+        START - timedelta(hours=48)
+    ]
+    assert associations["sepsis_3_criterion_met_dt"].to_list() == [
+        START + timedelta(hours=48)
+    ]
+
+
+def test_pathway_a_excludes_an_occurrence_outside_the_window() -> None:
+    associations = _associations(
+        sepsis2_hours=[10],
+        hypotension_hours=[20],
+        lactate_hours=[48.1],
     )
 
     assert associations.is_empty()
 
 
-def test_vasopressor_point_must_be_inside_both_half_open_intervals() -> None:
-    associations = build_sepsis3_associations(
-        _sepsis2(),
-        _shock_episodes([]),
-        _shock_points([20, 30, 48]),
-    )
+def test_pathway_b_is_independent_of_sepsis2_and_uses_order_anchor() -> None:
+    associations = _associations(vasopressor_rows=[(-10, 20)])
 
     assert associations.height == 1
-    assert associations["shock_point_time"].to_list() == [
+    assert associations["sepsis_3_pathway"].to_list() == [
+        "infection_vasopressor"
+    ]
+    assert associations["organ_episode_id"].to_list() == [None]
+    assert associations["sepsis_3_dt"].to_list() == [
+        START - timedelta(hours=10)
+    ]
+    assert associations["sepsis_3_criterion_met_dt"].to_list() == [
         START + timedelta(hours=20)
     ]
-    assert associations["shock_evidence_type"].to_list() == [
-        "vasopressor_administration"
-    ]
 
 
-def test_point_at_backward_window_boundary_qualifies_when_organ_is_active() -> None:
-    associations = build_sepsis3_associations(
-        _sepsis2(organ_start_hours=-50, organ_end_hours=-40),
-        _shock_episodes([]),
-        _shock_points([-48]),
+def test_pathway_b_uses_inclusive_administration_window() -> None:
+    associations = _associations(
+        vasopressor_rows=[(-60, -48), (0, 48), (0, 48.1)]
     )
 
-    assert associations.height == 1
-    assert associations["sepsis_3_dt"].to_list() == [START]
-    assert associations["sepsis_3_earliest_evidence_dt"].to_list() == [
-        START + timedelta(hours=-50)
+    assert associations.height == 2
+    assert associations["vasopressor_administration_time"].to_list() == [
+        START - timedelta(hours=48),
+        START + timedelta(hours=48),
     ]
 
 
-def test_sepsis3_summary_preserves_negative_encounters_and_counts_evidence() -> None:
-    associations = build_sepsis3_associations(
-        _sepsis2(),
-        _shock_episodes([(1, 20, 25)]),
-        _shock_points([20]),
+def test_or_composition_retains_both_pathways_and_summary_counts() -> None:
+    associations = _associations(
+        sepsis2_hours=[10],
+        hypotension_hours=[20],
+        lactate_hours=[30],
+        vasopressor_rows=[(5, 15)],
     )
     encounters = pl.DataFrame({"EncounterEpicCsn": [1, 2]})
 
     summary = build_sepsis3_encounter_summary(encounters, associations)
 
+    assert associations["sepsis_3_pathway"].sort().to_list() == [
+        "hypotension_lactate_sepsis2",
+        "infection_vasopressor",
+    ]
     assert summary["sepsis_3_flag"].to_list() == [1, 0]
+    assert summary["sepsis_3_criterion_met_dt"].to_list() == [
+        START + timedelta(hours=15),
+        None,
+    ]
     assert summary["sepsis_3_association_count"].to_list() == [2, 0]
-    assert summary["sepsis_3_anchor_count"].to_list() == [1, 0]
     assert summary["sepsis_3_organ_episode_count"].to_list() == [1, 0]
-    assert summary["sepsis_3_shock_evidence_count"].to_list() == [2, 0]

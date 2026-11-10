@@ -10,6 +10,7 @@ class SuspectedInfectionCriterionName(str, Enum):
     ANTIBIOTIC_CULTURE = "antibiotic_culture"
     LACTATE_CULTURE = "lactate_culture"
     CODE_SEPSIS = "code_sepsis"
+    SEPSIS_DOC_EVENT = "sepsis_doc_event"
     FLOWSHEET = "flowsheet"
 
 
@@ -65,10 +66,33 @@ class LactateBloodCultureConfig(BaseModel):
     long_value: str = "LACTATE+CULTURE"
 
 
+class CodeSepsisEventPair(BaseModel):
+    grouper_val: str
+    event_name_val: str
+
+
 class CodeSepsisConfig(BaseModel):
-    grouper_val: str = "Code Sepsis Page"
+    event_pairs: List[CodeSepsisEventPair] = Field(
+        default_factory=lambda: [
+            CodeSepsisEventPair(
+                grouper_val="Nursing",
+                event_name_val="UTSW CODE SEPSIS PAGE",
+            ),
+            CodeSepsisEventPair(
+                grouper_val="Code Sepsis Event",
+                event_name_val="ED Code Sepsis Page",
+            ),
+        ]
+    )
     datetime_col: str = "first_ev_time_codesepsis"
     long_value: str = "CODE_SEPSIS_ORDER"
+
+
+class SepsisDocumentationEventConfig(BaseModel):
+    grouper_val: str = "Sepsis Documentation Event"
+    event_name_val: str = "Sepsis Documentation Start"
+    datetime_col: str = "first_ev_time_sepsis_doc_event"
+    long_value: str = "SEPSIS_DOC_EVENT"
 
 
 class SuspectedInfectionFlowsheetConfig(BaseModel):
@@ -114,6 +138,9 @@ class SuspectedInfectionConfig(DataConfig):
     )
     code_sepsis_config: CodeSepsisConfig = Field(
         default_factory=CodeSepsisConfig
+    )
+    sepsis_doc_event_config: SepsisDocumentationEventConfig = Field(
+        default_factory=SepsisDocumentationEventConfig
     )
     suspected_infection_flowsheet_config: SuspectedInfectionFlowsheetConfig = Field(
         default_factory=SuspectedInfectionFlowsheetConfig
@@ -197,6 +224,7 @@ class SuspectedInfectionConfig(DataConfig):
             self.lactate_culture_config.lactate_result_datetime_col,
             self.lactate_culture_config.blood_culture_datetime_col,
             self.code_sepsis_config.datetime_col,
+            self.sepsis_doc_event_config.datetime_col,
             self.suspected_infection_flowsheet_config.datetime_col,
             self.culture_result_datetime_col,
         ]

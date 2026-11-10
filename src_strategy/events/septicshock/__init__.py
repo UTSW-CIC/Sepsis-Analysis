@@ -2,6 +2,7 @@
 
 from .evidence import (
     attach_vasopressor_evidence,
+    build_lactate_gt2_evidence,
     build_vasopressor_evidence,
     prepare_septic_shock_input,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "build_septic_shock_interval_segments",
     "build_septic_shock_pipeline",
     "build_septic_shock_point_evidence",
+    "build_lactate_gt2_evidence",
     "build_vasopressor_evidence",
     "prepare_septic_shock_input",
 ]

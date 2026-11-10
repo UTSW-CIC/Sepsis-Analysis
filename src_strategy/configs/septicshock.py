@@ -35,13 +35,28 @@ class MAP65Criteria(BaseModel):
 
 
 class Lactate4Criteria(BaseModel):
+    """Legacy standalone component retained outside active Sepsis 3 logic."""
+
     lactate_col: FeatureColumn = FeatureColumn.LAST_LACTATE_6H
     lactate_threshold: float = 4.0
     flag_col: str = "lactate4_flag"
 
 
+class Lactate2Criteria(BaseModel):
+    """Event-level lactate evidence for active Sepsis 3 Pathway A."""
+
+    lactate_threshold: float = 2.0
+    event_type_value: str = "Lab Results"
+    event_grouper_value: str = "Lactate"
+    evidence_id_col: str = "lactate_gt2_evidence_id"
+    evidence_datetime_col: str = "lactate_gt2_dt"
+    evidence_value_col: str = "lactate_gt2_value"
+    flag_col: str = "lactate2_flag"
+
+
 class VasopressorCriteria(BaseModel):
-    event_type_value: str = "Medication Administration"
+    administration_type_value: str = "Medication Administration"
+    order_type_value: str = "Medication Order"
     grouper_values: List[str] = Field(
         default_factory=lambda: [
             "Vasopressin",
@@ -56,6 +71,9 @@ class VasopressorCriteria(BaseModel):
     evidence_event_count_col: str = "vasopressor_evidence_event_count"
     qualifying_dose_count_col: str = "vasopressor_qualifying_dose_count"
     flag_col: str = "vasopressor_flag"
+    order_datetime_col: str = "vasopressor_order_time"
+    administration_datetime_col: str = "vasopressor_administration_time"
+    anchor_datetime_col: str = "vasopressor_anchor_time"
 
 
 class SepticShockConfig(DataConfig):
@@ -63,6 +81,7 @@ class SepticShockConfig(DataConfig):
     sbpdelta40_criteria: SBPDelta40Criteria = SBPDelta40Criteria()
     map65_criteria: MAP65Criteria = MAP65Criteria()
     lactate4_criteria: Lactate4Criteria = Lactate4Criteria()
+    lactate2_criteria: Lactate2Criteria = Lactate2Criteria()
     vasopressor_criteria: VasopressorCriteria = VasopressorCriteria()
     selected: List[SepticShockCriterionName] = Field(
         default_factory=lambda: list(SepticShockCriterionName)

@@ -86,6 +86,8 @@ class SeveritySepsisConfig(DataConfig):
     shock_point_id_col: str = "shock_point_id"
     sepsis3_flag_col: str = "sepsis_3_flag"
     sepsis3_dt_col: str = "sepsis_3_dt"
+    sepsis3_criterion_met_dt_col: str = "sepsis_3_criterion_met_dt"
+    sepsis3_pathway_col: str = "sepsis_3_pathway"
     sepsis3_earliest_evidence_dt_col: str = (
         "sepsis_3_earliest_evidence_dt"
     )

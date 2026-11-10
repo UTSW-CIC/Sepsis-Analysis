@@ -6,7 +6,6 @@ import polars as pl
 from src_strategy.configs.aggregator import (
     AggregatorConfig,
     FEATURE_REGISTRY,
-    FeatureColumn,
     FeatureConfig,
     FeatureDefinition,
 )
@@ -60,18 +59,14 @@ def test_prepare_event_table_keeps_null_values_for_flags() -> None:
     assert result[EVENT_VALUE_COL].null_count() == 1
 
 
-def test_vasopressor_features_require_positive_medication_administration() -> None:
-    vasopressor_features = (
-        FeatureColumn.LAST_VASOPRESSIN_24H,
-        FeatureColumn.LAST_PHENYLEPHRINE_24H,
-        FeatureColumn.LAST_NOREPINEPHRINE_24H,
-        FeatureColumn.LAST_EPINEPHRINE_24H,
+def test_vasopressors_are_not_registered_as_rolling_features() -> None:
+    assert all(
+        "vasopress" not in feature_column.value.lower()
+        and "phenylephrine" not in feature_column.value.lower()
+        and "norepinephrine" not in feature_column.value.lower()
+        and "epinephrine" not in feature_column.value.lower()
+        for feature_column in FEATURE_REGISTRY
     )
-
-    for feature_column in vasopressor_features:
-        feature = FEATURE_REGISTRY[feature_column]
-        assert feature.event_type_value == "Medication Administration"
-        assert feature.require_positive_value is True
 
 
 def test_positive_vasopressor_administration_is_carried_forward() -> None:

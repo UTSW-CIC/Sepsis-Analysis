@@ -87,6 +87,7 @@ def build_sepsis2_associations(
         config.infection_anchor_id_col,
         infection.variable_name_col,
         infection.value_name_dt_col,
+        infection.criterion_met_datetime_col,
         infection.value_type_col,
     }
     missing_anchors = sorted(
@@ -197,6 +198,7 @@ def build_sepsis2_associations(
         config.infection_anchor_id_col,
         infection.variable_name_col,
         infect_dt_col,
+        infection.criterion_met_datetime_col,
         infection.value_type_col,
         window_start_col,
         window_end_col,

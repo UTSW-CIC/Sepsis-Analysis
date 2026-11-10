@@ -14,6 +14,8 @@ def build_infection_anchors(
 ) -> pl.DataFrame:
     """Return one canonical anchor for each suspected-infection episode."""
     infection = config.suspected_infection_config
+    criterion_met_col = infection.criterion_met_datetime_col
+    has_criterion_met = criterion_met_col in df_infection.columns
     required_cols = [
         config.encounter_col,
         infection.infection_episode_id_col,
@@ -21,6 +23,8 @@ def build_infection_anchors(
         infection.variable_name_col,
         infection.value_type_col,
     ]
+    if has_criterion_met:
+        required_cols.append(criterion_met_col)
     missing = sorted(set(required_cols).difference(df_infection.columns))
     if missing:
         raise ValueError(
@@ -40,8 +44,21 @@ def build_infection_anchors(
         .agg(
             pl.col(infection.value_name_dt_col).n_unique().alias("_infect_dt_n"),
             pl.col(infection.value_type_col).n_unique().alias("_type_n"),
+            *(
+                [pl.col(criterion_met_col).n_unique().alias("_criterion_met_n")]
+                if has_criterion_met
+                else []
+            ),
         )
-        .filter((pl.col("_infect_dt_n") != 1) | (pl.col("_type_n") != 1))
+        .filter(
+            (pl.col("_infect_dt_n") != 1)
+            | (pl.col("_type_n") != 1)
+            | (
+                (pl.col("_criterion_met_n") != 1)
+                if has_criterion_met
+                else pl.lit(False)
+            )
+        )
     )
     if not inconsistent.is_empty():
         raise ValueError(
@@ -58,11 +75,21 @@ def build_infection_anchors(
             .str.join("+")
             .alias(infection.variable_name_col),
             pl.col(infection.value_name_dt_col).first(),
+            *(
+                [pl.col(criterion_met_col).first()]
+                if has_criterion_met
+                else [
+                    pl.col(infection.value_name_dt_col)
+                    .first()
+                    .alias(criterion_met_col)
+                ]
+            ),
             pl.col(infection.value_type_col).first(),
         )
         .sort(
             config.encounter_col,
             infection.value_name_dt_col,
+            criterion_met_col,
             infection.value_type_col,
             infection.infection_episode_id_col,
         )
@@ -78,6 +105,7 @@ def build_infection_anchors(
             infection.infection_episode_id_col,
             infection.variable_name_col,
             infection.value_name_dt_col,
+            criterion_met_col,
             infection.value_type_col,
         )
     )

@@ -430,12 +430,16 @@ def build_septic_shock_point_evidence(
     *,
     config: SepticShockConfig = septicshock_config,
 ) -> pl.DataFrame:
-    """Return one qualifying vasopressor point per encounter/timestamp."""
+    """Return one linked qualifying vasopressor administration event."""
     criterion = config.vasopressor_criteria
     required = {
         config.encounter_col,
         config.event_dt_col,
         config.grouper_col,
+        config.event_id,
+        criterion.order_datetime_col,
+        criterion.administration_datetime_col,
+        criterion.anchor_datetime_col,
         criterion.qualifying_dose_flag_col,
     }
     missing = sorted(required.difference(df_vasopressor_evidence.columns))
@@ -447,7 +451,14 @@ def build_septic_shock_point_evidence(
         df_vasopressor_evidence.filter(
             pl.col(criterion.qualifying_dose_flag_col) == 1
         )
-        .group_by(config.encounter_col, config.event_dt_col)
+        .group_by(
+            config.encounter_col,
+            config.grouper_col,
+            config.event_id,
+            criterion.administration_datetime_col,
+            criterion.order_datetime_col,
+            criterion.anchor_datetime_col,
+        )
         .agg(
             pl.len().cast(pl.Int64).alias("qualifying_vasopressor_dose_count"),
             pl.col(config.grouper_col)
@@ -455,7 +466,11 @@ def build_septic_shock_point_evidence(
             .sort()
             .alias("qualifying_vasopressor_groupers"),
         )
-        .sort(config.encounter_col, config.event_dt_col)
+        .sort(
+            config.encounter_col,
+            criterion.administration_datetime_col,
+            criterion.anchor_datetime_col,
+        )
         .with_columns(
             pl.int_range(1, pl.len() + 1)
             .over(config.encounter_col)
@@ -463,12 +478,21 @@ def build_septic_shock_point_evidence(
             .alias("shock_point_id"),
             pl.lit("vasopressor_administration").alias("shock_point_type"),
         )
-        .rename({config.event_dt_col: "shock_point_time"})
+        .with_columns(
+            pl.col(criterion.administration_datetime_col).alias(
+                "shock_point_time"
+            )
+        )
         .select(
             config.encounter_col,
             "shock_point_id",
             "shock_point_time",
             "shock_point_type",
+            config.grouper_col,
+            config.event_id,
+            criterion.order_datetime_col,
+            criterion.administration_datetime_col,
+            criterion.anchor_datetime_col,
             "qualifying_vasopressor_dose_count",
             "qualifying_vasopressor_groupers",
         )

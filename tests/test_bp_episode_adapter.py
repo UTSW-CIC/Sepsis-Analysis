@@ -62,9 +62,9 @@ def _encounters(rows: list[tuple[int, float | None]]) -> pl.DataFrame:
     )
 
 
-def test_bp_episode_filter_is_independent_and_disabled_by_default() -> None:
+def test_bp_episode_filter_is_classification_active_by_default() -> None:
     assert bp_episode_filter_config.status_name == "hypotension"
-    assert bp_episode_filter_config.enabled is False
+    assert bp_episode_filter_config.enabled is True
     assert bp_episode_filter_config.bridge_unknown is True
     assert bp_episode_filter_config.negative_gap_minutes == 20.0
     assert bp_episode_filter_config.minimum_positive_minutes == 20.0

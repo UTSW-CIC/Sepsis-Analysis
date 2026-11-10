@@ -13,7 +13,13 @@ def build_vasopressor_evidence(
     *,
     config: SepticShockConfig = septicshock_config,
 ) -> pl.DataFrame:
-    """Retain every vasopressor event and mark qualifying administrations."""
+    """Link orders to administrations and mark positive administered doses.
+
+    Every source vasopressor row remains visible. An order supplies an audit
+    anchor only when it shares encounter, grouper, and Event_ID with an
+    administration. Administration without a linked order remains eligible and
+    uses its own timestamp as the anchor.
+    """
     criterion = config.vasopressor_criteria
     required = {
         config.encounter_col,
@@ -43,27 +49,85 @@ def build_vasopressor_evidence(
             "cannot be null"
         )
 
+    event_id_col = config.event_id
+    if event_id_col not in evidence.columns:
+        evidence = evidence.with_columns(
+            pl.lit(None, dtype=pl.Int64).alias(event_id_col)
+        )
+
+    link_keys = [config.encounter_col, config.grouper_col, event_id_col]
+    linked_orders = (
+        evidence.filter(
+            (pl.col(config.type_col) == criterion.order_type_value)
+            & pl.col(event_id_col).is_not_null()
+        )
+        .group_by(link_keys)
+        .agg(
+            pl.col(config.event_dt_col)
+            .min()
+            .alias(criterion.order_datetime_col),
+            pl.col(config.event_dt_col).n_unique().alias("_order_time_count"),
+        )
+    )
+    ambiguous_order_links = linked_orders.filter(
+        pl.col("_order_time_count") > 1
+    ).height
+    if ambiguous_order_links:
+        raise ValueError(
+            "Vasopressor linkage found "
+            f"{ambiguous_order_links} encounter/grouper/Event_ID keys with "
+            "multiple distinct order timestamps"
+        )
+    linked_orders = linked_orders.drop("_order_time_count")
+    evidence = evidence.join(
+        linked_orders,
+        on=link_keys,
+        how="left",
+        validate="m:1",
+    )
+
     # Approved decision: an order alone does not establish shock. A row
     # qualifies only when it records an actual medication administration with
     # a positive dose. Zero and null doses remain in this evidence table.
     qualifying_dose = (
-        (pl.col(config.type_col) == criterion.event_type_value)
+        (pl.col(config.type_col) == criterion.administration_type_value)
         & pl.col(criterion.dose_col).is_not_null()
         & (pl.col(criterion.dose_col) > 0)
     )
     return (
         evidence.with_columns(
+            pl.when(
+                pl.col(config.type_col) == criterion.administration_type_value
+            )
+            .then(pl.col(config.event_dt_col))
+            .otherwise(pl.lit(None, dtype=evidence.schema[config.event_dt_col]))
+            .alias(criterion.administration_datetime_col),
             qualifying_dose.cast(pl.Int8).alias(
                 criterion.qualifying_dose_flag_col
+            ),
+        )
+        .with_columns(
+            pl.when(pl.col(criterion.qualifying_dose_flag_col) == 1)
+            .then(
+                pl.coalesce(
+                    criterion.order_datetime_col,
+                    criterion.administration_datetime_col,
+                )
             )
+            .otherwise(pl.lit(None, dtype=evidence.schema[config.event_dt_col]))
+            .alias(criterion.anchor_datetime_col)
         )
         .select(
             config.encounter_col,
             config.event_dt_col,
+            event_id_col,
             config.type_col,
             config.grouper_col,
             config.event_name_col,
             criterion.dose_col,
+            criterion.order_datetime_col,
+            criterion.administration_datetime_col,
+            criterion.anchor_datetime_col,
             criterion.qualifying_dose_flag_col,
         )
         .sort(
@@ -73,6 +137,68 @@ def build_vasopressor_evidence(
             config.event_name_col,
         )
     )
+
+
+def build_lactate_gt2_evidence(
+    df_events: pl.DataFrame,
+    *,
+    config: SepticShockConfig = septicshock_config,
+) -> pl.DataFrame:
+    """Return one auditable event row for every lactate result above 2."""
+    criterion = config.lactate2_criteria
+    required = {
+        config.encounter_col,
+        config.event_dt_col,
+        config.type_col,
+        config.grouper_col,
+        config.event_name_col,
+        config.val_col,
+    }
+    missing = sorted(required.difference(df_events.columns))
+    if missing:
+        raise ValueError(
+            f"Lactate >2 evidence input is missing required columns: {missing}"
+        )
+
+    event_id_col = config.event_id
+    events = df_events
+    if event_id_col not in events.columns:
+        events = events.with_columns(
+            pl.lit(None, dtype=pl.Int64).alias(event_id_col)
+        )
+
+    evidence = (
+        events.filter(
+            (pl.col(config.type_col) == criterion.event_type_value)
+            & (pl.col(config.grouper_col) == criterion.event_grouper_value)
+            & pl.col(config.val_col).is_not_null()
+            & (pl.col(config.val_col) > criterion.lactate_threshold)
+        )
+        .sort(
+            config.encounter_col,
+            config.event_dt_col,
+            event_id_col,
+            config.event_name_col,
+        )
+        .with_columns(
+            pl.int_range(1, pl.len() + 1)
+            .over(config.encounter_col)
+            .cast(pl.Int64)
+            .alias(criterion.evidence_id_col),
+            pl.col(config.event_dt_col).alias(criterion.evidence_datetime_col),
+            pl.col(config.val_col).alias(criterion.evidence_value_col),
+        )
+        .select(
+            config.encounter_col,
+            criterion.evidence_id_col,
+            criterion.evidence_datetime_col,
+            criterion.evidence_value_col,
+            pl.col(config.type_col).alias("lactate_source_type"),
+            pl.col(event_id_col).alias("lactate_source_event_id"),
+            pl.col(config.event_name_col).alias("lactate_source_event_name"),
+        )
+    )
+    return evidence
 
 
 def attach_vasopressor_evidence(

@@ -27,12 +27,9 @@ from src_strategy.events.pulmonarydysfunction import (
     build_pulmonary_state_timeline,
 )
 from src_strategy.events.septicshock import (
-    build_septic_shock_interval_episodes,
-    build_septic_shock_interval_segments,
-    build_septic_shock_pipeline,
+    build_lactate_gt2_evidence,
     build_septic_shock_point_evidence,
     build_vasopressor_evidence,
-    prepare_septic_shock_input,
 )
 from src_strategy.configs.sirscalculator import sirs_config
 from src_strategy.configs.severitysepsis import severitysepsisconfig
@@ -83,7 +80,6 @@ from src_strategy.run_validation import (
     validate_encounter_summary,
     validate_positive_flags_have_timestamps,
     validate_sepsis2_uses_selected_first_organ_episodes,
-    validate_sepsis3_is_subset_of_sepsis2,
     validate_unique_association_grain,
     validate_written_output_tables,
 )
@@ -94,7 +90,6 @@ from src_strategy.configs.shortdurationfilter import (
     sirs_episode_filter_config,
 )
 from src_strategy.events.hypotension import (
-    attach_effective_hypotension,
     build_bp_state_segments,
     build_effective_hypotension_episodes,
 )
@@ -291,54 +286,27 @@ df_organ_dysfunction_episodes = build_organ_dysfunction_episodes(
     config=organdysfunction_config,
 )
 
-# Reuse the existing BP segment reconstruction and episode filter before shock
-# whenever duration filtering is enabled. Raw BP flags remain available for
-# audit, while the effective flag controls their contribution to shock.
-bp_episode_results = None
-df_effective_hypotension_episodes = None
-if bp_episode_filter_config.enabled:
-    df_bp_segments = build_bp_state_segments(
-        df_aggregated,
-        df_encounters,
-        config=septicshock_config,
-    )
-    bp_episode_results = run_episode_filter(
-        df_bp_segments,
-        config=bp_episode_filter_config,
-    )
-    df_effective_hypotension_episodes = (
-        build_effective_hypotension_episodes(bp_episode_results)
-    )
+# Reconstruct and filter BP episodes before Sepsis 3 composition. This filter
+# is classification-active and is therefore always applied.
+df_bp_segments = build_bp_state_segments(
+    df_aggregated,
+    df_encounters,
+    config=septicshock_config,
+)
+bp_episode_results = run_episode_filter(
+    df_bp_segments,
+    config=bp_episode_filter_config,
+)
+df_effective_hypotension_episodes = build_effective_hypotension_episodes(
+    bp_episode_results
+)
 
 df_vasopressor_evidence = build_vasopressor_evidence(
     df_all_no_collisions,
     config=septicshock_config,
 )
-df_septic_shock_base_input = prepare_septic_shock_input(
-    df_aggregated,
-    df_encounters,
-    df_vasopressor_evidence,
-    config=septicshock_config,
-)
-df_septic_shock_input = df_septic_shock_base_input
-if bp_episode_filter_config.enabled:
-    df_septic_shock_input = attach_effective_hypotension(
-        df_septic_shock_input,
-        df_effective_hypotension_episodes,
-    )
-df_septic_shock = build_septic_shock_pipeline(
-    septicshock_config,
-    use_filtered_hypotension=bp_episode_filter_config.enabled,
-).process(df_septic_shock_input)
-df_septic_shock_interval_segments = build_septic_shock_interval_segments(
-    df_septic_shock_base_input,
-    df_effective_hypotension_episodes,
-    use_filtered_hypotension=bp_episode_filter_config.enabled,
-    config=septicshock_config,
-)
-df_septic_shock_interval_episodes = build_septic_shock_interval_episodes(
-    df_septic_shock_interval_segments,
-    use_filtered_hypotension=bp_episode_filter_config.enabled,
+df_lactate_gt2_evidence = build_lactate_gt2_evidence(
+    df_all_no_collisions,
     config=septicshock_config,
 )
 df_septic_shock_point_evidence = build_septic_shock_point_evidence(
@@ -391,8 +359,10 @@ df_sepsis2_encounters = build_sepsis2_encounter_summary(
     config=severitysepsisconfig,
 )
 df_sepsis3_associations = build_sepsis3_associations(
+    df_infection_anchors,
     df_sepsis2_associations,
-    df_septic_shock_interval_episodes,
+    df_effective_hypotension_episodes,
+    df_lactate_gt2_evidence,
     df_septic_shock_point_evidence,
     config=severitysepsisconfig,
 )
@@ -417,13 +387,7 @@ clinical_outputs = {
         df_organ_dysfunction_episodes
     ),
     "df_vasopressor_evidence.parquet": df_vasopressor_evidence,
-    "df_septic_shock.parquet": df_septic_shock,
-    "df_septic_shock_interval_segments.parquet": (
-        df_septic_shock_interval_segments
-    ),
-    "df_septic_shock_interval_episodes.parquet": (
-        df_septic_shock_interval_episodes
-    ),
+    "df_lactate_gt2_evidence.parquet": df_lactate_gt2_evidence,
     "df_septic_shock_point_evidence.parquet": (
         df_septic_shock_point_evidence
     ),
@@ -549,10 +513,15 @@ if run_mode is RunMode.VERSIONED:
 
     validation_results.extend(
         [
-            validate_sepsis3_is_subset_of_sepsis2(
-                df_sepsis2_encounters,
+            validate_positive_flags_have_timestamps(
                 df_sepsis3_encounters,
-                config=severitysepsisconfig,
+                flag_col=severitysepsisconfig.sepsis3_flag_col,
+                timestamp_col=(
+                    severitysepsisconfig.sepsis3_criterion_met_dt_col
+                ),
+                validation_name=(
+                    "sepsis3_positive_has_criterion_completion_timestamp"
+                ),
             ),
             validate_unique_association_grain(
                 df_sepsis1_associations,
@@ -577,7 +546,7 @@ if run_mode is RunMode.VERSIONED:
                 key_columns=[
                     severitysepsisconfig.encounter_col,
                     severitysepsisconfig.infection_anchor_id_col,
-                    severitysepsisconfig.organ_episode_id_col,
+                    severitysepsisconfig.sepsis3_pathway_col,
                     "shock_evidence_key",
                 ],
                 validation_name="sepsis3_association_grain_is_unique",

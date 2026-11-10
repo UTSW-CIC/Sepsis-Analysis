@@ -34,11 +34,12 @@ sirs_episode_filter_config = EpisodeFilterConfig(
 )
 
 
-# Hypotension duration filtering remains exploratory. The adapter and its
-# independent settings can be tested without changing encounter classification.
+# Hypotension duration filtering is part of the approved septic-shock logic.
+# Raw BP flags remain available for audit, while the filtered effective state
+# supplies the classification-active hypotension evidence.
 bp_episode_filter_config = EpisodeFilterConfig(
     status_name="hypotension",
-    enabled=False,
+    enabled=True,
     bridge_unknown=True,
     negative_gap_minutes=20.0,
     minimum_positive_minutes=20.0,

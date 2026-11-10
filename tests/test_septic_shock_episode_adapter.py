@@ -168,17 +168,35 @@ def test_vasopressor_points_keep_only_positive_administrations() -> None:
                 "Norepinephrine",
                 "Phenylephrine",
             ],
+            "Event_ID": [10, 11, 12, 13],
+            "vasopressor_order_time": [None, None, None, None],
+            "vasopressor_administration_time": [
+                START,
+                START,
+                START + timedelta(hours=1),
+                START + timedelta(hours=2),
+            ],
+            "vasopressor_anchor_time": [
+                START,
+                START,
+                None,
+                None,
+            ],
             "vasopressor_qualifying_dose_flag": [1, 1, 0, 0],
         },
-        schema_overrides={"vasopressor_qualifying_dose_flag": pl.Int8},
+        schema_overrides={
+            "vasopressor_order_time": pl.Datetime,
+            "vasopressor_anchor_time": pl.Datetime,
+            "vasopressor_qualifying_dose_flag": pl.Int8,
+        },
     )
 
     points = build_septic_shock_point_evidence(evidence, config=config)
 
-    assert points.height == 1
-    assert points["shock_point_time"].to_list() == [START]
-    assert points["qualifying_vasopressor_dose_count"].to_list() == [2]
-    assert points["qualifying_vasopressor_groupers"].to_list() == [[
-        "Norepinephrine",
-        "Vasopressin",
-    ]]
+    assert points.height == 2
+    assert points["shock_point_time"].to_list() == [START, START]
+    assert points["qualifying_vasopressor_dose_count"].to_list() == [1, 1]
+    assert sorted(points["qualifying_vasopressor_groupers"].to_list()) == [
+        ["Norepinephrine"],
+        ["Vasopressin"],
+    ]

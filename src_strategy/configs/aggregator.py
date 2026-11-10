@@ -44,11 +44,6 @@ class FeatureColumn(str, Enum):
     # LASTeurological
     LAST_GCS_12H             = auto()
 
-    # LASTasopressors
-    LAST_VASOPRESSIN_24H     = auto()
-    LAST_PHENYLEPHRINE_24H   = auto()
-    LAST_NOREPINEPHRINE_24H  = auto()
-    LAST_EPINEPHRINE_24H     = auto()
 
 class BaselineColumn(str, Enum):
     BASELINE_CREATININE     = "Baseline_Creatinine"
@@ -278,47 +273,6 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
         lookback_period=12*60
     ),
 
-    # Vasopressors
-    # TODO:Question: There are two Event_Names: VASOPRESSIN 20 UNIT/ML, VASOPRESSIN 0.2 UNIT/ML
-    # Numeric values vary between 0.0 up to 40
-    FeatureColumn.LAST_VASOPRESSIN_24H: FeatureDefinition(
-        event_grouper="Vasopressin",
-        alias=FeatureColumn.LAST_VASOPRESSIN_24H,
-        event_type_value="Medication Administration",
-        require_positive_value=True,
-        agg_type="flag",
-        agg="last",
-        lookback_period=24*60
-    ),
-    # # TODO: Question: There are multiple Event_Names for Phenylephrine: PHENYLEPHRINE 10 MG/ML, PHENYLEPHRINE 0.1 MG/ML, PHENYLEPHRINE 1 MG/ML, PHENYLEPHRINE 20 MG/ML, PHENYLEPHRINE 2 MG/ML, PHENYLEPHRINE 5 MG/ML
-    FeatureColumn.LAST_PHENYLEPHRINE_24H: FeatureDefinition(
-        event_grouper="Phenylephrine",
-        alias=FeatureColumn.LAST_PHENYLEPHRINE_24H,
-        event_type_value="Medication Administration",
-        require_positive_value=True,
-        agg_type="flag",
-        agg="last",
-        lookback_period=24*60
-    ),
-    
-    FeatureColumn.LAST_NOREPINEPHRINE_24H: FeatureDefinition(
-        event_grouper="Norepinephrine",
-        alias=FeatureColumn.LAST_NOREPINEPHRINE_24H,
-        event_type_value="Medication Administration",
-        require_positive_value=True,
-        agg_type="flag",
-        agg="last",
-        lookback_period=24*60
-    ),
-    FeatureColumn.LAST_EPINEPHRINE_24H: FeatureDefinition(
-        event_grouper="Epinephrine",
-        alias=FeatureColumn.LAST_EPINEPHRINE_24H,
-        event_type_value="Medication Administration",
-        require_positive_value=True,
-        agg_type="flag",
-        agg="last",
-        lookback_period=24*60
-    ),
 }
 
 class FeatureConfig(DataConfig):

@@ -678,8 +678,57 @@ class LactateCultureCriterion(SuspectedInfectionCriterion):
 class CodeSepsisCriterion(SuspectedInfectionCriterion):
     def detect(self, df: pl.DataFrame) -> pl.DataFrame:
         config = self.config.code_sepsis_config
+        event_filter = pl.lit(False)
+        for event_pair in config.event_pairs:
+            event_filter = event_filter | (
+                (
+                    pl.col(self.config.grouper_col)
+                    == event_pair.grouper_val
+                )
+                & (
+                    pl.col(self.config.event_name_col)
+                    == event_pair.event_name_val
+                )
+            )
         events = (
-            df.filter(pl.col(self.config.grouper_col) == config.grouper_val)
+            df.filter(event_filter)
+            .select(
+                self.config.encounter_col,
+                pl.col(self.config.event_dt_col).alias("_event_dt"),
+            )
+            .drop_nulls([self.config.encounter_col, "_event_dt"])
+            .unique()
+            .sort(self.config.encounter_col, "_event_dt")
+            .with_columns(
+                (
+                    pl.lit(f"{config.long_value}:")
+                    + pl.int_range(1, pl.len() + 1)
+                    .over(self.config.encounter_col)
+                    .cast(pl.String)
+                ).alias("_infection_episode_id"),
+                pl.col("_event_dt").alias("_infect_dt"),
+                pl.col("_event_dt").alias("_criterion_met_dt"),
+            )
+        )
+        return self._long_rows(
+            events,
+            "_event_dt",
+            config.datetime_col,
+            config.long_value,
+        )
+
+
+class SepsisDocumentationEventCriterion(SuspectedInfectionCriterion):
+    def detect(self, df: pl.DataFrame) -> pl.DataFrame:
+        config = self.config.sepsis_doc_event_config
+        events = (
+            df.filter(
+                (pl.col(self.config.grouper_col) == config.grouper_val)
+                & (
+                    pl.col(self.config.event_name_col)
+                    == config.event_name_val
+                )
+            )
             .select(
                 self.config.encounter_col,
                 pl.col(self.config.event_dt_col).alias("_event_dt"),

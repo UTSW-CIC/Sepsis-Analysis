@@ -27,12 +27,9 @@ from src_strategy.events.pulmonarydysfunction import (
     build_pulmonary_state_timeline,
 )
 from src_strategy.events.septicshock import (
-    build_septic_shock_interval_episodes,
-    build_septic_shock_interval_segments,
-    build_septic_shock_pipeline,
+    build_lactate_gt2_evidence,
     build_septic_shock_point_evidence,
     build_vasopressor_evidence,
-    prepare_septic_shock_input,
 )
 from src_strategy.configs.sirscalculator import sirs_config
 from src_strategy.configs.severitysepsis import severitysepsisconfig
@@ -83,7 +80,6 @@ from src_strategy.run_validation import (
     validate_encounter_summary,
     validate_positive_flags_have_timestamps,
     validate_sepsis2_uses_selected_first_organ_episodes,
-    validate_sepsis3_is_subset_of_sepsis2,
     validate_unique_association_grain,
     validate_written_output_tables,
 )
@@ -94,7 +90,6 @@ from src_strategy.configs.shortdurationfilter import (
     sirs_episode_filter_config,
 )
 from src_strategy.events.hypotension import (
-    attach_effective_hypotension,
     build_bp_state_segments,
     build_effective_hypotension_episodes,
 )
@@ -125,10 +120,9 @@ def parse_run_mode() -> RunMode:
     return RunMode(arguments.run_mode)
 
 
-# run_mode = parse_run_mode()
-run_mode = RunMode.DEVELOPMENT
+run_mode = parse_run_mode()
 repository_root = Path(__file__).resolve().parent
-# enforce_run_mode_preconditions(run_mode, repository_root)
+enforce_run_mode_preconditions(run_mode, repository_root)
 
 # Reserve an immutable run identity before clinical processing starts. If the
 # pipeline later fails, the `.incomplete` directory is retained for review.
@@ -162,14 +156,14 @@ if run_mode is RunMode.VERSIONED:
 setup_root_logger(log_dir=input_output_config_4.logger_dir)
 logger = get_logger(__name__)
 
-# dl = DataLoader(input_output_config_4,
-#                 data_config,
-#                 bp_config,
-#                 flowsheet_bounds_config,
-#                 lab_bounds_config,
-#                 bp_bounds_config)
+dl = DataLoader(input_output_config_4,
+                data_config,
+                bp_config,
+                flowsheet_bounds_config,
+                lab_bounds_config,
+                bp_bounds_config)
 
-# df_all, df_encounters = dl.load_data()
+df_all, df_encounters = dl.load_data()
 if bp_config.calculate_map:
     df_all_file_name = "df_all.parquet"
     df_all_no_collisions_file_name = "df_all_no_collisions.parquet"
@@ -179,64 +173,64 @@ else:
     df_all_no_collisions_file_name = "df_all_no_collisions_map_measured_only.parquet"
     df_aggregated_file_name = "df_aggregated_map_measured_only.parquet"
 
-# save_df(df_all, input_output_config_4.output_path, df_all_file_name, logger, message=f"Data injestion & Preprocessing completed, and data is saved to {input_output_config_4.output_path+'/'+df_all_file_name}")
-# save_df(df_encounters, input_output_config_4.output_path, "df_encounters.parquet", logger, message=f"Encounters data is saved to {input_output_config_4.output_path+'/df_encounters.parquet'}")
+save_df(df_all, input_output_config_4.output_path, df_all_file_name, logger, message=f"Data injestion & Preprocessing completed, and data is saved to {input_output_config_4.output_path+'/'+df_all_file_name}")
+save_df(df_encounters, input_output_config_4.output_path, "df_encounters.parquet", logger, message=f"Encounters data is saved to {input_output_config_4.output_path+'/df_encounters.parquet'}")
 
-df_all = load_df(input_output_config_4.output_path, df_all_file_name)
-df_encounters = load_df(input_output_config_4.output_path, "df_encounters.parquet")
+# df_all = load_df(input_output_config_4.output_path, df_all_file_name)
+# df_encounters = load_df(input_output_config_4.output_path, "df_encounters.parquet")
 
 
 # Preserve measured MAP as its own source event. Systolic/diastolic blood
 # pressure and measured MAP are resolved independently before aggregation, so
 # no MAP grouper normalization is performed here.
 # Keep procedure-order lactate distinct from resulted lab lactate.
-# df_all = df_all.with_columns(
-#     pl.when(
-#         (pl.col(collision_config.grouper_col) == "Lactate")&
-#         (pl.col(collision_config.type_col) == "Procedure Order")
-#     ).then(
-#         pl.lit('Lactate-Procedure-Order')
-#     ).otherwise(pl.col(collision_config.grouper_col)).alias(collision_config.grouper_col)
-# )
-# rc = ResolveCollision(collision_config, input_output_config_4)
-# df_all_no_collisions = rc.resolve(df_all)
-# df_pf_events = PFRatioBuilder(pf_config).build(df_all_no_collisions)
-# backbone = df_all_no_collisions.select([collision_config.encounter_col, collision_config.event_dt_col]).unique().sort(collision_config.encounter_col, collision_config.event_dt_col)
-# save_df(df_all_no_collisions, input_output_config_4.output_path, df_all_no_collisions_file_name, logger,
-#          message=f"Handling numerical value collisions completed, and data is saved to {input_output_config_4.output_path+'/'+df_all_no_collisions_file_name}")
-# save_df(backbone, input_output_config_4.output_path, "backbone.parquet", logger,
-#          message=f"Backbone (unique encounter, event_dt) is saved to {input_output_config_4.output_path+'/backbone.parquet'}")
-df_all_no_collisions = load_df(input_output_config_4.output_path, df_all_no_collisions_file_name)
-backbone = load_df(input_output_config_4.output_path, "backbone.parquet")
+df_all = df_all.with_columns(
+    pl.when(
+        (pl.col(collision_config.grouper_col) == "Lactate")&
+        (pl.col(collision_config.type_col) == "Procedure Order")
+    ).then(
+        pl.lit('Lactate-Procedure-Order')
+    ).otherwise(pl.col(collision_config.grouper_col)).alias(collision_config.grouper_col)
+)
+rc = ResolveCollision(collision_config, input_output_config_4)
+df_all_no_collisions = rc.resolve(df_all)
+df_pf_events = PFRatioBuilder(pf_config).build(df_all_no_collisions)
+backbone = df_all_no_collisions.select([collision_config.encounter_col, collision_config.event_dt_col]).unique().sort(collision_config.encounter_col, collision_config.event_dt_col)
+save_df(df_all_no_collisions, input_output_config_4.output_path, df_all_no_collisions_file_name, logger,
+         message=f"Handling numerical value collisions completed, and data is saved to {input_output_config_4.output_path+'/'+df_all_no_collisions_file_name}")
+save_df(backbone, input_output_config_4.output_path, "backbone.parquet", logger,
+         message=f"Backbone (unique encounter, event_dt) is saved to {input_output_config_4.output_path+'/backbone.parquet'}")
+# df_all_no_collisions = load_df(input_output_config_4.output_path, df_all_no_collisions_file_name)
+# backbone = load_df(input_output_config_4.output_path, "backbone.parquet")
 
-# suspected_infection_pipeline = build_suspected_infection_pipeline(
-#     suspected_infection_config
-# )
-# df_suspected_infection = suspected_infection_pipeline.process(
-#     df_all_no_collisions
-# )
-# save_df(
-#     df_suspected_infection,
-#     input_output_config_4.output_path,
-#     "df_suspected_infection.parquet",
-#     logger,
-#     message="Suspected-infection detection completed",
-# )
-
-df_suspected_infection = load_df(
+suspected_infection_pipeline = build_suspected_infection_pipeline(
+    suspected_infection_config
+)
+df_suspected_infection = suspected_infection_pipeline.process(
+    df_all_no_collisions
+)
+save_df(
+    df_suspected_infection,
     input_output_config_4.output_path,
     "df_suspected_infection.parquet",
+    logger,
+    message="Suspected-infection detection completed",
 )
 
-# agg = Aggregator(
-#     agg_config,
-#     feature_config
+# df_suspected_infection = load_df(
+#     input_output_config_4.output_path,
+#     "df_suspected_infection.parquet",
 # )
-# df_aggregated = agg.aggregate(df_all_no_collisions, backbone)
-# save_df(df_aggregated, input_output_config_4.output_path, df_aggregated_file_name, logger,
-#          message=f"Aggregation completed, and data is saved to {input_output_config_4.output_path+'/'+df_aggregated_file_name}")
 
-df_aggregated = load_df(input_output_config_4.output_path, df_aggregated_file_name)
+agg = Aggregator(
+    agg_config,
+    feature_config
+)
+df_aggregated = agg.aggregate(df_all_no_collisions, backbone)
+save_df(df_aggregated, input_output_config_4.output_path, df_aggregated_file_name, logger,
+         message=f"Aggregation completed, and data is saved to {input_output_config_4.output_path+'/'+df_aggregated_file_name}")
+
+# df_aggregated = load_df(input_output_config_4.output_path, df_aggregated_file_name)
 
 # Pulmonary evidence must be constructed from the collision-free event table,
 # while its reconstructed state is attached to the temporal aggregate table.
@@ -290,54 +284,27 @@ df_organ_dysfunction_episodes = build_organ_dysfunction_episodes(
     pulmonary_config=pulmonary_dysfunction_config,
 )
 
-# Reuse the existing BP segment reconstruction and episode filter before shock
-# whenever duration filtering is enabled. Raw BP flags remain available for
-# audit, while the effective flag controls their contribution to shock.
-bp_episode_results = None
-df_effective_hypotension_episodes = None
-if bp_episode_filter_config.enabled:
-    df_bp_segments = build_bp_state_segments(
-        df_aggregated,
-        df_encounters,
-        config=septicshock_config,
-    )
-    bp_episode_results = run_episode_filter(
-        df_bp_segments,
-        config=bp_episode_filter_config,
-    )
-    df_effective_hypotension_episodes = (
-        build_effective_hypotension_episodes(bp_episode_results)
-    )
+# Reconstruct and filter BP episodes before Sepsis 3 composition. This filter
+# is classification-active and is therefore always applied.
+df_bp_segments = build_bp_state_segments(
+    df_aggregated,
+    df_encounters,
+    config=septicshock_config,
+)
+bp_episode_results = run_episode_filter(
+    df_bp_segments,
+    config=bp_episode_filter_config,
+)
+df_effective_hypotension_episodes = build_effective_hypotension_episodes(
+    bp_episode_results
+)
 
 df_vasopressor_evidence = build_vasopressor_evidence(
     df_all_no_collisions,
     config=septicshock_config,
 )
-df_septic_shock_base_input = prepare_septic_shock_input(
-    df_aggregated,
-    df_encounters,
-    df_vasopressor_evidence,
-    config=septicshock_config,
-)
-df_septic_shock_input = df_septic_shock_base_input
-if bp_episode_filter_config.enabled:
-    df_septic_shock_input = attach_effective_hypotension(
-        df_septic_shock_input,
-        df_effective_hypotension_episodes,
-    )
-df_septic_shock = build_septic_shock_pipeline(
-    septicshock_config,
-    use_filtered_hypotension=bp_episode_filter_config.enabled,
-).process(df_septic_shock_input)
-df_septic_shock_interval_segments = build_septic_shock_interval_segments(
-    df_septic_shock_base_input,
-    df_effective_hypotension_episodes,
-    use_filtered_hypotension=bp_episode_filter_config.enabled,
-    config=septicshock_config,
-)
-df_septic_shock_interval_episodes = build_septic_shock_interval_episodes(
-    df_septic_shock_interval_segments,
-    use_filtered_hypotension=bp_episode_filter_config.enabled,
+df_lactate_gt2_evidence = build_lactate_gt2_evidence(
+    df_all_no_collisions,
     config=septicshock_config,
 )
 df_septic_shock_point_evidence = build_septic_shock_point_evidence(
@@ -390,8 +357,10 @@ df_sepsis2_encounters = build_sepsis2_encounter_summary(
     config=severitysepsisconfig,
 )
 df_sepsis3_associations = build_sepsis3_associations(
+    df_infection_anchors,
     df_sepsis2_associations,
-    df_septic_shock_interval_episodes,
+    df_effective_hypotension_episodes,
+    df_lactate_gt2_evidence,
     df_septic_shock_point_evidence,
     config=severitysepsisconfig,
 )
@@ -416,13 +385,7 @@ clinical_outputs = {
         df_organ_dysfunction_episodes
     ),
     "df_vasopressor_evidence.parquet": df_vasopressor_evidence,
-    "df_septic_shock.parquet": df_septic_shock,
-    "df_septic_shock_interval_segments.parquet": (
-        df_septic_shock_interval_segments
-    ),
-    "df_septic_shock_interval_episodes.parquet": (
-        df_septic_shock_interval_episodes
-    ),
+    "df_lactate_gt2_evidence.parquet": df_lactate_gt2_evidence,
     "df_septic_shock_point_evidence.parquet": (
         df_septic_shock_point_evidence
     ),
@@ -548,10 +511,15 @@ if run_mode is RunMode.VERSIONED:
 
     validation_results.extend(
         [
-            validate_sepsis3_is_subset_of_sepsis2(
-                df_sepsis2_encounters,
+            validate_positive_flags_have_timestamps(
                 df_sepsis3_encounters,
-                config=severitysepsisconfig,
+                flag_col=severitysepsisconfig.sepsis3_flag_col,
+                timestamp_col=(
+                    severitysepsisconfig.sepsis3_criterion_met_dt_col
+                ),
+                validation_name=(
+                    "sepsis3_positive_has_criterion_completion_timestamp"
+                ),
             ),
             validate_unique_association_grain(
                 df_sepsis1_associations,
@@ -576,7 +544,7 @@ if run_mode is RunMode.VERSIONED:
                 key_columns=[
                     severitysepsisconfig.encounter_col,
                     severitysepsisconfig.infection_anchor_id_col,
-                    severitysepsisconfig.organ_episode_id_col,
+                    severitysepsisconfig.sepsis3_pathway_col,
                     "shock_evidence_key",
                 ],
                 validation_name="sepsis3_association_grain_is_unique",
@@ -605,7 +573,7 @@ if run_mode is RunMode.VERSIONED:
         )
     )
 
-    cached_input_directory = Path(input_output_config_3_1.output_path)
+    cached_input_directory = Path(input_output_config_4.output_path)
     cached_inputs = [
         describe_cached_input(cached_input_directory / filename)
         for filename in [

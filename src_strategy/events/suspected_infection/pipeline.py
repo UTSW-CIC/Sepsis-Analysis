@@ -9,6 +9,7 @@ from .criteria import (
     AntibioticCultureCriterion,
     CodeSepsisCriterion,
     LactateCultureCriterion,
+    SepsisDocumentationEventCriterion,
     SuspectedInfectionCriterion,
     SuspectedInfectionFlowsheetCriterion,
 )
@@ -21,6 +22,7 @@ SUSPECTED_INFECTION_CRITERION_REGISTRY: dict[
     SuspectedInfectionCriterionName.ANTIBIOTIC_CULTURE: AntibioticCultureCriterion,
     SuspectedInfectionCriterionName.LACTATE_CULTURE: LactateCultureCriterion,
     SuspectedInfectionCriterionName.CODE_SEPSIS: CodeSepsisCriterion,
+    SuspectedInfectionCriterionName.SEPSIS_DOC_EVENT: SepsisDocumentationEventCriterion,
     SuspectedInfectionCriterionName.FLOWSHEET: SuspectedInfectionFlowsheetCriterion,
 }
 
