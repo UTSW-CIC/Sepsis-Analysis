@@ -111,6 +111,7 @@ class OrganDysfunctionConfig(DataConfig):
         default_factory=lambda: list(OrganDysfunctionCriterionName)
     )
     flag_col: str = "organ_dysfunction_total"
+    source_evidence_suffix: str = "_source_evidence"
 
     @model_validator(mode="after")
     def validate_selected(self) -> "OrganDysfunctionConfig":

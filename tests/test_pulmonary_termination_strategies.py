@@ -19,8 +19,8 @@ def test_raw_termination_strategies_recognize_documented_signals() -> None:
         {
             "Event_Grouper": [
                 "Vent off Documentation",
-                # "Vent On/Off",
-                # "Vent On/Off",
+                "Vent On/Off",
+                "Vent On/Off",
                 "O2 Delivery Nasal Cannula",
                 "O2 Delivery Simple Face Mask",
                 "O2 Delivery Room Air",
@@ -32,8 +32,8 @@ def test_raw_termination_strategies_recognize_documented_signals() -> None:
             ],
             "Value": [
                 None,
-                # "Standby",
-                # None,
+                "Standby",
+                None,
                 None,
                 None,
                 None,

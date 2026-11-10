@@ -63,6 +63,21 @@ class BaselineColumn(str, Enum):
 class FeatureDefinition(BaseModel):
     event_grouper: str
     alias: str
+    event_type_value: str | None = Field(
+        default=None,
+        description="Optional Type value used to restrict source events",
+    )
+    require_positive_value: bool = Field(
+        default=False,
+        description="Whether source events must have a non-null value greater than zero",
+    )
+    preserve_source_provenance: bool = Field(
+        default=False,
+        description=(
+            "Whether to retain Type, Event_ID, and Event_Name for the selected "
+            "numeric source row"
+        ),
+    )
     agg_type: Literal["flag", "numeric"] = "numeric"
     agg: Literal["max", "min", "last", "sum", "mean"]
     lookback_period: float | None = None
@@ -95,6 +110,31 @@ class FeatureDefinition(BaseModel):
                     f"{sorted(overlapping_values)!r}"
                 )
         return self
+
+
+def source_timestamp_col(alias: str) -> str:
+    return f"{alias}_source_ts"
+
+
+def source_type_col(alias: str) -> str:
+    return f"{alias}_source_type"
+
+
+def source_event_id_col(alias: str) -> str:
+    return f"{alias}_source_event_id"
+
+
+def source_event_name_col(alias: str) -> str:
+    return f"{alias}_source_event_name"
+
+
+def source_provenance_cols(alias: str) -> list[str]:
+    return [
+        source_timestamp_col(alias),
+        source_type_col(alias),
+        source_event_id_col(alias),
+        source_event_name_col(alias),
+    ]
 
 FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     # Temperature
@@ -142,14 +182,8 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
         val_col="sys"
     ),
 
-    # FeatureColumn.LAST_MAP_8h: FeatureDefinition(
-    #     event_grouper="Arterial Blood Pressure Mean",
-    #     alias=FeatureColumn.LAST_MAP_8h,
-    #     agg="last",
-    #     lookback_period=8*60
-    # ),
     FeatureColumn.LAST_MAP_8h: FeatureDefinition(
-        event_grouper="Blood Pressure",
+        event_grouper="Arterial Blood Pressure Mean",
         alias=FeatureColumn.LAST_MAP_8h,
         agg="last",
         lookback_period=8*60,
@@ -174,12 +208,16 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_CREATININE_12H: FeatureDefinition(
         event_grouper="Creatinine",
         alias=FeatureColumn.LAST_CREATININE_12H,
+        event_type_value="Lab Results",
+        preserve_source_provenance=True,
         agg="last",
         lookback_period=12*60
     ),
     FeatureColumn.LAST_EGFR_12H: FeatureDefinition(
         event_grouper="eGFR",
         alias=FeatureColumn.LAST_EGFR_12H,
+        event_type_value="Lab Results",
+        preserve_source_provenance=True,
         agg="last",
         lookback_period=12*60
     ),
@@ -188,6 +226,8 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_BILIRUBIN_12H: FeatureDefinition(
         event_grouper="Bilirubin",
         alias=FeatureColumn.LAST_BILIRUBIN_12H,
+        event_type_value="Lab Results",
+        preserve_source_provenance=True,
         agg="last",
         lookback_period=12*60
     ),
@@ -196,6 +236,8 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_LACTATE_6H: FeatureDefinition(
         event_grouper="Lactate",
         alias=FeatureColumn.LAST_LACTATE_6H,
+        event_type_value="Lab Results",
+        preserve_source_provenance=True,
         agg="last",
         lookback_period=6*60
     ),
@@ -204,18 +246,24 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_PLATELETS_24H: FeatureDefinition(
         event_grouper="Platelets",
         alias=FeatureColumn.LAST_PLATELETS_24H,
+        event_type_value="Lab Results",
+        preserve_source_provenance=True,
         agg="last",
         lookback_period=24*60
     ),
     FeatureColumn.LAST_INR_12H: FeatureDefinition(
         event_grouper="INR",
         alias=FeatureColumn.LAST_INR_12H,
+        event_type_value="Lab Results",
+        preserve_source_provenance=True,
         agg="last",
         lookback_period=12*60
     ),
     FeatureColumn.LAST_APTT_24H: FeatureDefinition(
         event_grouper="APTT",
         alias=FeatureColumn.LAST_APTT_24H,
+        event_type_value="Lab Results",
+        preserve_source_provenance=True,
         agg="last",
         lookback_period=24*60
     ),
@@ -224,6 +272,8 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_GCS_12H: FeatureDefinition(
         event_grouper="Glasgow Coma Score",
         alias=FeatureColumn.LAST_GCS_12H,
+        event_type_value="Flowsheet",
+        preserve_source_provenance=True,
         agg="last",
         lookback_period=12*60
     ),
@@ -234,6 +284,8 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_VASOPRESSIN_24H: FeatureDefinition(
         event_grouper="Vasopressin",
         alias=FeatureColumn.LAST_VASOPRESSIN_24H,
+        event_type_value="Medication Administration",
+        require_positive_value=True,
         agg_type="flag",
         agg="last",
         lookback_period=24*60
@@ -242,6 +294,8 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_PHENYLEPHRINE_24H: FeatureDefinition(
         event_grouper="Phenylephrine",
         alias=FeatureColumn.LAST_PHENYLEPHRINE_24H,
+        event_type_value="Medication Administration",
+        require_positive_value=True,
         agg_type="flag",
         agg="last",
         lookback_period=24*60
@@ -250,6 +304,8 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_NOREPINEPHRINE_24H: FeatureDefinition(
         event_grouper="Norepinephrine",
         alias=FeatureColumn.LAST_NOREPINEPHRINE_24H,
+        event_type_value="Medication Administration",
+        require_positive_value=True,
         agg_type="flag",
         agg="last",
         lookback_period=24*60
@@ -257,6 +313,8 @@ FEATURE_REGISTRY: dict[FeatureColumn, FeatureDefinition] = {
     FeatureColumn.LAST_EPINEPHRINE_24H: FeatureDefinition(
         event_grouper="Epinephrine",
         alias=FeatureColumn.LAST_EPINEPHRINE_24H,
+        event_type_value="Medication Administration",
+        require_positive_value=True,
         agg_type="flag",
         agg="last",
         lookback_period=24*60
@@ -289,6 +347,9 @@ class BloodPressureConfig(BaseModel):
 class AggregatorConfig(DataConfig):
     evt_val_col: str = "evt_val"
     evt_dt_col: str = "evt_dt"
+    evt_type_col: str = "evt_type"
+    evt_event_id_col: str = "evt_event_id"
+    evt_event_name_col: str = "evt_event_name"
 
     blood_pressure_config: BloodPressureConfig = BloodPressureConfig()
 

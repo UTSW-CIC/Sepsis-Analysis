@@ -5,6 +5,8 @@ import polars as pl
 
 from src_strategy.configs.aggregator import (
     AggregatorConfig,
+    FEATURE_REGISTRY,
+    FeatureColumn,
     FeatureConfig,
     FeatureDefinition,
 )
@@ -56,6 +58,83 @@ def test_prepare_event_table_keeps_null_values_for_flags() -> None:
 
     assert result.height == 1
     assert result[EVENT_VALUE_COL].null_count() == 1
+
+
+def test_vasopressor_features_require_positive_medication_administration() -> None:
+    vasopressor_features = (
+        FeatureColumn.LAST_VASOPRESSIN_24H,
+        FeatureColumn.LAST_PHENYLEPHRINE_24H,
+        FeatureColumn.LAST_NOREPINEPHRINE_24H,
+        FeatureColumn.LAST_EPINEPHRINE_24H,
+    )
+
+    for feature_column in vasopressor_features:
+        feature = FEATURE_REGISTRY[feature_column]
+        assert feature.event_type_value == "Medication Administration"
+        assert feature.require_positive_value is True
+
+
+def test_positive_vasopressor_administration_is_carried_forward() -> None:
+    start = datetime(2026, 1, 1)
+    event_times = [
+        start,
+        start + timedelta(minutes=10),
+        start + timedelta(minutes=20),
+        start + timedelta(minutes=25),
+        start + timedelta(minutes=30),
+    ]
+    reference_times = [
+        *event_times,
+        start + timedelta(minutes=90),
+        start + timedelta(minutes=91),
+    ]
+    feature = FeatureDefinition(
+        event_grouper="Norepinephrine",
+        alias="norepinephrine_flag",
+        event_type_value="Medication Administration",
+        require_positive_value=True,
+        agg_type="flag",
+        agg="last",
+        lookback_period=60,
+    )
+    aggregator = Aggregator(
+        AggregatorConfig(),
+        SimpleNamespace(rolling_metrics=[feature]),
+    )
+    df = pl.DataFrame(
+        {
+            ENCOUNTER_COL: [1] * len(event_times),
+            REFERENCE_TIME_COL: event_times,
+            "Type": [
+                "Medication Order",
+                "Medication Administration",
+                "Medication Administration",
+                "Lab Results",
+                "Medication Administration",
+            ],
+            "Event_Grouper": ["Norepinephrine"] * len(event_times),
+            "NumericValue": [1.0, 0.0, None, 2.0, 1.0],
+        }
+    )
+    backbone = pl.DataFrame(
+        {
+            ENCOUNTER_COL: [1] * len(reference_times),
+            REFERENCE_TIME_COL: reference_times,
+        }
+    )
+
+    result = aggregator.aggregate(df, backbone).sort(REFERENCE_TIME_COL)
+
+    assert result["norepinephrine_flag"].to_list() == [0, 0, 0, 0, 1, 1, 0]
+    assert result["norepinephrine_flag_last_set_ts"].to_list() == [
+        None,
+        None,
+        None,
+        None,
+        event_times[-1],
+        event_times[-1],
+        None,
+    ]
 
 
 def test_null_event_sets_flag_until_validity_expires() -> None:

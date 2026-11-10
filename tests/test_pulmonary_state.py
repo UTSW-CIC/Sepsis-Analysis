@@ -25,9 +25,12 @@ def _events(
             "Event_DateTime": [
                 START + timedelta(hours=row[1]) for row in rows
             ],
+            "Event_ID": list(range(100, 100 + len(rows))),
+            "Type": ["Flowsheet"] * len(rows),
             "Event_Grouper": [row[2] for row in rows],
             "Value": [row[3] for row in rows],
-        }
+        },
+        schema_overrides={"Event_ID": pl.Int64},
     )
 
 
@@ -42,12 +45,20 @@ def _pf_events(
                 START + timedelta(hours=row[1]) for row in rows
             ],
             "pf_pair_status": [row[3] for row in rows],
+            "pf_pao2_event_id": [
+                1000 + (2 * index) for index in range(len(rows))
+            ],
+            "pf_fio2_event_id": [
+                1001 + (2 * index) for index in range(len(rows))
+            ],
         },
         schema_overrides={
             "EncounterEpicCsn": pl.Int64,
             "pf_ratio": pl.Float64,
             "pf_ratio_time": pl.Datetime,
             "pf_pair_status": pl.String,
+            "pf_pao2_event_id": pl.Int64,
+            "pf_fio2_event_id": pl.Int64,
         },
     )
 
@@ -97,6 +108,64 @@ def test_simultaneous_termination_wins_and_retains_both_types() -> None:
         "vent_documentation_start",
         "vent_documentation_termination",
     ]]
+    assert transition["pulmonary_transition_event_ids"].to_list() == [[101, 102]]
+
+
+def test_continuation_values_do_not_create_transitions() -> None:
+    events = _events(
+        [
+            (1, 0, "Unrelated", None),
+            (1, 1, "Vent on Documentation", None),
+            (1, 2, "Vent On/Off", "Extubation not ordered"),
+            (1, 3, "Vent On/Off", "Do not Extubate Patient"),
+            (
+                1,
+                4,
+                "Vent On/Off",
+                "Do not Extubate Patient, Resume Ordered Settings",
+            ),
+            (1, 5, "Unrelated", None),
+        ]
+    )
+
+    timeline = build_pulmonary_state_timeline(events, _pf_events([]))
+
+    assert timeline["pulmonary_state_time"].to_list() == [
+        START,
+        START + timedelta(hours=1),
+        START + timedelta(hours=5),
+    ]
+    assert timeline["pulmonary_dysfunction_flag"].to_list() == [None, 1, 1]
+
+
+def test_vent_onoff_phase4_start_and_termination_values() -> None:
+    config = PulmonaryDysfunctionConfig()
+
+    for value in config.vent_onoff.start_values:
+        timeline = build_pulmonary_state_timeline(
+            _events(
+                [
+                    (1, 0, "Unrelated", None),
+                    (1, 1, "Vent On/Off", value),
+                    (1, 2, "Unrelated", None),
+                ]
+            ),
+            _pf_events([]),
+        )
+        assert timeline["pulmonary_dysfunction_flag"].to_list() == [None, 1, 1]
+
+    for value in [*config.vent_onoff.termination_values, None]:
+        timeline = build_pulmonary_state_timeline(
+            _events(
+                [
+                    (1, 0, "Vent on Documentation", None),
+                    (1, 1, "Vent On/Off", value),
+                    (1, 2, "Unrelated", None),
+                ]
+            ),
+            _pf_events([]),
+        )
+        assert timeline["pulmonary_dysfunction_flag"].to_list() == [1, 0, 0]
 
 
 @pytest.mark.parametrize("value", ["Z99.11", "Z93.0", "$ Home Vent Used"])

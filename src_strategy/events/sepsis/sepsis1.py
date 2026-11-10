@@ -12,36 +12,59 @@ def build_infection_anchors(
     *,
     config: SeveritySepsisConfig = severitysepsisconfig,
 ) -> pl.DataFrame:
-    """Return every distinct suspected-infection evidence row as an anchor."""
+    """Return one canonical anchor for each suspected-infection episode."""
     infection = config.suspected_infection_config
-    anchor_cols = [
+    required_cols = [
         config.encounter_col,
+        infection.infection_episode_id_col,
         infection.value_name_dt_col,
         infection.variable_name_col,
         infection.value_type_col,
     ]
-    missing = sorted(set(anchor_cols).difference(df_infection.columns))
+    missing = sorted(set(required_cols).difference(df_infection.columns))
     if missing:
         raise ValueError(
             f"Suspected-infection anchor input is missing columns: {missing}"
         )
     if df_infection.select(
-        pl.any_horizontal(pl.col(anchor_cols).is_null()).any()
+        pl.any_horizontal(pl.col(required_cols).is_null()).any()
     ).item():
         raise ValueError("Suspected-infection anchor fields cannot be null")
 
-    # Approved sensitivity-first policy: every distinct evidence row is an
-    # independent anchor. For paired criteria this can create overlapping
-    # windows wider than one canonical episode anchored at its earliest event;
-    # canonical episode grouping remains the recommended future comparison.
+    episode_key = [
+        config.encounter_col,
+        infection.infection_episode_id_col,
+    ]
+    inconsistent = (
+        df_infection.group_by(episode_key)
+        .agg(
+            pl.col(infection.value_name_dt_col).n_unique().alias("_infect_dt_n"),
+            pl.col(infection.value_type_col).n_unique().alias("_type_n"),
+        )
+        .filter((pl.col("_infect_dt_n") != 1) | (pl.col("_type_n") != 1))
+    )
+    if not inconsistent.is_empty():
+        raise ValueError(
+            "Every suspected-infection episode must have one canonical "
+            "infect_dt and one suspicion_infection_type"
+        )
+
     return (
-        df_infection.select(anchor_cols)
-        .unique(subset=anchor_cols)
+        df_infection.group_by(episode_key)
+        .agg(
+            pl.col(infection.variable_name_col)
+            .unique()
+            .sort()
+            .str.join("+")
+            .alias(infection.variable_name_col),
+            pl.col(infection.value_name_dt_col).first(),
+            pl.col(infection.value_type_col).first(),
+        )
         .sort(
             config.encounter_col,
             infection.value_name_dt_col,
-            infection.variable_name_col,
             infection.value_type_col,
+            infection.infection_episode_id_col,
         )
         .with_columns(
             pl.int_range(1, pl.len() + 1)
@@ -52,6 +75,7 @@ def build_infection_anchors(
         .select(
             config.encounter_col,
             config.infection_anchor_id_col,
+            infection.infection_episode_id_col,
             infection.variable_name_col,
             infection.value_name_dt_col,
             infection.value_type_col,

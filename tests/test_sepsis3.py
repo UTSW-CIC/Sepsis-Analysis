@@ -36,6 +36,19 @@ def _sepsis2(
             "sepsis_2_dt": [
                 max(START, START + timedelta(hours=organ_start_hours))
             ],
+            "last_lactate_6h_source_evidence": [
+                [
+                    {
+                        "value": 3.0,
+                        "result_dt": START + timedelta(
+                            hours=organ_start_hours
+                        ),
+                        "type": "Lab Results",
+                        "event_id": 100,
+                        "event_name": "LACTATE",
+                    }
+                ]
+            ],
         },
         schema_overrides={"sepsis_2_flag": pl.Int8},
     )
@@ -110,6 +123,9 @@ def test_interval_shock_must_overlap_organ_and_infection_window() -> None:
         START + timedelta(hours=20)
     ]
     assert associations["sepsis_3_earliest_evidence_dt"].to_list() == [START]
+    assert associations["last_lactate_6h_source_evidence"].to_list()[0][0][
+        "event_id"
+    ] == 100
 
 
 def test_interval_touching_window_end_is_excluded() -> None:

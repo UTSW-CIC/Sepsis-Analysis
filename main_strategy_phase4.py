@@ -162,14 +162,14 @@ if run_mode is RunMode.VERSIONED:
 setup_root_logger(log_dir=input_output_config_4.logger_dir)
 logger = get_logger(__name__)
 
-dl = DataLoader(input_output_config_4,
-                data_config,
-                bp_config,
-                flowsheet_bounds_config,
-                lab_bounds_config,
-                bp_bounds_config)
+# dl = DataLoader(input_output_config_4,
+#                 data_config,
+#                 bp_config,
+#                 flowsheet_bounds_config,
+#                 lab_bounds_config,
+#                 bp_bounds_config)
 
-df_all, df_encounters = dl.load_data()
+# df_all, df_encounters = dl.load_data()
 if bp_config.calculate_map:
     df_all_file_name = "df_all.parquet"
     df_all_no_collisions_file_name = "df_all_no_collisions.parquet"
@@ -179,20 +179,17 @@ else:
     df_all_no_collisions_file_name = "df_all_no_collisions_map_measured_only.parquet"
     df_aggregated_file_name = "df_aggregated_map_measured_only.parquet"
 
-save_df(df_all, input_output_config_4.output_path, df_all_file_name, logger, message=f"Data injestion & Preprocessing completed, and data is saved to {input_output_config_3_1.output_path+'/'+df_all_file_name}")
-save_df(df_encounters, input_output_config_4.output_path, "df_encounters.parquet", logger, message=f"Encounters data is saved to {input_output_config_3_1.output_path+'/df_encounters.parquet'}")
+# save_df(df_all, input_output_config_4.output_path, df_all_file_name, logger, message=f"Data injestion & Preprocessing completed, and data is saved to {input_output_config_4.output_path+'/'+df_all_file_name}")
+# save_df(df_encounters, input_output_config_4.output_path, "df_encounters.parquet", logger, message=f"Encounters data is saved to {input_output_config_4.output_path+'/df_encounters.parquet'}")
 
 df_all = load_df(input_output_config_4.output_path, df_all_file_name)
+df_encounters = load_df(input_output_config_4.output_path, "df_encounters.parquet")
 
 
-# #================================================================================
-# # TODO: Find a better way to do this
-# df_all = df_all.with_columns(
-#     pl.when(
-#         pl.col(collision_config.grouper_col) == "Arterial Blood Pressure Mean"
-#     ).then(pl.lit("Blood Pressure")).otherwise(pl.col(collision_config.grouper_col)).alias(collision_config.grouper_col)
-# )
-
+# Preserve measured MAP as its own source event. Systolic/diastolic blood
+# pressure and measured MAP are resolved independently before aggregation, so
+# no MAP grouper normalization is performed here.
+# Keep procedure-order lactate distinct from resulted lab lactate.
 # df_all = df_all.with_columns(
 #     pl.when(
 #         (pl.col(collision_config.grouper_col) == "Lactate")&
@@ -201,19 +198,16 @@ df_all = load_df(input_output_config_4.output_path, df_all_file_name)
 #         pl.lit('Lactate-Procedure-Order')
 #     ).otherwise(pl.col(collision_config.grouper_col)).alias(collision_config.grouper_col)
 # )
-# # #================================================================================
-
-
-# rc = ResolveCollision(collision_config, input_output_config_3_1)
+# rc = ResolveCollision(collision_config, input_output_config_4)
 # df_all_no_collisions = rc.resolve(df_all)
 # df_pf_events = PFRatioBuilder(pf_config).build(df_all_no_collisions)
 # backbone = df_all_no_collisions.select([collision_config.encounter_col, collision_config.event_dt_col]).unique().sort(collision_config.encounter_col, collision_config.event_dt_col)
-# save_df(df_all_no_collisions, input_output_config_3_1.output_path, df_all_no_collisions_file_name, logger,
-#          message=f"Handling numerical value collisions completed, and data is saved to {input_output_config_3_1.output_path+'/'+df_all_no_collisions_file_name}")
-# save_df(backbone, input_output_config_3_1.output_path, "backbone.parquet", logger,
-#          message=f"Backbone (unique encounter, event_dt) is saved to {input_output_config_3_1.output_path+'/backbone.parquet'}")
-# df_all_no_collisions = load_df(input_output_config_3_1.output_path, df_all_no_collisions_file_name)
-# backbone = load_df(input_output_config_3_1.output_path, "backbone.parquet")
+# save_df(df_all_no_collisions, input_output_config_4.output_path, df_all_no_collisions_file_name, logger,
+#          message=f"Handling numerical value collisions completed, and data is saved to {input_output_config_4.output_path+'/'+df_all_no_collisions_file_name}")
+# save_df(backbone, input_output_config_4.output_path, "backbone.parquet", logger,
+#          message=f"Backbone (unique encounter, event_dt) is saved to {input_output_config_4.output_path+'/backbone.parquet'}")
+df_all_no_collisions = load_df(input_output_config_4.output_path, df_all_no_collisions_file_name)
+backbone = load_df(input_output_config_4.output_path, "backbone.parquet")
 
 # suspected_infection_pipeline = build_suspected_infection_pipeline(
 #     suspected_infection_config
@@ -223,31 +217,34 @@ df_all = load_df(input_output_config_4.output_path, df_all_file_name)
 # )
 # save_df(
 #     df_suspected_infection,
-#     input_output_config_3_1.output_path,
+#     input_output_config_4.output_path,
 #     "df_suspected_infection.parquet",
 #     logger,
 #     message="Suspected-infection detection completed",
 # )
+
+df_suspected_infection = load_df(
+    input_output_config_4.output_path,
+    "df_suspected_infection.parquet",
+)
+
 # agg = Aggregator(
 #     agg_config,
 #     feature_config
 # )
 # df_aggregated = agg.aggregate(df_all_no_collisions, backbone)
-# save_df(df_aggregated, input_output_config_3_1.output_path, df_aggregated_file_name, logger,
-#          message=f"Aggregation completed, and data is saved to {input_output_config_3_1.output_path+'/'+df_aggregated_file_name}")
+# save_df(df_aggregated, input_output_config_4.output_path, df_aggregated_file_name, logger,
+#          message=f"Aggregation completed, and data is saved to {input_output_config_4.output_path+'/'+df_aggregated_file_name}")
 
-df_aggregated = load_df(input_output_config_3_1.output_path, df_aggregated_file_name)
+df_aggregated = load_df(input_output_config_4.output_path, df_aggregated_file_name)
 
 # Pulmonary evidence must be constructed from the collision-free event table,
 # while its reconstructed state is attached to the temporal aggregate table.
-df_all_no_collisions = load_df(
-    input_output_config_3_1.output_path,
-    df_all_no_collisions_file_name,
-)
+# df_all_no_collisions = load_df(
+#     input_output_config_3_1.output_path,
+#     df_all_no_collisions_file_name,
+# )
 
-df_suspected_infection = build_suspected_infection_pipeline(
-    suspected_infection_config
-).process(df_all_no_collisions)
 
 df_pf_events = PFRatioBuilder(pf_config).build(df_all_no_collisions)
 
@@ -270,7 +267,7 @@ df_aggregated_with_pulmonary = attach_pulmonary_state(
 # =========================================================================================
 
 df_encounters = load_df(
-    input_output_config_3_1.output_path,
+    input_output_config_4.output_path,
     "df_encounters.parquet",
 )
 df_organ_dysfunction_input = prepare_organ_dysfunction_input(
@@ -290,6 +287,7 @@ df_organ_dysfunction_segments = build_organ_dysfunction_state_segments(
 df_organ_dysfunction_episodes = build_organ_dysfunction_episodes(
     df_organ_dysfunction_segments,
     config=organdysfunction_config,
+    pulmonary_config=pulmonary_dysfunction_config,
 )
 
 # Reuse the existing BP segment reconstruction and episode filter before shock

@@ -7,6 +7,7 @@ from ...configs.pulmonarydysfunction import (
     PulmonaryTerminationCriterionName,
     pulmonary_dysfunction_config,
 )
+from ...utils.logger import get_logger
 from .exclusions import build_pulmonary_exclusion_evidence
 from .pipeline import (
     build_pulmonary_pf_start_pipeline,
@@ -16,9 +17,13 @@ from .pipeline import (
 )
 
 
+logger = get_logger(__name__)
+
+
 _CHANGE_TIME = "_pulmonary_change_time"
 _TRANSITION_TYPE = "_pulmonary_transition_type"
 _TRANSITION_STATE = "_pulmonary_transition_state"
+_TRANSITION_EVENT_IDS = "_pulmonary_transition_event_ids"
 
 
 def _timeline_schema(
@@ -32,6 +37,9 @@ def _timeline_schema(
         config.pulmonary_dysfunction_flag: pl.Int8,
         config.transition_time_col: event_time_type,
         config.transition_type_col: pl.List(pl.String),
+        config.transition_event_ids_col: pl.List(
+            df_events.schema[config.event_id]
+        ),
         config.exclusions.flag_col: pl.Int8,
         config.exclusions.reason_col: pl.List(pl.String),
         config.exclusions.evidence_time_col: pl.List(event_time_type),
@@ -50,8 +58,35 @@ def _raw_transition_rows(
         *config.o2_delivery.all_termination_groupers,
     ]
     relevant = df_events.filter(
-        pl.col(config.grouper_col).is_in(relevant_groupers)
+        (pl.col(config.type_col) == config.raw_transition_type_value)
+        & pl.col(config.grouper_col).is_in(relevant_groupers)
     )
+
+    vent_onoff = config.vent_onoff
+    known_vent_values = [
+        *vent_onoff.classified_non_null_values,
+        config.exclusions.home_vent_value,
+    ]
+    unclassified_vent_count = relevant.filter(
+        (pl.col(config.grouper_col) == vent_onoff.grouper)
+        & (
+            (
+                pl.col(config.raw_val_col).is_not_null()
+                & ~pl.col(config.raw_val_col).is_in(known_vent_values)
+            )
+            | (
+                pl.col(config.raw_val_col).is_null()
+                & pl.lit(not vent_onoff.null_value_terminates)
+            )
+        )
+    ).height
+    if unclassified_vent_count:
+        # Report only the count: raw EHR values may contain sensitive text.
+        logger.warning(
+            "Pulmonary state ignored %s unclassified Vent On/Off events",
+            unclassified_vent_count,
+        )
+
     started = build_pulmonary_raw_start_pipeline(config).process(relevant)
     scored = build_pulmonary_raw_termination_pipeline(config).process(started)
 
@@ -77,7 +112,10 @@ def _raw_transition_rows(
             .when(pl.col(o2.start_flag_col) == 1)
             .then(pl.lit("mechanical_o2_start"))
             .otherwise(pl.lit(None, dtype=pl.String))
-            .alias(_TRANSITION_TYPE)
+            .alias(_TRANSITION_TYPE),
+            pl.concat_list(pl.col(config.event_id)).alias(
+                _TRANSITION_EVENT_IDS
+            ),
         )
         .select(
             config.encounter_col,
@@ -85,6 +123,7 @@ def _raw_transition_rows(
             config.start_flag_col,
             config.termination_flag_col,
             _TRANSITION_TYPE,
+            _TRANSITION_EVENT_IDS,
         )
     )
 
@@ -129,7 +168,11 @@ def _pf_transition_rows(
             | (pl.col(config.termination_flag_col) == 1)
         )
         .with_columns(
-            transition_type.alias(_TRANSITION_TYPE)
+            transition_type.alias(_TRANSITION_TYPE),
+            pl.concat_list(
+                pf.pao2_event_id_col,
+                pf.fio2_event_id_col,
+            ).alias(_TRANSITION_EVENT_IDS),
         )
         .select(
             config.encounter_col,
@@ -137,6 +180,7 @@ def _pf_transition_rows(
             config.start_flag_col,
             config.termination_flag_col,
             _TRANSITION_TYPE,
+            _TRANSITION_EVENT_IDS,
         )
     )
 
@@ -198,6 +242,12 @@ def build_pulmonary_state_timeline(
             .unique()
             .sort()
             .alias(config.transition_type_col),
+            pl.col(_TRANSITION_EVENT_IDS)
+            .explode()
+            .drop_nulls()
+            .unique()
+            .sort()
+            .alias(config.transition_event_ids_col),
         )
         # Approved decision: termination wins when start and termination
         # evidence occur at the same encounter timestamp.
@@ -237,6 +287,10 @@ def build_pulmonary_state_timeline(
             pl.lit(None, dtype=pl.List(pl.String)).alias(
                 config.transition_type_col
             ),
+            pl.lit(
+                None,
+                dtype=pl.List(df_events.schema[config.event_id]),
+            ).alias(config.transition_event_ids_col),
         )
     else:
         points = points.join_asof(
@@ -246,6 +300,7 @@ def build_pulmonary_state_timeline(
                 _TRANSITION_STATE,
                 config.transition_time_col,
                 config.transition_type_col,
+                config.transition_event_ids_col,
             ),
             on=_CHANGE_TIME,
             by=config.encounter_col,

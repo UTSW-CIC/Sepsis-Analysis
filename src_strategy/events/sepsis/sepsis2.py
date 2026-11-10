@@ -169,6 +169,29 @@ def build_sepsis2_associations(
         for _, column in _organ_failure_items(config)
         if column in association.columns
     ]
+    source_evidence_cols = [
+        column
+        for column in association.columns
+        if column.endswith(
+            config.organdysfunction_config.source_evidence_suffix
+        )
+    ]
+    baseline_cols = [
+        column
+        for column in [
+            config.organdysfunction_config.renal.baseline_creatinine_col.value,
+            config.organdysfunction_config.renal.baseline_egfr_col.value,
+            (
+                config.organdysfunction_config.hepatic
+                .baseline_bilirubin_col.value
+            ),
+            (
+                config.organdysfunction_config.coagulation
+                .baseline_platelets_col.value
+            ),
+        ]
+        if column in association.columns
+    ]
     return association.select(
         config.encounter_col,
         config.infection_anchor_id_col,
@@ -184,6 +207,8 @@ def build_sepsis2_associations(
         "max_organ_dysfunction_total",
         config.sepsis2_first_organ_types_col,
         *evidence_cols,
+        *baseline_cols,
+        *source_evidence_cols,
         config.sepsis2_flag_col,
         config.sepsis2_earliest_evidence_dt_col,
         config.sepsis2_dt_col,

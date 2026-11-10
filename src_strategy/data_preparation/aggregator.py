@@ -4,7 +4,15 @@ from datetime import timedelta
 import re
 
 from typing import List
-from ..configs.aggregator import FeatureConfig, FeatureDefinition, AggregatorConfig
+from ..configs.aggregator import (
+    AggregatorConfig,
+    FeatureConfig,
+    FeatureDefinition,
+    source_event_id_col,
+    source_event_name_col,
+    source_timestamp_col,
+    source_type_col,
+)
 from ..utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -41,6 +49,9 @@ class Aggregator:
         ref_dt_col: str = "Event_DateTime",      # NEW
         evt_dt_col: str = "evt_dt",              # NEW
         evt_val_col: str = "evt_val",            # NEW
+        evt_type_col: str = "evt_type",
+        evt_event_id_col: str = "evt_event_id",
+        evt_event_name_col: str = "evt_event_name",
     ) -> pl.DataFrame:
         """
         For each row in reference, look back `lookback_period` hours into events
@@ -59,9 +70,11 @@ class Aggregator:
         -------
         Reference keys with the aggregate and ``<agg_col_name>_source_ts``.
         For row-selecting aggregates, the timestamp identifies the selected
-        source row. Max/min ties select the most recent row. For multi-event
-        aggregates, it is the latest contributing timestamp, accompanied by
-        ``<agg_col_name>_contributor_count``.
+        source row, along with its Type, Event_ID, and Event_Name when those
+        provenance inputs are supplied. Max/min ties select the most recent
+        row. For multi-event aggregates, provenance identifies the latest
+        contributor and ``<agg_col_name>_contributor_count`` records the total
+        number of contributors.
         """
         if isinstance(lookback_period, (int, float)):
             lookback_period = timedelta(minutes=lookback_period)
@@ -71,13 +84,49 @@ class Aggregator:
         # --- Sanitize identifiers ---
         encounter_col = self._safe_identifier(encounter_col)
         agg_col_name = self._safe_identifier(agg_col_name)
-        source_ts_col = self._safe_identifier(f"{agg_col_name}_source_ts")
+        source_ts_col = self._safe_identifier(
+            source_timestamp_col(agg_col_name)
+        )
+        output_source_type_col = self._safe_identifier(
+            source_type_col(agg_col_name)
+        )
+        output_source_event_id_col = self._safe_identifier(
+            source_event_id_col(agg_col_name)
+        )
+        output_source_event_name_col = self._safe_identifier(
+            source_event_name_col(agg_col_name)
+        )
         contributor_count_col = self._safe_identifier(
             f"{agg_col_name}_contributor_count"
         )
         ref_dt_col = self._safe_identifier(ref_dt_col)
         evt_dt_col = self._safe_identifier(evt_dt_col)
         evt_val_col = self._safe_identifier(evt_val_col)
+        evt_type_col = self._safe_identifier(evt_type_col)
+        evt_event_id_col = self._safe_identifier(evt_event_id_col)
+        evt_event_name_col = self._safe_identifier(evt_event_name_col)
+
+        provenance_input_cols = {
+            evt_type_col,
+            evt_event_id_col,
+            evt_event_name_col,
+        }
+        available_provenance_cols = provenance_input_cols.intersection(
+            events.columns
+        )
+        if available_provenance_cols and (
+            available_provenance_cols != provenance_input_cols
+        ):
+            missing_provenance = sorted(
+                provenance_input_cols.difference(events.columns)
+            )
+            raise ValueError(
+                "Numeric event provenance is incomplete; missing columns: "
+                f"{missing_provenance}"
+            )
+        preserve_provenance = (
+            available_provenance_cols == provenance_input_cols
+        )
 
         event_value = f"events_tbl.{evt_val_col}"
         event_time = f"events_tbl.{evt_dt_col}"
@@ -88,34 +137,41 @@ class Aggregator:
                 f"{event_time} DESC) {non_null_filter}",
                 f"FIRST({event_time} ORDER BY {event_value} DESC NULLS LAST, "
                 f"{event_time} DESC) {non_null_filter}",
+                f"{event_value} DESC NULLS LAST, {event_time} DESC",
             ),
             "min": (
                 f"FIRST({event_value} ORDER BY {event_value} ASC NULLS LAST, "
                 f"{event_time} DESC) {non_null_filter}",
                 f"FIRST({event_time} ORDER BY {event_value} ASC NULLS LAST, "
                 f"{event_time} DESC) {non_null_filter}",
+                f"{event_value} ASC NULLS LAST, {event_time} DESC",
             ),
             "mean": (
                 f"AVG({event_value})",
                 f"MAX({event_time}) {non_null_filter}",
+                f"{event_time} DESC",
             ),
             "sum": (
                 f"SUM({event_value})",
                 f"MAX({event_time}) {non_null_filter}",
+                f"{event_time} DESC",
             ),
             "count": (
                 f"COUNT({event_value})",
                 f"MAX({event_time}) {non_null_filter}",
+                f"{event_time} DESC",
             ),
             "last": (
                 f"FIRST({event_value} ORDER BY {event_time} DESC) "
                 f"{non_null_filter}",
                 f"MAX({event_time}) {non_null_filter}",
+                f"{event_time} DESC",
             ),
             "first": (
                 f"FIRST({event_value} ORDER BY {event_time} ASC) "
                 f"{non_null_filter}",
                 f"MIN({event_time}) {non_null_filter}",
+                f"{event_time} ASC",
             ),
         }
 
@@ -126,13 +182,24 @@ class Aggregator:
             raise ValueError(
                 f"Unknown agg_func: '{agg_func}'. Supported functions: {supported}"
             )
-        agg_expr, source_ts_expr = agg_expressions
+        agg_expr, source_ts_expr, source_order = agg_expressions
 
         contributor_count_select = ""
         if normalized_agg_func in {"mean", "sum", "count"}:
             contributor_count_select = (
                 f", COUNT({event_value}) AS {contributor_count_col}"
             )
+
+        provenance_select = ""
+        if preserve_provenance:
+            provenance_select = f""",
+                    FIRST(events_tbl.{evt_type_col} ORDER BY {source_order})
+                        {non_null_filter} AS {output_source_type_col},
+                    FIRST(events_tbl.{evt_event_id_col} ORDER BY {source_order})
+                        {non_null_filter} AS {output_source_event_id_col},
+                    FIRST(events_tbl.{evt_event_name_col} ORDER BY {source_order})
+                        {non_null_filter} AS {output_source_event_name_col}
+            """
 
         with duckdb.connect() as conn:
             conn.register("reference_tbl", reference)
@@ -144,6 +211,7 @@ class Aggregator:
                     reference_tbl.{ref_dt_col},
                     {agg_expr} AS {agg_col_name},
                     {source_ts_expr} AS {source_ts_col}
+                    {provenance_select}
                     {contributor_count_select}
                 FROM reference_tbl
                 LEFT JOIN events_tbl
@@ -308,14 +376,62 @@ class Aggregator:
         event_filter = (
             pl.col(self.aggregator_config.grouper_col) == feature.event_grouper
         )
-        if feature.agg_type == "numeric":
+
+        if feature.event_type_value is not None:
+            event_filter &= (
+                pl.col(self.aggregator_config.type_col)
+                == feature.event_type_value
+            )
+
+        if feature.require_positive_value:
+            event_filter &= (
+                pl.col(feature.val_col).is_not_null()
+                & (pl.col(feature.val_col) > 0)
+            )
+        elif feature.agg_type == "numeric":
             event_filter &= pl.col(feature.val_col).is_not_null()
 
-        return df.filter(event_filter).select(
+        selected = [
             self.aggregator_config.encounter_col,
-            pl.col(self.aggregator_config.event_dt_col).alias(self.aggregator_config.evt_dt_col),
-            pl.col(feature.val_col).alias(self.aggregator_config.evt_val_col)
-        )
+            pl.col(self.aggregator_config.event_dt_col).alias(
+                self.aggregator_config.evt_dt_col
+            ),
+            pl.col(feature.val_col).alias(
+                self.aggregator_config.evt_val_col
+            ),
+        ]
+        if (
+            feature.agg_type == "numeric"
+            and feature.preserve_source_provenance
+        ):
+            required_provenance = {
+                self.aggregator_config.type_col,
+                self.aggregator_config.event_id,
+                self.aggregator_config.event_name_col,
+            }
+            missing_provenance = sorted(
+                required_provenance.difference(df.columns)
+            )
+            if missing_provenance:
+                raise ValueError(
+                    f"Numeric feature {feature.alias!r} is missing source "
+                    f"provenance columns: {missing_provenance}"
+                )
+            selected.extend(
+                [
+                    pl.col(self.aggregator_config.type_col).alias(
+                        self.aggregator_config.evt_type_col
+                    ),
+                    pl.col(self.aggregator_config.event_id).alias(
+                        self.aggregator_config.evt_event_id_col
+                    ),
+                    pl.col(self.aggregator_config.event_name_col).alias(
+                        self.aggregator_config.evt_event_name_col
+                    ),
+                ]
+            )
+
+        return df.filter(event_filter).select(selected)
 
     def _prepare_termination_event_table(
         self,
@@ -396,6 +512,13 @@ class Aggregator:
                     ref_dt_col=self.aggregator_config.event_dt_col,
                     evt_dt_col=self.aggregator_config.evt_dt_col,
                     evt_val_col=self.aggregator_config.evt_val_col,
+                    evt_type_col=self.aggregator_config.evt_type_col,
+                    evt_event_id_col=(
+                        self.aggregator_config.evt_event_id_col
+                    ),
+                    evt_event_name_col=(
+                        self.aggregator_config.evt_event_name_col
+                    ),
                 )
             elif feature.agg_type == "flag":
                 if not feature.persist_until_termination:

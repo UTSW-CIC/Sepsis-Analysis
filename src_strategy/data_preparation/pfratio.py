@@ -24,9 +24,11 @@ class PFRatioBuilder:
             config.encounter_col: source_schema[config.encounter_col],
             config.pao2_value_col: pl.Float64,
             config.pao2_time_col: source_schema[config.event_dt_col],
+            config.pao2_event_id_col: source_schema[config.event_id],
             config.fio2_value_col: pl.Float64,
             config.fio2_fraction_col: pl.Float64,
             config.fio2_time_col: source_schema[config.event_dt_col],
+            config.fio2_event_id_col: source_schema[config.event_id],
             config.pf_ratio_col: pl.Float64,
             config.pf_ratio_time_col: source_schema[config.event_dt_col],
             config.pair_status_col: pl.String,
@@ -38,6 +40,8 @@ class PFRatioBuilder:
         required = {
             config.encounter_col,
             config.event_dt_col,
+            config.event_id,
+            config.type_col,
             config.grouper_col,
             config.val_col,
         }
@@ -50,8 +54,13 @@ class PFRatioBuilder:
 
         output_schema = self._output_schema(df_events.schema)
         relevant = df_events.filter(
-            pl.col(config.grouper_col).is_in(
-                [config.pao2_grouper_val, config.fio2_grouper_val]
+            (
+                (pl.col(config.grouper_col) == config.pao2_grouper_val)
+                & (pl.col(config.type_col) == config.pao2_type_value)
+            )
+            | (
+                (pl.col(config.grouper_col) == config.fio2_grouper_val)
+                & (pl.col(config.type_col) == config.fio2_type_value)
             )
         )
         if relevant.is_empty():
@@ -91,6 +100,7 @@ class PFRatioBuilder:
                 _PAO2_ROW_ID,
                 config.encounter_col,
                 pl.col(config.event_dt_col).alias(config.pao2_time_col),
+                pl.col(config.event_id).alias(config.pao2_event_id_col),
                 pl.col(config.val_col)
                 .cast(pl.Float64)
                 .alias(config.pao2_value_col),
@@ -104,6 +114,7 @@ class PFRatioBuilder:
         ).select(
             config.encounter_col,
             pl.col(config.event_dt_col).alias(config.fio2_time_col),
+            pl.col(config.event_id).alias(config.fio2_event_id_col),
             pl.col(config.val_col)
             .cast(pl.Float64)
             .alias(config.fio2_value_col),
@@ -166,6 +177,7 @@ class PFRatioBuilder:
                 config.fio2_value_col,
                 config.fio2_fraction_col,
                 config.fio2_time_col,
+                config.fio2_event_id_col,
             )
         )
 

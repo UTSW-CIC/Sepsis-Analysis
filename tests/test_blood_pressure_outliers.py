@@ -37,6 +37,7 @@ def make_blood_pressure_result() -> pl.DataFrame:
             "Event_DateTime": [
                 start + timedelta(minutes=offset) for offset in range(6)
             ],
+            "Event_ID": [1, 2, 3, 4, 5, 6],
             "Event_Grouper": [
                 "Blood Pressure",
                 "Blood Pressure",

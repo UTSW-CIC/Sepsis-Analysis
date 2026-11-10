@@ -28,22 +28,70 @@ class VentOnOffConfig(BaseModel):
             "On Going Hospital Vent",
             "Initial",
             "$ On Going Hospital Vent",
+            "Place back on Ventilator (Trachs)",
+            "Place on BiPAP (Trachs)",
         ]
     )
     termination_values: list[str] = Field(
-        # default_factory=lambda: ["Standby", "$ Extubation"]
-        default_factory=lambda: ["$ Extubation"]
+        default_factory=lambda: [
+            "Standby",
+            "Discontinue Vent (Trachs Only)",
+            "Place on Trach Collar",
+            "Place on High Flow (Trachs)",
+        ]
     )
-    null_value_terminates: bool = False 
+    continuation_values: list[str] = Field(
+        default_factory=lambda: [
+            "Extubation not ordered",
+            "Do not Extubate Patient",
+            "Do not Extubate Patient, Resume Ordered Settings",
+        ]
+    )
+    neutral_values: list[str] = Field(
+        default_factory=lambda: [
+            "Extubation ordered",
+            "Other (Comment)",
+        ]
+    )
+    null_value_terminates: bool = True
     start_flag_col: str = "vent_onoff_start_flag"
     termination_flag_col: str = "vent_onoff_termination_flag"
 
+    @property
+    def classified_non_null_values(self) -> list[str]:
+        return [
+            *self.start_values,
+            *self.termination_values,
+            *self.continuation_values,
+            *self.neutral_values,
+        ]
+
     @model_validator(mode="after")
     def validate_values(self) -> "VentOnOffConfig":
-        if set(self.start_values) & set(self.termination_values):
-            raise ValueError(
-                "Vent On/Off start and termination values cannot overlap"
-            )
+        roles = {
+            "start": self.start_values,
+            "termination": self.termination_values,
+            "continuation": self.continuation_values,
+            "neutral": self.neutral_values,
+        }
+        for role, values in roles.items():
+            if len(values) != len(set(values)):
+                raise ValueError(
+                    f"Vent On/Off {role} values must be unique"
+                )
+
+        role_names = list(roles)
+        for index, left_name in enumerate(role_names):
+            for right_name in role_names[index + 1:]:
+                overlapping_values = (
+                    set(roles[left_name]) & set(roles[right_name])
+                )
+                if overlapping_values:
+                    raise ValueError(
+                        "Vent On/Off value roles must not overlap: "
+                        f"{left_name}/{right_name}="
+                        f"{sorted(overlapping_values)!r}"
+                    )
         return self
 
 
@@ -57,15 +105,19 @@ class VentDocumentationConfig(BaseModel):
 class PFConfig(DataConfig):
     pao2_grouper_val: str = "PAO2"
     fio2_grouper_val: str = "FIO2"
+    pao2_type_value: str = "Lab Results"
+    fio2_type_value: str = "Lab Results"
     threshold: float = 200.0
     time_window_between_pao2_fio2_hrs: float = 2.0
 
     pf_ratio_col: str = "pf_ratio"
     pao2_value_col: str = "pf_pao2_value"
     pao2_time_col: str = "pf_pao2_time"
+    pao2_event_id_col: str = "pf_pao2_event_id"
     fio2_value_col: str = "pf_fio2_value"
     fio2_fraction_col: str = "pf_fio2_fraction"
     fio2_time_col: str = "pf_fio2_time"
+    fio2_event_id_col: str = "pf_fio2_event_id"
     pf_ratio_time_col: str = "pf_ratio_time"
     pair_status_col: str = "pf_pair_status"
     paired_status: str = "paired"
@@ -164,11 +216,13 @@ class PulmonaryDysfunctionConfig(DataConfig):
             PulmonaryTerminationCriterionName.O2_DELIVERY,
         ]
     )
+    raw_transition_type_value: str = "Flowsheet"
 
     start_flag_col: str = "pulmonary_start_flag"
     termination_flag_col: str = "pulmonary_termination_flag"
     transition_state_col: str = "pulmonary_transition_state"
     transition_type_col: str = "pulmonary_transition_type"
+    transition_event_ids_col: str = "pulmonary_transition_event_ids"
     transition_time_col: str = "pulmonary_transition_time"
     state_time_col: str = "pulmonary_state_time"
     segment_start_col: str = "segment_start"
@@ -191,6 +245,13 @@ class PulmonaryDysfunctionConfig(DataConfig):
             raise ValueError(
                 "at least one pulmonary termination criterion is required"
             )
+        if self.exclusions.home_vent_value in (
+            self.vent_onoff.classified_non_null_values
+        ):
+            raise ValueError(
+                "The home-vent exclusion value cannot also be a Vent On/Off "
+                "transition or non-transition value"
+            )
         return self
 
     @property
@@ -198,6 +259,8 @@ class PulmonaryDysfunctionConfig(DataConfig):
         return [
             self.encounter_col,
             self.event_dt_col,
+            self.event_id,
+            self.type_col,
             self.grouper_col,
             self.raw_val_col,
         ]
@@ -209,6 +272,8 @@ class PulmonaryDysfunctionConfig(DataConfig):
             self.pf.pf_ratio_col,
             self.pf.pf_ratio_time_col,
             self.pf.pair_status_col,
+            self.pf.pao2_event_id_col,
+            self.pf.fio2_event_id_col,
         ]
 
 

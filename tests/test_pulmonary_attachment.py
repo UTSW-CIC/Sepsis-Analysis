@@ -22,6 +22,8 @@ def _events() -> pl.DataFrame:
                 START + timedelta(hours=3),
                 START + timedelta(hours=4),
             ],
+            "Event_ID": [100, 101, 102, 103],
+            "Type": ["Flowsheet"] * 4,
             "Event_Grouper": [
                 "Unrelated",
                 "Vent on Documentation",
@@ -40,6 +42,8 @@ def _empty_pf() -> pl.DataFrame:
             "pf_ratio": pl.Float64,
             "pf_ratio_time": pl.Datetime,
             "pf_pair_status": pl.String,
+            "pf_pao2_event_id": pl.Int64,
+            "pf_fio2_event_id": pl.Int64,
         }
     )
 

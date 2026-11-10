@@ -24,11 +24,16 @@ def _events(
             "Event_DateTime": [
                 START + timedelta(hours=row[1]) for row in rows
             ],
+            "Event_ID": list(range(100, 100 + len(rows))),
+            "Type": ["Lab Results"] * len(rows),
             "Event_Grouper": [row[2] for row in rows],
             "NumericValue": [row[3] for row in rows],
             "audit_marker": list(range(len(rows))),
         },
-        schema_overrides={"NumericValue": pl.Float64},
+        schema_overrides={
+            "Event_ID": pl.Int64,
+            "NumericValue": pl.Float64,
+        },
     )
 
 
@@ -46,6 +51,7 @@ def test_collision_resolution_precedes_pf_ratio_construction() -> None:
         {
             "EncounterEpicCsn": [1] * 4,
             "Event_DateTime": [START] * 4,
+            "Event_ID": [1, 2, 3, 4],
             "Type": ["Lab Results"] * 4,
             "Event_Grouper": ["PAO2", "PAO2", "FIO2", "FIO2"],
             "Event_Name": ["pa1", "pa2", "fi1", "fi2"],
@@ -79,6 +85,8 @@ def test_builder_selects_nearest_fio2_and_prefers_earlier_tie() -> None:
 
     assert result.height == 1
     assert result["pf_fio2_value"].to_list() == [40.0]
+    assert result["pf_pao2_event_id"].to_list() == [100]
+    assert result["pf_fio2_event_id"].to_list() == [101]
     assert result["pf_ratio"].to_list() == [200.0]
     assert result["pf_ratio_time"].to_list() == [START + timedelta(hours=2)]
     assert result["pf_pair_status"].to_list() == ["paired"]
@@ -193,6 +201,30 @@ def test_builder_rejects_missing_columns() -> None:
         PFRatioBuilder().build(_events([]).drop("NumericValue"))
 
 
+def test_builder_ignores_non_result_rows_with_matching_groupers() -> None:
+    source = _events(
+        [(1, 0, "PAO2", 80.0), (1, 0, "FIO2", 40.0)]
+    ).vstack(
+        pl.DataFrame(
+            {
+                "EncounterEpicCsn": [1],
+                "Event_DateTime": [START],
+                "Event_ID": [999],
+                "Type": ["Procedure Order"],
+                "Event_Grouper": ["PAO2"],
+                "NumericValue": [None],
+                "audit_marker": [999],
+            },
+            schema_overrides={"NumericValue": pl.Float64},
+        )
+    )
+
+    result = PFRatioBuilder().build(source)
+
+    assert result.height == 1
+    assert result["pf_pao2_event_id"].to_list() == [100]
+
+
 def test_builder_returns_typed_empty_output_without_pao2() -> None:
     source = _events([(1, 0, "FIO2", 40.0)])
     config = PFConfig()
@@ -204,9 +236,11 @@ def test_builder_returns_typed_empty_output_without_pao2() -> None:
         config.encounter_col,
         config.pao2_value_col,
         config.pao2_time_col,
+        config.pao2_event_id_col,
         config.fio2_value_col,
         config.fio2_fraction_col,
         config.fio2_time_col,
+        config.fio2_event_id_col,
         config.pf_ratio_col,
         config.pf_ratio_time_col,
         config.pair_status_col,

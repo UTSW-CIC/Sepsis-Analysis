@@ -4,7 +4,11 @@ from datetime import timedelta
 
 import polars as pl
 
-from ...configs.aggregator import FEATURE_REGISTRY, FeatureColumn
+from ...configs.aggregator import (
+    FEATURE_REGISTRY,
+    FeatureColumn,
+    source_provenance_cols,
+)
 from ...configs.organdysfunction import (
     OrganDysfunctionConfig,
     OrganDysfunctionCriterionName,
@@ -85,6 +89,30 @@ def _selected_failure_cols(config: OrganDysfunctionConfig) -> list[str]:
     return [failure_map[criterion] for criterion in config.selected]
 
 
+def _feature_failure_col(
+    feature: FeatureColumn,
+    config: OrganDysfunctionConfig,
+) -> str:
+    feature_map = {
+        config.cardiovascular.lactate_col: config.cardiovascular.flag_col,
+        config.renal.creatinine_col: config.renal.flag_col,
+        config.renal.egfr_col: config.renal.flag_col,
+        config.hepatic.bilirubin_col: config.hepatic.flag_col,
+        config.coagulation.platelets_col: config.coagulation.flag_col,
+        config.coagulation.inr_col: config.coagulation.flag_col,
+        config.coagulation.aptt_col: config.coagulation.flag_col,
+        config.neurological.gcs_col: config.neurological.flag_col,
+    }
+    return feature_map[feature]
+
+
+def _feature_evidence_col(
+    feature: FeatureColumn,
+    config: OrganDysfunctionConfig,
+) -> str:
+    return f"{feature.value}{config.source_evidence_suffix}"
+
+
 def build_organ_dysfunction_state_segments(
     df_organ_input: pl.DataFrame,
     df_pulmonary_timeline: pl.DataFrame | None = None,
@@ -100,7 +128,7 @@ def build_organ_dysfunction_state_segments(
     features = _selected_features(config)
     baselines = _selected_baselines(config)
     failure_cols = _selected_failure_cols(config)
-    feature_details: list[tuple[str, str, float]] = []
+    feature_details: list[tuple[FeatureColumn, str, list[str], float]] = []
     for feature in features:
         definition = FEATURE_REGISTRY[feature]
         if definition.lookback_period is None:
@@ -109,8 +137,9 @@ def build_organ_dysfunction_state_segments(
             )
         feature_details.append(
             (
+                feature,
                 feature.value,
-                f"{feature.value}_source_ts",
+                source_provenance_cols(feature.value),
                 float(definition.lookback_period),
             )
         )
@@ -119,8 +148,12 @@ def build_organ_dysfunction_state_segments(
         encounter_col,
         event_dt_col,
         *baselines,
-        *[value_col for value_col, _, _ in feature_details],
-        *[source_col for _, source_col, _ in feature_details],
+        *[value_col for _, value_col, _, _ in feature_details],
+        *[
+            source_col
+            for _, _, provenance_cols, _ in feature_details
+            for source_col in provenance_cols
+        ],
     }
     missing = sorted(required.difference(df_organ_input.columns))
     if missing:
@@ -128,6 +161,14 @@ def build_organ_dysfunction_state_segments(
             f"Organ episode input is missing required columns: {missing}"
         )
 
+    pulmonary_selected = (
+        OrganDysfunctionCriterionName.PULMONARY in config.selected
+    )
+    feature_output_cols = [
+        column
+        for _, value_col, provenance_cols, _ in feature_details
+        for column in [value_col, *provenance_cols]
+    ]
     output_schema = {
         encounter_col: df_organ_input.schema[encounter_col],
         "state": pl.Int8,
@@ -135,7 +176,28 @@ def build_organ_dysfunction_state_segments(
         "segment_end": df_organ_input.schema[event_dt_col],
         config.flag_col: pl.Int64,
         **{column: pl.Int8 for column in failure_cols},
+        **{column: df_organ_input.schema[column] for column in baselines},
+        **{
+            column: df_organ_input.schema[column]
+            for column in feature_output_cols
+        },
     }
+    if pulmonary_selected:
+        if df_pulmonary_timeline is None:
+            raise ValueError(
+                "Pulmonary organ episodes require the pulmonary state timeline"
+            )
+        pulmonary_evidence_cols = [
+            pulmonary_config.transition_time_col,
+            pulmonary_config.transition_type_col,
+            pulmonary_config.transition_event_ids_col,
+        ]
+        output_schema.update(
+            {
+                column: df_pulmonary_timeline.schema[column]
+                for column in pulmonary_evidence_cols
+            }
+        )
     if df_organ_input.is_empty():
         return pl.DataFrame(schema=output_schema)
     if df_organ_input.select(
@@ -171,8 +233,11 @@ def build_organ_dysfunction_state_segments(
         ),
     ]
 
-    measurement_tables: list[tuple[str, str, float, pl.DataFrame]] = []
-    for value_col, source_ts_col, validity_minutes in feature_details:
+    measurement_tables: list[
+        tuple[str, list[str], str, float, pl.DataFrame]
+    ] = []
+    for _, value_col, provenance_cols, validity_minutes in feature_details:
+        source_ts_col = provenance_cols[0]
         mismatched_pair_count = df_organ_input.filter(
             pl.col(value_col).is_null() != pl.col(source_ts_col).is_null()
         ).height
@@ -188,6 +253,7 @@ def build_organ_dysfunction_state_segments(
                 encounter_col,
                 pl.col(source_ts_col).alias(measurement_ts_col),
                 value_col,
+                *provenance_cols[1:],
             )
             .filter(pl.col(measurement_ts_col).is_not_null())
             .unique()
@@ -208,7 +274,13 @@ def build_organ_dysfunction_state_segments(
             keep="last",
         ).sort(encounter_col, measurement_ts_col)
         measurement_tables.append(
-            (value_col, measurement_ts_col, validity_minutes, measurements)
+            (
+                value_col,
+                provenance_cols,
+                measurement_ts_col,
+                validity_minutes,
+                measurements,
+            )
         )
         if not measurements.is_empty():
             change_point_frames.extend(
@@ -229,18 +301,14 @@ def build_organ_dysfunction_state_segments(
                 ]
             )
 
-    pulmonary_selected = (
-        OrganDysfunctionCriterionName.PULMONARY in config.selected
-    )
     if pulmonary_selected:
-        if df_pulmonary_timeline is None:
-            raise ValueError(
-                "Pulmonary organ episodes require the pulmonary state timeline"
-            )
         required_pulmonary = {
             encounter_col,
             pulmonary_config.state_time_col,
             pulmonary_config.pulmonary_dysfunction_flag,
+            pulmonary_config.transition_time_col,
+            pulmonary_config.transition_type_col,
+            pulmonary_config.transition_event_ids_col,
         }
         missing_pulmonary = sorted(
             required_pulmonary.difference(df_pulmonary_timeline.columns)
@@ -293,14 +361,26 @@ def build_organ_dysfunction_state_segments(
         .sort(encounter_col, "_change_time")
     )
 
-    for value_col, measurement_ts_col, validity_minutes, measurements in (
-        measurement_tables
-    ):
+    for (
+        value_col,
+        provenance_cols,
+        measurement_ts_col,
+        validity_minutes,
+        measurements,
+    ) in measurement_tables:
+        source_ts_col = provenance_cols[0]
         if measurements.is_empty():
             points = points.with_columns(
                 pl.lit(None, dtype=df_organ_input.schema[value_col]).alias(
                     value_col
-                )
+                ),
+                *[
+                    pl.lit(
+                        None,
+                        dtype=df_organ_input.schema[column],
+                    ).alias(column)
+                    for column in provenance_cols
+                ],
             )
             continue
         points = points.join_asof(
@@ -310,18 +390,35 @@ def build_organ_dysfunction_state_segments(
             by=encounter_col,
             strategy="backward",
             check_sortedness=False,
-        ).with_columns(
-            pl.when(
-                pl.col(measurement_ts_col).is_not_null()
-                & (
-                    pl.col("_change_time")
-                    < pl.col(measurement_ts_col)
-                    + pl.lit(timedelta(minutes=validity_minutes))
-                )
+        )
+        evidence_is_valid = (
+            pl.col(measurement_ts_col).is_not_null()
+            & (
+                pl.col("_change_time")
+                < pl.col(measurement_ts_col)
+                + pl.lit(timedelta(minutes=validity_minutes))
             )
+        )
+        points = points.with_columns(
+            pl.when(evidence_is_valid)
             .then(pl.col(value_col))
             .otherwise(pl.lit(None, dtype=df_organ_input.schema[value_col]))
-            .alias(value_col)
+            .alias(value_col),
+            pl.when(evidence_is_valid)
+            .then(pl.col(measurement_ts_col))
+            .otherwise(
+                pl.lit(None, dtype=df_organ_input.schema[source_ts_col])
+            )
+            .alias(source_ts_col),
+            *[
+                pl.when(evidence_is_valid)
+                .then(pl.col(column))
+                .otherwise(
+                    pl.lit(None, dtype=df_organ_input.schema[column])
+                )
+                .alias(column)
+                for column in provenance_cols[1:]
+            ],
         )
 
     if baselines:
@@ -363,6 +460,9 @@ def build_organ_dysfunction_state_segments(
                 encounter_col,
                 pulmonary_config.state_time_col,
                 pulmonary_state_col,
+                pulmonary_config.transition_time_col,
+                pulmonary_config.transition_type_col,
+                pulmonary_config.transition_event_ids_col,
             ).sort(encounter_col, pulmonary_config.state_time_col),
             left_on="_change_time",
             right_on=pulmonary_config.state_time_col,
@@ -396,6 +496,9 @@ def build_organ_dysfunction_episodes(
     df_segments: pl.DataFrame,
     *,
     config: OrganDysfunctionConfig = organdysfunction_config,
+    pulmonary_config: PulmonaryDysfunctionConfig = (
+        pulmonary_dysfunction_config
+    ),
 ) -> pl.DataFrame:
     """Collapse exact organ state segments and retain contributing organs."""
     encounter_col = config.encounter_col
@@ -404,6 +507,80 @@ def build_organ_dysfunction_episodes(
         for column in _selected_failure_cols(config)
         if column in df_segments.columns
     ]
+    features = _selected_features(config)
+    baselines = [
+        column
+        for column in _selected_baselines(config)
+        if column in df_segments.columns
+    ]
+    feature_evidence_exprs = []
+    for feature in features:
+        value_col = feature.value
+        provenance_cols = source_provenance_cols(value_col)
+        source_ts_col, source_type, source_event_id, source_event_name = (
+            provenance_cols
+        )
+        required_feature_cols = {
+            value_col,
+            *provenance_cols,
+            _feature_failure_col(feature, config),
+        }
+        missing_feature_cols = sorted(
+            required_feature_cols.difference(df_segments.columns)
+        )
+        if missing_feature_cols:
+            raise ValueError(
+                "Organ segments are missing source-evidence columns: "
+                f"{missing_feature_cols}"
+            )
+        feature_evidence_exprs.append(
+            pl.struct(
+                pl.col(value_col).alias("value"),
+                pl.col(source_ts_col).alias("result_dt"),
+                pl.col(source_type).alias("type"),
+                pl.col(source_event_id).alias("event_id"),
+                pl.col(source_event_name).alias("event_name"),
+            )
+            .filter(
+                (pl.col(_feature_failure_col(feature, config)) == 1)
+                & pl.col(source_ts_col).is_not_null()
+            )
+            .unique(maintain_order=True)
+            .alias(_feature_evidence_col(feature, config))
+        )
+
+    pulmonary_evidence_exprs = []
+    if OrganDysfunctionCriterionName.PULMONARY in config.selected:
+        transition_time_col = pulmonary_config.transition_time_col
+        transition_type_col = pulmonary_config.transition_type_col
+        transition_event_ids_col = pulmonary_config.transition_event_ids_col
+        pulmonary_columns = {
+            config.pulmonary.flag_col,
+            transition_time_col,
+            transition_type_col,
+            transition_event_ids_col,
+        }
+        missing_pulmonary = sorted(
+            pulmonary_columns.difference(df_segments.columns)
+        )
+        if missing_pulmonary:
+            raise ValueError(
+                "Organ segments are missing pulmonary evidence columns: "
+                f"{missing_pulmonary}"
+            )
+        pulmonary_evidence_exprs.append(
+            pl.struct(
+                pl.col(transition_time_col).alias("transition_dt"),
+                pl.col(transition_type_col).alias("transition_type"),
+                pl.col(transition_event_ids_col).alias("event_ids"),
+            )
+            .filter(
+                (pl.col(config.pulmonary.flag_col) == 1)
+                & pl.col(transition_time_col).is_not_null()
+            )
+            .unique(maintain_order=True)
+            .alias(f"pulmonary{config.source_evidence_suffix}")
+        )
     raw = build_state_episodes(df_segments, encounter_col=encounter_col)
     evidence = (
         raw.select(
@@ -423,6 +600,12 @@ def build_organ_dysfunction_episodes(
             .max()
             .alias("max_organ_dysfunction_total"),
             *[pl.col(column).max().alias(column) for column in failure_cols],
+            *[
+                pl.col(column).drop_nulls().first().alias(column)
+                for column in baselines
+            ],
+            *feature_evidence_exprs,
+            *pulmonary_evidence_exprs,
         )
     )
     return (

@@ -82,6 +82,13 @@ def _infection_frame() -> pl.DataFrame:
     return pl.DataFrame(
         {
             "EncounterEpicCsn": [1, 1, 1, 1, 2],
+            "infection_episode_id": [
+                "IV+Culture:1",
+                "IV+Culture:1",
+                "IV+Culture:1",
+                "CODE_SEPSIS_ORDER:1",
+                "IV+Culture:1",
+            ],
             "criterion": [
                 "iv_dt",
                 "iv_dt",
@@ -92,7 +99,7 @@ def _infection_frame() -> pl.DataFrame:
             "infect_dt": [
                 START,
                 START,
-                START + timedelta(hours=10),
+                START,
                 START,
                 START,
             ],
@@ -136,18 +143,34 @@ def _effective_sirs_frame() -> pl.DataFrame:
     )
 
 
-def test_infection_anchors_deduplicate_only_identical_rows() -> None:
+def test_infection_anchors_collapse_evidence_rows_by_episode() -> None:
     anchors = build_infection_anchors(_infection_frame())
 
-    assert anchors.height == 4
-    assert anchors.filter(pl.col("EncounterEpicCsn") == 1).height == 3
+    assert anchors.height == 3
+    assert anchors.filter(pl.col("EncounterEpicCsn") == 1).height == 2
     assert anchors.filter(
         (pl.col("EncounterEpicCsn") == 1)
         & (pl.col("infect_dt") == START)
     ).height == 2
+    assert anchors.filter(
+        (pl.col("EncounterEpicCsn") == 1)
+        & (pl.col("infection_episode_id") == "IV+Culture:1")
+    )["criterion"].to_list() == ["culture_dt+iv_dt"]
 
 
-def test_sepsis1_uses_independent_24_hour_anchors_and_later_onset() -> None:
+def test_infection_anchors_reject_inconsistent_episode_timestamps() -> None:
+    inconsistent = _infection_frame().with_columns(
+        pl.when(pl.col("criterion") == "culture_dt")
+        .then(pl.lit(START + timedelta(hours=1)))
+        .otherwise(pl.col("infect_dt"))
+        .alias("infect_dt")
+    )
+
+    with pytest.raises(ValueError, match="one canonical infect_dt"):
+        build_infection_anchors(inconsistent)
+
+
+def test_sepsis1_uses_one_24_hour_anchor_per_infection_episode() -> None:
     config = SeveritySepsisConfig()
     anchors = build_infection_anchors(_infection_frame(), config=config)
 
@@ -159,17 +182,15 @@ def test_sepsis1_uses_independent_24_hour_anchors_and_later_onset() -> None:
     )
 
     encounter_one = associations.filter(pl.col("EncounterEpicCsn") == 1)
-    assert encounter_one.height == 3
+    assert encounter_one.height == 2
     assert encounter_one["sirs_episode_id"].unique().to_list() == [1]
     assert encounter_one["sepsis_1_dt"].to_list() == [
-        START + timedelta(hours=23),
         START + timedelta(hours=23),
         START + timedelta(hours=23),
     ]
     assert encounter_one["sepsis_1_earliest_evidence_dt"].to_list() == [
         START,
         START,
-        START + timedelta(hours=10),
     ]
     assert associations.filter(pl.col("EncounterEpicCsn") == 2).is_empty()
 
@@ -196,9 +217,7 @@ def test_sepsis1_onset_is_infection_time_when_sirs_was_established_first() -> No
     )
 
     assert associations["sepsis_1_earliest_evidence_dt"].to_list() == [START]
-    assert associations["sepsis_1_dt"].to_list() == [
-        START + timedelta(hours=10)
-    ]
+    assert associations["sepsis_1_dt"].to_list() == [START]
 
 
 def test_sepsis1_episode_touching_window_boundary_does_not_overlap() -> None:
@@ -213,7 +232,12 @@ def test_sepsis1_episode_touching_window_boundary_does_not_overlap() -> None:
 
     associations = build_sepsis1_associations(
         anchors,
-        _effective_sirs_frame().filter(pl.col("sirs_episode_id") == 2),
+        _effective_sirs_frame()
+        .filter(pl.col("sirs_episode_id") == 2)
+        .with_columns(
+            pl.lit(START + timedelta(hours=24)).alias("sirs_episode_start"),
+            pl.lit(START + timedelta(hours=25)).alias("sirs_episode_end"),
+        ),
         use_filtered_sirs=True,
         config=config,
     )
@@ -239,8 +263,8 @@ def test_sepsis1_summary_retains_encounters_without_sepsis() -> None:
     )
 
     assert summary["sepsis_1_flag"].to_list() == [1, 0, 0]
-    assert summary["sepsis_1_association_count"].to_list() == [3, 0, 0]
-    assert summary["sepsis_1_anchor_count"].to_list() == [3, 0, 0]
+    assert summary["sepsis_1_association_count"].to_list() == [2, 0, 0]
+    assert summary["sepsis_1_anchor_count"].to_list() == [2, 0, 0]
     assert summary["sepsis_1_sirs_episode_count"].to_list() == [1, 0, 0]
     assert summary["sepsis_1_dt"].to_list() == [
         START + timedelta(hours=23),

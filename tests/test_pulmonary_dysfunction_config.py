@@ -20,11 +20,25 @@ def test_pulmonary_config_matches_documented_event_contract() -> None:
         "On Going Hospital Vent",
         "Initial",
         "$ On Going Hospital Vent",
+        "Place back on Ventilator (Trachs)",
+        "Place on BiPAP (Trachs)",
     ]
-    # assert config.vent_onoff.termination_values == ["Standby"]
-    # assert config.vent_onoff.null_value_terminates is True
-    assert config.vent_onoff.termination_values == ["$ Extubation"]
-    assert config.vent_onoff.null_value_terminates is False 
+    assert config.vent_onoff.termination_values == [
+        "Standby",
+        "Discontinue Vent (Trachs Only)",
+        "Place on Trach Collar",
+        "Place on High Flow (Trachs)",
+    ]
+    assert config.vent_onoff.continuation_values == [
+        "Extubation not ordered",
+        "Do not Extubate Patient",
+        "Do not Extubate Patient, Resume Ordered Settings",
+    ]
+    assert config.vent_onoff.neutral_values == [
+        "Extubation ordered",
+        "Other (Comment)",
+    ]
+    assert config.vent_onoff.null_value_terminates is True
 
 
 def test_mechanical_o2_config_includes_every_documented_start_value() -> None:
@@ -75,6 +89,8 @@ def test_pulmonary_input_contract_is_explicit() -> None:
     assert config.required_event_columns == [
         "EncounterEpicCsn",
         "Event_DateTime",
+        "Event_ID",
+        "Type",
         "Event_Grouper",
         "Value",
     ]
@@ -83,7 +99,19 @@ def test_pulmonary_input_contract_is_explicit() -> None:
         "pf_ratio",
         "pf_ratio_time",
         "pf_pair_status",
+        "pf_pao2_event_id",
+        "pf_fio2_event_id",
     ]
+
+
+def test_vent_onoff_roles_cannot_overlap() -> None:
+    with pytest.raises(ValidationError, match="must not overlap"):
+        PulmonaryDysfunctionConfig(
+            vent_onoff={
+                "start_values": ["same"],
+                "termination_values": ["same"],
+            }
+        )
 
 
 @pytest.mark.parametrize(

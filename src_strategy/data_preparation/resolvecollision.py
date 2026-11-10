@@ -42,7 +42,14 @@ class ResolveCollision:
 
     def _save_extreme_diff(self, df: pl.DataFrame, collisions_resolved: pl.DataFrame, extreme_ratio:float=0.5):
         df_inner = df.join(
-            collisions_resolved, on=[self.collision_config.encounter_col, self.collision_config.event_dt_col, self.collision_config.grouper_col, self.collision_config.type_col], how='inner'
+            collisions_resolved,
+            on=[
+                self.collision_config.encounter_col,
+                self.collision_config.event_dt_col,
+                self.collision_config.grouper_col,
+                self.collision_config.type_col,
+            ],
+            how='inner'
         )
         df_map_extreme = df_inner.filter(
             ((pl.col("map")-pl.col("map_right")).abs()/pl.col("map")) > extreme_ratio
@@ -68,34 +75,98 @@ class ResolveCollision:
 
 
     def resolve_bp_collisions(self, df: pl.DataFrame, collisions: pl.DataFrame) -> pl.DataFrame:
-        df_with_collisions = df.join(
-            collisions.filter(
-                pl.col(self.collision_config.grouper_col) == 'Blood Pressure'
-            ), on=[self.collision_config.encounter_col, self.collision_config.event_dt_col, self.collision_config.grouper_col], how='inner'
-        )
-        resolved_list = []
-        for key, feat_dict in self.collision_config.features_resolutions_dict.items():
-            if key != 'map' and key != 'sys':
-                continue
-            expr = pl.col(feat_dict.val_col)
-            picked = self._set_strategy_expression(expr, key)
-            resolved = df_with_collisions.group_by(
-                self.collision_config.encounter_col,
-                self.collision_config.event_dt_col
-            ).agg(
-                picked.alias(feat_dict.val_col)
-            )
-            resolved_list.append(resolved)
+        """Resolve systolic and measured-MAP collisions as separate events."""
+        key_cols = [
+            self.collision_config.encounter_col,
+            self.collision_config.event_dt_col,
+            self.collision_config.grouper_col,
+            self.collision_config.type_col,
+        ]
+        provenance_cols = [
+            column
+            for column in [
+                self.collision_config.event_id,
+                self.collision_config.event_name_col,
+                self.collision_config.raw_val_col,
+            ]
+            if column in df.columns
+        ]
+        resolved_frames = []
 
-        assert len(resolved_list) == 2, 'Expected 2 resolved dataframes (map and sys)'
-        assert len( set(resolved_list[0][self.collision_config.encounter_col].unique()).intersection(set(resolved_list[1][self.collision_config.encounter_col].unique())) ) == resolved_list[0][self.collision_config.encounter_col].n_unique(), f'{self.collision_config.encounter_col} should be the same in both dataframes'
-        assert len( set(resolved_list[0][self.collision_config.event_dt_col].unique()).intersection(set(resolved_list[1][self.collision_config.event_dt_col].unique())) ) == resolved_list[0][self.collision_config.event_dt_col].n_unique(), f'{self.collision_config.event_dt_col} should be the same in both dataframes'
-        df_bp_no_collisions = resolved_list[0].join(resolved_list[1], on=[self.collision_config.encounter_col, self.collision_config.event_dt_col], how='inner').with_columns(
-            pl.lit("Blood Pressure").alias(self.collision_config.grouper_col),
-            pl.lit("Flowsheet").alias(self.collision_config.type_col)
-        )
-        self._save_extreme_diff(df, df_bp_no_collisions, extreme_ratio=0.5)
-        return df_bp_no_collisions
+        for feature_name in ("sys", "map"):
+            feature = self.collision_config.features_resolutions_dict[feature_name]
+            feature_collision_keys = (
+                collisions.filter(
+                    pl.col(self.collision_config.grouper_col).is_in(
+                        feature.grouper_col_val
+                    )
+                    & (
+                        pl.col(self.collision_config.type_col)
+                        == feature.type_col_val
+                    )
+                )
+                .select(key_cols)
+                .unique()
+            )
+            if feature_collision_keys.is_empty():
+                continue
+
+            candidates = df.join(
+                feature_collision_keys,
+                on=key_cols,
+                how="inner",
+            )
+            candidates_with_value = candidates.filter(
+                pl.col(feature.val_col).is_not_null()
+            )
+
+            if candidates_with_value.is_empty():
+                selected = candidates.head(0)
+            else:
+                selected_values = candidates_with_value.group_by(key_cols).agg(
+                    self._set_strategy_expression(
+                        pl.col(feature.val_col),
+                        feature_name,
+                    ).alias(feature.val_col)
+                )
+                selected = (
+                    candidates.join(
+                        selected_values,
+                        on=key_cols + [feature.val_col],
+                        how="inner",
+                    )
+                    .sort(key_cols + provenance_cols)
+                    .unique(subset=key_cols, keep="first", maintain_order=True)
+                )
+
+            unresolved_keys = feature_collision_keys.join(
+                selected.select(key_cols),
+                on=key_cols,
+                how="anti",
+            )
+            if not unresolved_keys.is_empty():
+                null_value_fallbacks = (
+                    candidates.join(unresolved_keys, on=key_cols, how="inner")
+                    .sort(key_cols + provenance_cols)
+                    .unique(subset=key_cols, keep="first", maintain_order=True)
+                )
+                selected = pl.concat(
+                    [selected, null_value_fallbacks],
+                    how="vertical",
+                )
+
+            if selected.height != feature_collision_keys.height:
+                raise ValueError(
+                    f"Failed to resolve every {feature_name} collision key"
+                )
+            resolved_frames.append(selected.select(df.columns))
+
+        if not resolved_frames:
+            return df.head(0)
+
+        resolved = pl.concat(resolved_frames, how="vertical").sort(key_cols)
+        self._save_extreme_diff(df, resolved, extreme_ratio=0.5)
+        return resolved
 
 
     def _set_strategy_expression(self, expr: pl.Expr, grouper:str):
@@ -149,7 +220,12 @@ class ResolveCollision:
             raise Exception('self.groupers_to_resolve_ is not set. Please call detect_collisions() method first.')
         core_df = df.join(
             collision,
-            on=[self.collision_config.encounter_col, self.collision_config.event_dt_col, self.collision_config.grouper_col],
+            on=[
+                self.collision_config.encounter_col,
+                self.collision_config.event_dt_col,
+                self.collision_config.grouper_col,
+                self.collision_config.type_col,
+            ],
             how='inner'
         )
         resolved_list = []
@@ -181,6 +257,24 @@ class ResolveCollision:
                     pl.lit(self.collision_config.features_resolutions_dict[grouper].type_col_val).alias(self.collision_config.type_col),
                 )
             )
+        if not resolved_list:
+            return pl.DataFrame(
+                schema={
+                    self.collision_config.encounter_col: df.schema[
+                        self.collision_config.encounter_col
+                    ],
+                    self.collision_config.event_dt_col: df.schema[
+                        self.collision_config.event_dt_col
+                    ],
+                    "value": df.schema[self.collision_config.val_col],
+                    self.collision_config.grouper_col: df.schema[
+                        self.collision_config.grouper_col
+                    ],
+                    self.collision_config.type_col: df.schema[
+                        self.collision_config.type_col
+                    ],
+                }
+            )
         return pl.concat(resolved_list, how='vertical').explode(self.collision_config.grouper_col)
         
 
@@ -188,7 +282,12 @@ class ResolveCollision:
 
         df_with_collision_resolved = df.join(
             resolved_collisions_bp,
-            on=[self.collision_config.encounter_col, self.collision_config.event_dt_col, self.collision_config.grouper_col],
+            on=[
+                self.collision_config.encounter_col,
+                self.collision_config.event_dt_col,
+                self.collision_config.grouper_col,
+                self.collision_config.type_col,
+            ],
             how='inner'
         )
         resolved_dict = {} 
@@ -220,7 +319,12 @@ class ResolveCollision:
 
         df_with_collision_resolved = df.join(
             resolved_collisions.rename({"value": self.collision_config.val_col}),
-            on=[self.collision_config.encounter_col, self.collision_config.event_dt_col, self.collision_config.grouper_col],
+            on=[
+                self.collision_config.encounter_col,
+                self.collision_config.event_dt_col,
+                self.collision_config.grouper_col,
+                self.collision_config.type_col,
+            ],
             how='left'
         )
         # Analyze for all groupers except Blood Pressure
@@ -303,11 +407,7 @@ class ResolveCollision:
             how='inner'
         ).unique(subset=[self.collision_config.encounter_col, self.collision_config.event_dt_col, self.collision_config.grouper_col, self.collision_config.val_col, self.collision_config.type_col])
 
-        df_resolved_subset_bp = resolved_collisions_bp.join(
-            df,
-            on=resolved_collisions_bp.columns,
-            how='inner'
-        ).unique(subset=[self.collision_config.encounter_col, self.collision_config.event_dt_col, self.collision_config.grouper_col, self.collision_config.val_col, self.collision_config.type_col])
+        df_resolved_subset_bp = resolved_collisions_bp
 
         assert df_no_collisions.shape[1] == df_resolved_subset_bp.shape[1] == df_resolved_subset_numval.shape[1], 'Expected df_no_collisions and df_resolved_subset_numval and df_resolved_subset_bp to have the same number of columns'
 
@@ -315,4 +415,4 @@ class ResolveCollision:
 
         self._monitor_output_validation(resolved_collisions_all)        
 
-        return resolved_collisions_all 
+        return resolved_collisions_all

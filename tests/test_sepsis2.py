@@ -18,7 +18,13 @@ def _infection_frame() -> pl.DataFrame:
     return pl.DataFrame(
         {
             "EncounterEpicCsn": [1, 1, 1, 2],
-            "criterion": ["iv_dt", "culture_dt", "culture_dt", "iv_dt"],
+            "infection_episode_id": [
+                "IV+Culture:1",
+                "IV+Culture:2",
+                "IV+Culture:2",
+                "IV+Culture:1",
+            ],
+            "criterion": ["iv_dt", "iv_dt", "culture_dt", "iv_dt"],
             "infect_dt": [
                 START,
                 START + timedelta(hours=30),
@@ -54,6 +60,28 @@ def _organ_episodes() -> pl.DataFrame:
             "hepatic_failure_flag": [0, 0, 0],
             "coagulation_failure_flag": [0, 0, 0],
             "neurological_failure_flag": [0, 0, 0],
+            "Baseline_Creatinine": [1.0, 1.0, 1.0],
+            "last_lactate_6h_source_evidence": [
+                [
+                    {
+                        "value": 3.0,
+                        "result_dt": START + timedelta(hours=20),
+                        "type": "Lab Results",
+                        "event_id": 100,
+                        "event_name": "LACTATE",
+                    }
+                ],
+                [],
+                [
+                    {
+                        "value": 3.5,
+                        "result_dt": START + timedelta(hours=60),
+                        "type": "Lab Results",
+                        "event_id": 200,
+                        "event_name": "LACTATE",
+                    }
+                ],
+            ],
         },
         schema_overrides={"organ_episode_state": pl.Int8},
     )
@@ -75,6 +103,11 @@ def test_sepsis2_uses_every_distinct_anchor_and_configured_48_hour_window() -> N
     assert encounter_one["infection_anchor_id"].n_unique() == 2
     assert encounter_one["organ_episode_id"].unique().to_list() == [1]
     assert associations.filter(pl.col("EncounterEpicCsn") == 2).is_empty()
+    assert "last_lactate_6h_source_evidence" in associations.columns
+    assert "Baseline_Creatinine" in associations.columns
+    assert encounter_one["last_lactate_6h_source_evidence"].to_list()[0][0][
+        "event_id"
+    ] == 100
 
 
 def test_sepsis2_selects_only_earliest_episode_for_each_organ_type() -> None:
@@ -147,6 +180,7 @@ def test_later_same_organ_episode_cannot_rescue_unmatched_first_episode() -> Non
     infection = pl.DataFrame(
         {
             "EncounterEpicCsn": [1],
+            "infection_episode_id": ["IV+Culture:1"],
             "criterion": ["iv_dt"],
             "infect_dt": [START],
             "suspicion_infection_type": ["IV+Culture"],

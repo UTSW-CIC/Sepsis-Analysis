@@ -45,6 +45,8 @@ class SuspectedInfectionPipeline:
             self.config.encounter_col,
             self.config.value_name_dt_col,
             self.config.value_type_col,
+            self.config.infection_episode_id_col,
+            self.config.evidence_datetime_col,
             self.config.variable_name_col,
         )
 

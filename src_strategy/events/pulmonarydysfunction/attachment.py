@@ -30,6 +30,7 @@ def attach_pulmonary_state(
         config.pulmonary_dysfunction_flag,
         config.transition_time_col,
         config.transition_type_col,
+        config.transition_event_ids_col,
         config.exclusions.flag_col,
         config.exclusions.reason_col,
         config.exclusions.evidence_time_col,

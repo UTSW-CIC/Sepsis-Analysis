@@ -29,6 +29,15 @@ def test_pf_evidence_flows_through_pulmonary_and_organ_state() -> None:
                 start + timedelta(hours=3),
                 start + timedelta(hours=4),
             ],
+            "Event_ID": [100, 101, 102, 103, 104, 105],
+            "Type": [
+                "Flowsheet",
+                "Lab Results",
+                "Lab Results",
+                "Lab Results",
+                "Lab Results",
+                "Flowsheet",
+            ],
             "Event_Grouper": [
                 "Unrelated",
                 "FIO2",
