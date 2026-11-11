@@ -63,6 +63,7 @@ class VasopressorCriteria(BaseModel):
             "Phenylephrine",
             "Norepinephrine",
             "Epinephrine",
+            "Dopamine"
         ]
     )
     dose_col: str = "NumericValue"
