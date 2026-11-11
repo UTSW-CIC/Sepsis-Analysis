@@ -36,9 +36,9 @@ class RunIdentityConfig(BaseModel):
 
 
 run_identity_config = RunIdentityConfig(
-    dataset_version="phase3_2026-06-05",
+    dataset_version="phase4_2026-06-05",
     algorithm_variant="first_per_organ_type",
-    clinical_definition_version="3_1",
+    clinical_definition_version="4",
 )
 
 

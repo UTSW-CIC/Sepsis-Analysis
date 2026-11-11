@@ -42,6 +42,7 @@ from src_strategy.events.episode_filter import (
     run_episode_filter,
 )
 from src_strategy.events.sepsis import (
+    build_final_sepsis_encounter_summary,
     build_infection_anchors,
     build_sepsis1_associations,
     build_sepsis1_encounter_summary,
@@ -369,6 +370,13 @@ df_sepsis3_encounters = build_sepsis3_encounter_summary(
     df_sepsis3_associations,
     config=severitysepsisconfig,
 )
+df_sepsis_encounters = build_final_sepsis_encounter_summary(
+    df_encounters,
+    df_sepsis1_encounters,
+    df_sepsis2_encounters,
+    df_sepsis3_encounters,
+    config=severitysepsisconfig,
+)
 
 clinical_outputs = {
     "df_suspected_infection.parquet": df_suspected_infection,
@@ -399,6 +407,7 @@ clinical_outputs = {
     "df_sepsis2_encounters.parquet": df_sepsis2_encounters,
     "df_sepsis3_associations.parquet": df_sepsis3_associations,
     "df_sepsis3_encounters.parquet": df_sepsis3_encounters,
+    "df_sepsis_encounters.parquet": df_sepsis_encounters,
 }
 if bp_episode_filter_config.enabled:
     clinical_outputs.update(
@@ -468,6 +477,12 @@ if run_mode is RunMode.VERSIONED:
             df_sepsis3_encounters,
             encounter_col=severitysepsisconfig.encounter_col,
             validation_name="sepsis3_one_row_per_input_encounter",
+        ),
+        validate_encounter_summary(
+            df_encounters,
+            df_sepsis_encounters,
+            encounter_col=severitysepsisconfig.encounter_col,
+            validation_name="final_sepsis_one_row_per_input_encounter",
         ),
     ]
 

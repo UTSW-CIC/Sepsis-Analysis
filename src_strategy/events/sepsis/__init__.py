@@ -1,5 +1,6 @@
 """Sepsis 1/2/3 temporal association and encounter categorization."""
 
+from .encounter_categorization import build_final_sepsis_encounter_summary
 from .sepsis1 import (
     build_infection_anchors,
     build_sepsis1_associations,
@@ -16,6 +17,7 @@ from .sepsis3 import (
 )
 
 __all__ = [
+    "build_final_sepsis_encounter_summary",
     "build_infection_anchors",
     "build_sepsis1_associations",
     "build_sepsis1_encounter_summary",

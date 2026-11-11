@@ -100,6 +100,25 @@ class SeveritySepsisConfig(DataConfig):
         "sepsis_3_shock_evidence_count"
     )
 
+    arrival_datetime_col: str = "Arrival_Instant"
+    inpatient_admission_datetime_col: str = "InpatientAdmissionInstant"
+    length_of_stay_col: str = "LengthOfStayInDays"
+    death_flag_col: str = "Death_Flag"
+    billed_sepsis_category_col: str = "Sepsis_Category"
+    calculated_sepsis_severity_col: str = "calculated_sepsis_severity"
+    first_sepsis_dt_col: str = "first_sepsis_dt"
+    calculated_poa_status_col: str = "calculated_poa_status"
+    calculated_sepsis_category_col: str = "calculated_sepsis_category"
+    sepsis_category_match_col: str = "sepsis_category_match"
+    poa_arrival_hours: float = Field(
+        default=48,
+        description=(
+            "Inclusive number of hours after arrival used to classify "
+            "calculated sepsis as present on admission"
+        ),
+    )
+    no_sepsis_category: str = "No Sepsis"
+
     sepsis_state_period_from_infection_hrs: float = Field(
         default=24 * 14,
         description=(
@@ -145,6 +164,7 @@ class SeveritySepsisConfig(DataConfig):
             "infection_2_shock_dysfunction_backward_hrs": (
                 self.infection_2_shock_dysfunction_backward_hrs
             ),
+            "poa_arrival_hours": self.poa_arrival_hours,
         }
         invalid = [
             name
