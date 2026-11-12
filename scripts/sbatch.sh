@@ -13,9 +13,9 @@
 
 # Name of the SLURM partition that this job should run on.
 #SBATCH -p 256GBv2       # partition (queue)
+
 # Number of nodes required to run this job
 #SBATCH -N 1
-
 # Memory (RAM) requirement/limit in MB.
 #SBATCH --mem 252928      # Memory Requirement (MB)
 
@@ -27,21 +27,26 @@
 # The standard output and errors from commands will be written to these files.
 # %j in the filename will be replace with the job number when it is submitted.
 #SBATCH -o job_%j.out
-#SBATCH -e job_%j.err
 
+#SBATCH -e job_%j.err
 # Send an email when the job status changes, to the specfied address.
 #SBATCH --mail-type ALL
+
 #SBATCH --mail-user mohamed.ali@utsouthwestern.edu
+set -euo pipefail
 # COMMAND GROUP 1
 
 /home2/s223850/.conda/envs/ED/bin/python /work/InternalMedicine/s223850/Sepsis/main_strategy_phase4.py --run-mode versioned
 
-MYOUTDIR=`ls -td ../Sepsis-data/data/output/output_data_phase4/clinical_runs/phase4_2026-06-05/first_
-per_organ_type/* | head -n 1`
+MYOUTDIR=`ls -td ../Sepsis-data/data/output/output_data_phase4/clinical_runs/phase4_2026-06-05/first_per_organ_type/* | head -n 1`
 
-COMMIT=`echo $MYOUTDIR | rev | cut -d'-' -f1 | rev`
+clinical_run_id=${MYOUTDIR%/}
+clinical_run_id=${clinical_run_id##*/}
 
-/home2/s223850/.conda/envs/ED/bin/python /work/InternalMedicine/s223850/Sepsis/main_analysis_phase4.py --clinical-run-dir $MYOUTDIR --output-dir "output_phase4_${COMMIT}"
+analysis_dir="output_phase4_${clinical_run_id}"
+figure_dir="output_phase4_figures_${clinical_run_id}"
 
-/home2/s223850/.conda/envs/ED/bin/python /work/InternalMedicine/s223850/Sepsis/main_analysis_phase4.py --analysis-dir $"output_phase4_${COMMIT}" --output-dir "output_phase4_figures_${COMMIT}"
+/home2/s223850/.conda/envs/ED/bin/python /work/InternalMedicine/s223850/Sepsis/main_analysis_phase4.py --clinical-run-dir "$MYOUTDIR" --output-dir "$analysis_dir"
+
+/home2/s223850/.conda/envs/ED/bin/python /work/InternalMedicine/s223850/Sepsis/main_analysis_figures_phase4.py --analysis-dir "$analysis_dir" --output-dir "$figure_dir"
 # END OF SCRIPT

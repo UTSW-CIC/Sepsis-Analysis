@@ -10,3 +10,6 @@ docs/~*
 logs/pipeline.log
 *.err
 *.out
+/output_phase_4/
+/output_phase_4_figures/
+/output_phase4_*/
