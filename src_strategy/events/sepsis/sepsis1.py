@@ -188,9 +188,9 @@ def build_sepsis1_associations(
         )
         .with_columns(
             pl.lit(1, dtype=pl.Int8).alias(config.sepsis1_flag_col),
-            # Approved onset: the later timestamp is when both associated
-            # infection and qualifying SIRS evidence have been established.
-            pl.max_horizontal(
+            # Retrospective project onset is the earliest contributing
+            # evidence timestamp, not the time when both criteria are known.
+            pl.min_horizontal(
                 infect_dt_col,
                 "sirs_episode_start",
             ).alias(config.sepsis1_dt_col),

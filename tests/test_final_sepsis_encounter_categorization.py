@@ -27,33 +27,61 @@ def _summary(
     severity: int,
     flags: list[int],
     onset_hours: list[int | None],
+    earliest_evidence_hours: list[int | None] | None = None,
 ) -> pl.DataFrame:
     onsets = [
         None if hours is None else START + timedelta(hours=hours)
         for hours in onset_hours
     ]
+    earliest_evidence = [
+        None if hours is None else START + timedelta(hours=hours)
+        for hours in (
+            onset_hours
+            if earliest_evidence_hours is None
+            else earliest_evidence_hours
+        )
+    ]
     return pl.DataFrame(
         {
             "EncounterEpicCsn": [1, 2, 3, 4],
             f"sepsis_{severity}_flag": flags,
+            f"sepsis_{severity}_earliest_evidence_dt": earliest_evidence,
             f"sepsis_{severity}_dt": onsets,
             f"sepsis_{severity}_association_count": flags,
         },
-        schema_overrides={f"sepsis_{severity}_dt": pl.Datetime("us")},
+        schema_overrides={
+            f"sepsis_{severity}_earliest_evidence_dt": pl.Datetime("us"),
+            f"sepsis_{severity}_dt": pl.Datetime("us"),
+        },
     )
 
 
 def test_final_summary_uses_maximum_severity_and_first_positive_onset() -> None:
     result = build_final_sepsis_encounter_summary(
         _encounters(),
-        _summary(1, [1, 0, 1, 0], [10, None, 48, None]),
-        _summary(2, [1, 0, 0, 0], [5, None, None, None]),
-        _summary(3, [1, 1, 0, 0], [20, 49, None, None]),
+        _summary(
+            1,
+            [1, 0, 1, 0],
+            [10, None, 48, None],
+            [8, None, 48, None],
+        ),
+        _summary(
+            2,
+            [1, 0, 0, 0],
+            [5, None, None, None],
+            [3, None, None, None],
+        ),
+        _summary(
+            3,
+            [1, 1, 0, 0],
+            [20, 49, None, None],
+            [2, 49, None, None],
+        ),
     )
 
     assert result["calculated_sepsis_severity"].to_list() == [3, 3, 1, 0]
     assert result["first_sepsis_dt"].to_list() == [
-        START + timedelta(hours=5),
+        START + timedelta(hours=2),
         START + timedelta(hours=49),
         START + timedelta(hours=48),
         None,

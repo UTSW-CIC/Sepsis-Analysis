@@ -185,8 +185,8 @@ def test_sepsis1_uses_one_24_hour_anchor_per_infection_episode() -> None:
     assert encounter_one.height == 2
     assert encounter_one["sirs_episode_id"].unique().to_list() == [1]
     assert encounter_one["sepsis_1_dt"].to_list() == [
-        START + timedelta(hours=23),
-        START + timedelta(hours=23),
+        START,
+        START,
     ]
     assert encounter_one["sepsis_1_earliest_evidence_dt"].to_list() == [
         START,
@@ -267,7 +267,7 @@ def test_sepsis1_summary_retains_encounters_without_sepsis() -> None:
     assert summary["sepsis_1_anchor_count"].to_list() == [2, 0, 0]
     assert summary["sepsis_1_sirs_episode_count"].to_list() == [1, 0, 0]
     assert summary["sepsis_1_dt"].to_list() == [
-        START + timedelta(hours=23),
+        START,
         None,
         None,
     ]

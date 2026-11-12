@@ -43,9 +43,10 @@ def build_final_sepsis_encounter_summary(
 ) -> pl.DataFrame:
     """Return one analysis-ready categorization row for every encounter.
 
-    Severity is the highest positive Sepsis 1/2/3 flag. Onset is the earliest
-    positive severity onset, independent of that maximum severity. The
-    Arrival + 48-hour POA boundary is inclusive.
+    Severity is the highest positive Sepsis 1/2/3 flag. Onset is the minimum
+    earliest-evidence timestamp across the positive severity groups,
+    independent of that maximum severity. The Arrival + 48-hour POA boundary
+    is inclusive.
     """
     encounter_col = config.encounter_col
     encounter_columns = [
@@ -70,19 +71,19 @@ def build_final_sepsis_encounter_summary(
             "Sepsis 1 encounter summary",
             df_sepsis1_encounters,
             config.sepsis1_flag_col,
-            config.sepsis1_dt_col,
+            config.sepsis1_earliest_evidence_dt_col,
         ),
         (
             "Sepsis 2 encounter summary",
             df_sepsis2_encounters,
             config.sepsis2_flag_col,
-            config.sepsis2_dt_col,
+            config.sepsis2_earliest_evidence_dt_col,
         ),
         (
             "Sepsis 3 encounter summary",
             df_sepsis3_encounters,
             config.sepsis3_flag_col,
-            config.sepsis3_dt_col,
+            config.sepsis3_earliest_evidence_dt_col,
         ),
     ]
     _validate_encounter_grain(
@@ -173,11 +174,11 @@ def build_final_sepsis_encounter_summary(
         .alias(severity_col),
         pl.min_horizontal(
             pl.when(pl.col(config.sepsis1_flag_col) == 1)
-            .then(pl.col(config.sepsis1_dt_col)),
+            .then(pl.col(config.sepsis1_earliest_evidence_dt_col)),
             pl.when(pl.col(config.sepsis2_flag_col) == 1)
-            .then(pl.col(config.sepsis2_dt_col)),
+            .then(pl.col(config.sepsis2_earliest_evidence_dt_col)),
             pl.when(pl.col(config.sepsis3_flag_col) == 1)
-            .then(pl.col(config.sepsis3_dt_col)),
+            .then(pl.col(config.sepsis3_earliest_evidence_dt_col)),
         ).alias(first_dt_col),
     )
 

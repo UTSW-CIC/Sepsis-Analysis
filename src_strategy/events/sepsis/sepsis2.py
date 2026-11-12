@@ -146,9 +146,9 @@ def build_sepsis2_associations(
         )
         .with_columns(
             pl.lit(1, dtype=pl.Int8).alias(config.sepsis2_flag_col),
-            # Classification time is when both associated evidence components
-            # have been established; the earlier evidence time is also kept.
-            pl.max_horizontal(
+            # Retrospective project onset is the earliest contributing
+            # evidence timestamp, not the time when both criteria are known.
+            pl.min_horizontal(
                 infect_dt_col,
                 "organ_episode_start",
             ).alias(config.sepsis2_dt_col),

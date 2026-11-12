@@ -220,7 +220,7 @@ def test_later_same_organ_episode_cannot_rescue_unmatched_first_episode() -> Non
     assert associations.is_empty()
 
 
-def test_sepsis2_timestamp_uses_later_and_retains_earlier_evidence() -> None:
+def test_sepsis2_timestamp_uses_earliest_contributing_evidence() -> None:
     config = SeveritySepsisConfig()
     associations = build_sepsis2_associations(
         build_infection_anchors(_infection_frame(), config=config),
@@ -229,8 +229,8 @@ def test_sepsis2_timestamp_uses_later_and_retains_earlier_evidence() -> None:
     ).sort("infect_dt")
 
     assert associations["sepsis_2_dt"].to_list() == [
+        START,
         START + timedelta(hours=20),
-        START + timedelta(hours=30),
     ]
     assert associations["sepsis_2_earliest_evidence_dt"].to_list() == [
         START,
@@ -283,7 +283,7 @@ def test_sepsis2_summary_includes_negative_encounters_without_sirs_input() -> No
     assert summary["sepsis_2_anchor_count"].to_list() == [2, 0, 0]
     assert summary["sepsis_2_organ_episode_count"].to_list() == [1, 0, 0]
     assert summary["sepsis_2_dt"].to_list() == [
-        START + timedelta(hours=20),
+        START,
         None,
         None,
     ]
