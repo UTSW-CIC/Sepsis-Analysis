@@ -15,6 +15,7 @@ from src_strategy.configs.outlierdetection.extremeoutliers import (
     FlowsheetBoundsConfig,
     LabBoundsConfig,
 )
+from src_strategy.configs.encounter_exclusions import EncounterExclusionConfig
 from src_strategy.configs.pulmonarydysfunction import PFConfig
 from src_strategy.data_ingest.dataloader_1 import DataLoader as DataLoaderV1
 from src_strategy.data_ingest.dataloader_2 import DataLoader as DataLoaderV2
@@ -102,14 +103,20 @@ def make_io_config(
 
 
 def make_loader(loader_class, io_config: DataInputOutputConfig):
-    return loader_class(
+    arguments = [
         io_config,
         DataConfig(),
         BloodPressureConfig(),
         FlowsheetBoundsConfig.with_defaults(),
         LabBoundsConfig.with_defaults(),
         BloodPressureBoundsConfig.with_defaults(),
-    )
+    ]
+    if loader_class is DataLoaderV2:
+        return loader_class(
+            *arguments,
+            encounter_exclusion_config=EncounterExclusionConfig(enabled=False),
+        )
+    return loader_class(*arguments)
 
 
 def csv_schema_map(root: Path) -> dict[str, list[str]]:
@@ -128,7 +135,9 @@ def test_dataloader_v2_matches_v1_end_to_end() -> None:
         v1_io = make_io_config(input_path, root / "v1_output")
         v2_io = make_io_config(input_path, root / "v2_output")
         v1_events, v1_encounters = make_loader(DataLoaderV1, v1_io).load_data()
-        v2_events, v2_encounters = make_loader(DataLoaderV2, v2_io).load_data()
+        v2_events, v2_encounters, v2_exclusions = make_loader(
+            DataLoaderV2, v2_io
+        ).load_data()
 
         event_sort_cols = [
             "EncounterEpicCsn",
@@ -149,6 +158,7 @@ def test_dataloader_v2_matches_v1_end_to_end() -> None:
 
         assert v2_events.height == 8
         assert v2_encounters.height == 1
+        assert v2_exclusions.is_empty()
 
         bp = v2_events.filter(pl.col("Event_Grouper") == "Blood Pressure")
         assert bp["sys"].to_list() == [120.0]

@@ -6,6 +6,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from .dataconfig import bp_config
+from .encounter_exclusions import encounter_exclusion_config
 from .organdysfunction import organdysfunction_config
 from .pulmonarydysfunction import pf_config, pulmonary_dysfunction_config
 from .septicshock import septicshock_config
@@ -57,6 +58,7 @@ def active_run_configuration_sections() -> dict[
 
     return {
         "blood_pressure_input": bp_config,
+        "encounter_exclusions": encounter_exclusion_config,
         "pf_ratio_builder": pf_config,
         "pulmonary_dysfunction": pulmonary_dysfunction_config,
         "organ_dysfunction": organdysfunction_config,

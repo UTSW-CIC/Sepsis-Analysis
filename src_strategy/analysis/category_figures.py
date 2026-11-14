@@ -8,6 +8,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from matplotlib.ticker import FuncFormatter, MaxNLocator
 import numpy as np
 import polars as pl
 import seaborn as sns
@@ -15,6 +16,8 @@ import seaborn as sns
 from .figure_config import (
     BILLING_COLOR,
     CALCULATED_COLOR,
+    ICU_NO_COLOR,
+    ICU_YES_COLOR,
     NPOA_COLOR,
     POA_COLOR,
     Phase4FigureConfig,
@@ -377,6 +380,256 @@ def plot_crosstab_heatmap(
     # Keep the axis label below the heatmap so it cannot overlap column totals.
     ax.set_xlabel("Billing Sepsis Category", labelpad=12)
     ax.set_ylabel("Computed Sepsis Category")
+    _save(fig, output_dir / filename, config.dpi)
+
+
+def plot_icu_by_category_heatmap(
+    crosstab: pl.DataFrame,
+    *,
+    output_dir: Path,
+    config: Phase4FigureConfig,
+) -> None:
+    """Plot ICU encounter counts by computed and billed sepsis category."""
+    categories = list(config.category_order)
+    count_matrix = np.zeros((len(categories), len(categories)), dtype=int)
+    row_totals = np.zeros(len(categories), dtype=int)
+    column_totals = np.zeros(len(categories), dtype=int)
+
+    for row_index, calculated in enumerate(categories):
+        for column_index, billed in enumerate(categories):
+            row = crosstab.filter(
+                (pl.col("calculated_category") == calculated)
+                & (pl.col("billed_category") == billed)
+            )
+            if row.height:
+                count_matrix[row_index, column_index] = row[
+                    "encounter_count"
+                ].item()
+                row_totals[row_index] = row[
+                    "calculated_category_total"
+                ].item()
+                column_totals[column_index] = row[
+                    "billed_category_total"
+                ].item()
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.heatmap(
+        count_matrix,
+        annot=True,
+        fmt=",d",
+        cmap="Purples",
+        vmin=0,
+        vmax=max(int(count_matrix.max()), 1),
+        linewidths=0.5,
+        linecolor="white",
+        xticklabels=categories,
+        yticklabels=categories,
+        cbar_kws={"label": "ICU encounter count", "pad": 0.12},
+        ax=ax,
+    )
+    for index, total in enumerate(row_totals):
+        ax.text(
+            len(categories) + 0.08,
+            index + 0.5,
+            f"{total:,}",
+            ha="left",
+            va="center",
+            fontweight="bold",
+            clip_on=False,
+        )
+    for index, total in enumerate(column_totals):
+        ax.text(
+            index + 0.5,
+            -0.55,
+            f"{total:,}",
+            ha="center",
+            va="bottom",
+            fontweight="bold",
+            clip_on=False,
+        )
+
+    ax.xaxis.tick_top()
+    ax.tick_params(axis="x", rotation=30, length=0)
+    ax.tick_params(axis="y", length=0)
+    ax.set_title(
+        "ICU Encounters: Computed vs Billed Sepsis Category",
+        pad=95,
+    )
+    ax.set_xlabel("Billing Sepsis Category", labelpad=12)
+    ax.set_ylabel("Computed Sepsis Category")
+    _save(
+        fig,
+        output_dir / "icu_encounter_count_computed_vs_billed_category_heatmap.png",
+        config.dpi,
+    )
+
+
+def plot_icu_by_severity_heatmap(
+    crosstab: pl.DataFrame,
+    *,
+    output_dir: Path,
+    config: Phase4FigureConfig,
+) -> None:
+    """Plot ICU encounter counts by computed and billed sepsis severity."""
+    severities = [1, 2, 3]
+    count_matrix = np.zeros((3, 3), dtype=int)
+    row_totals = np.zeros(3, dtype=int)
+    column_totals = np.zeros(3, dtype=int)
+
+    for row_index, calculated in enumerate(severities):
+        for column_index, billed in enumerate(severities):
+            row = crosstab.filter(
+                (pl.col("calculated_severity") == calculated)
+                & (pl.col("billed_severity") == billed)
+            )
+            if row.height:
+                count_matrix[row_index, column_index] = row[
+                    "icu_encounter_count"
+                ].item()
+                row_totals[row_index] = row[
+                    "calculated_severity_total"
+                ].item()
+                column_totals[column_index] = row[
+                    "billed_severity_total"
+                ].item()
+
+    labels = [f"Sepsis {severity}" for severity in severities]
+    fig, ax = plt.subplots(figsize=(10, 7))
+    sns.heatmap(
+        count_matrix,
+        annot=True,
+        fmt=",d",
+        cmap="Purples",
+        vmin=0,
+        vmax=max(int(count_matrix.max()), 1),
+        linewidths=0.5,
+        linecolor="white",
+        xticklabels=labels,
+        yticklabels=labels,
+        cbar_kws={"label": "ICU encounter count", "pad": 0.14},
+        ax=ax,
+    )
+    for index, total in enumerate(row_totals):
+        ax.text(
+            len(severities) + 0.08,
+            index + 0.5,
+            f"{total:,}",
+            ha="left",
+            va="center",
+            fontweight="bold",
+            clip_on=False,
+        )
+    for index, total in enumerate(column_totals):
+        ax.text(
+            index + 0.5,
+            -0.45,
+            f"{total:,}",
+            ha="center",
+            va="bottom",
+            fontweight="bold",
+            clip_on=False,
+        )
+
+    ax.xaxis.tick_top()
+    ax.tick_params(axis="x", rotation=0, length=0)
+    ax.tick_params(axis="y", rotation=0, length=0)
+    ax.set_title(
+        "ICU Encounters: Computed vs Billed Sepsis Severity",
+        pad=90,
+    )
+    ax.set_xlabel("Billed Sepsis Severity", labelpad=12)
+    ax.set_ylabel("Computed Sepsis Severity")
+    _save(
+        fig,
+        output_dir / "icu_encounter_count_computed_vs_billed_severity_heatmap.png",
+        config.dpi,
+    )
+
+
+def plot_icu_status_diverging_bars(
+    counts: pl.DataFrame,
+    *,
+    classification_source: str,
+    classification_order: list[str],
+    display_labels: list[str],
+    title: str,
+    filename: str,
+    output_dir: Path,
+    config: Phase4FigureConfig,
+) -> None:
+    """Plot ICU=1 upward and ICU=0 downward for one classification source."""
+    subset = counts.filter(
+        pl.col("classification_source") == classification_source
+    )
+    positive_counts = np.array(
+        [
+            subset.filter(
+                (pl.col("classification") == classification)
+                & (pl.col("icu_status") == 1)
+            )["encounter_count"].item()
+            for classification in classification_order
+        ],
+        dtype=int,
+    )
+    negative_counts = np.array(
+        [
+            subset.filter(
+                (pl.col("classification") == classification)
+                & (pl.col("icu_status") == 0)
+            )["encounter_count"].item()
+            for classification in classification_order
+        ],
+        dtype=int,
+    )
+
+    positions = np.arange(len(classification_order))
+    fig, ax = plt.subplots(figsize=(12, 7))
+    positive_bars = ax.bar(
+        positions,
+        positive_counts,
+        color=ICU_YES_COLOR,
+        label="ICU_YN = 1",
+    )
+    negative_bars = ax.bar(
+        positions,
+        -negative_counts,
+        color=ICU_NO_COLOR,
+        label="ICU_YN = 0",
+    )
+    for bar, count in zip(positive_bars, positive_counts):
+        if count == 0:
+            continue
+        ax.annotate(
+            f"{count:,}",
+            xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
+            xytext=(0, 3),
+            textcoords="offset points",
+            ha="center",
+            va="bottom",
+        )
+    for bar, count in zip(negative_bars, negative_counts):
+        if count == 0:
+            continue
+        ax.annotate(
+            f"{count:,}",
+            xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
+            xytext=(0, -3),
+            textcoords="offset points",
+            ha="center",
+            va="top",
+        )
+
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.set_xticks(positions, display_labels)
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.yaxis.set_major_formatter(
+        FuncFormatter(lambda value, _: f"{abs(value):,.0f}")
+    )
+    ax.set_xlabel("Sepsis Classification")
+    ax.set_ylabel("Encounter Count (ICU_YN=0 shown below zero)")
+    ax.set_title(title)
+    ax.legend()
+    sns.despine(ax=ax)
     _save(fig, output_dir / filename, config.dpi)
 
 

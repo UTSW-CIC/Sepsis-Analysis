@@ -10,6 +10,8 @@ CALCULATED_COLOR = "#4C72B0"
 MATCH_COLOR = "#917B6F"
 DEATH_NO_COLOR = "#003d99"
 DEATH_YES_COLOR = "#d62728"
+ICU_NO_COLOR = "#4C72B0"
+ICU_YES_COLOR = "#DD8452"
 
 
 @dataclass(frozen=True)
@@ -44,6 +46,12 @@ class Phase4FigureConfig:
         "cohortbyBillingFromAnalysisScript.png",
         "dist_mortality_rate_flag.png",
         "mortality_rate_computed_vs_billed_severity_heatmap.png",
+        "icu_encounter_count_computed_vs_billed_category_heatmap.png",
+        "icu_encounter_count_computed_vs_billed_severity_heatmap.png",
+        "icu_status_computed_severity_diverging_barplot.png",
+        "icu_status_billed_severity_diverging_barplot.png",
+        "icu_status_computed_category_diverging_barplot.png",
+        "icu_status_billed_category_diverging_barplot.png",
         "dist_48hrs_arrival.png",
         "dist_24hrs_admission.png",
         "heatmap_48hrs_arrival.png",

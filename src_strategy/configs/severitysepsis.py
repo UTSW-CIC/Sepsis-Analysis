@@ -104,6 +104,7 @@ class SeveritySepsisConfig(DataConfig):
     inpatient_admission_datetime_col: str = "InpatientAdmissionInstant"
     length_of_stay_col: str = "LengthOfStayInDays"
     death_flag_col: str = "Death_Flag"
+    icu_flag_col: str = "ICU_YN"
     billed_sepsis_category_col: str = "Sepsis_Category"
     calculated_sepsis_severity_col: str = "calculated_sepsis_severity"
     first_sepsis_dt_col: str = "first_sepsis_dt"

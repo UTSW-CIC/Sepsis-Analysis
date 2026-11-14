@@ -30,6 +30,7 @@ def _sepsis_encounters() -> pl.DataFrame:
         billed_category: str,
         length_of_stay: int,
         death_flag: int,
+        icu_flag: int | None,
     ) -> dict:
         return {
             "EncounterEpicCsn": encounter,
@@ -37,6 +38,7 @@ def _sepsis_encounters() -> pl.DataFrame:
             "InpatientAdmissionInstant": BASE_TIME + timedelta(hours=2),
             "LengthOfStayInDays": length_of_stay,
             "Death_Flag": death_flag,
+            "ICU_YN": icu_flag,
             "Sepsis_Category": billed_category,
             "calculated_sepsis_severity": severity,
             "first_sepsis_dt": (
@@ -59,6 +61,7 @@ def _sepsis_encounters() -> pl.DataFrame:
                 billed_category="POA-1",
                 length_of_stay=4,
                 death_flag=0,
+                icu_flag=1,
             ),
             row(
                 2,
@@ -69,6 +72,7 @@ def _sepsis_encounters() -> pl.DataFrame:
                 billed_category="UPOA-2",
                 length_of_stay=8,
                 death_flag=1,
+                icu_flag=0,
             ),
             row(
                 3,
@@ -79,6 +83,7 @@ def _sepsis_encounters() -> pl.DataFrame:
                 billed_category="POA-1",
                 length_of_stay=3,
                 death_flag=0,
+                icu_flag=1,
             ),
             row(
                 4,
@@ -89,6 +94,7 @@ def _sepsis_encounters() -> pl.DataFrame:
                 billed_category="NPOA-3",
                 length_of_stay=12,
                 death_flag=1,
+                icu_flag=1,
             ),
             row(
                 5,
@@ -99,6 +105,7 @@ def _sepsis_encounters() -> pl.DataFrame:
                 billed_category="POA-2",
                 length_of_stay=6,
                 death_flag=0,
+                icu_flag=0,
             ),
             row(
                 6,
@@ -109,12 +116,14 @@ def _sepsis_encounters() -> pl.DataFrame:
                 billed_category="NPOA-1",
                 length_of_stay=5,
                 death_flag=0,
+                icu_flag=None,
             ),
         ],
         schema_overrides={
             "EncounterEpicCsn": pl.Int64,
             "LengthOfStayInDays": pl.Int64,
             "Death_Flag": pl.Int64,
+            "ICU_YN": pl.Int64,
             "calculated_sepsis_severity": pl.Int8,
         },
     )
@@ -221,6 +230,52 @@ def test_analysis_tables_are_aggregate_and_cover_active_analyses() -> None:
     assert empty_cell["encounter_count"].item() == 0
     assert empty_cell["mortality_rate"].item() is None
 
+    icu_grid = tables["icu_by_category_crosstab"]
+    assert icu_grid.height == 36
+    assert icu_grid["encounter_count"].sum() == 2
+    assert (
+        icu_grid.filter(
+            (pl.col("calculated_category") == "POA-1")
+            & (pl.col("billed_category") == "POA-1")
+        )["encounter_count"].item()
+        == 1
+    )
+
+    icu_severity_grid = tables["icu_by_severity_crosstab"]
+    assert icu_severity_grid.height == 9
+    assert icu_severity_grid["icu_encounter_count"].sum() == 2
+    assert (
+        icu_severity_grid.filter(
+            (pl.col("calculated_severity") == 3)
+            & (pl.col("billed_severity") == 3)
+        )["icu_encounter_count"].item()
+        == 1
+    )
+
+    icu_status_counts = tables["icu_status_counts"]
+    assert icu_status_counts.height == 36
+    totals_by_source = (
+        icu_status_counts.group_by("classification_source")
+        .agg(pl.col("encounter_count").sum())
+        .sort("classification_source")
+    )
+    assert totals_by_source["encounter_count"].to_list() == [3, 3, 3, 3]
+    assert (
+        icu_status_counts.filter(
+            (pl.col("classification_source") == "computed_severity")
+            & (pl.col("classification") == "2")
+            & (pl.col("icu_status") == 0)
+        )["encounter_count"].item()
+        == 1
+    )
+    assert (
+        icu_grid.filter(
+            (pl.col("calculated_category") == "POA-3")
+            & (pl.col("billed_category") == "NPOA-3")
+        )["encounter_count"].item()
+        == 1
+    )
+
     los_distribution = tables["length_of_stay_distribution"]
     severity1_match = los_distribution.filter(
         (pl.col("comparison") == "severity")
@@ -255,5 +310,5 @@ def test_figure_pipeline_renders_complete_configured_inventory(
 
     rendered = {path.name for path in tmp_path.glob("*.png")}
     assert rendered == set(phase4_figure_config.figure_filenames)
-    assert len(rendered) == 26
+    assert len(rendered) == 32
     assert all((tmp_path / filename).stat().st_size > 0 for filename in rendered)

@@ -8,6 +8,10 @@ from src_strategy.configs.dataconfig import (
     DataConfig,
     DataInputOutputConfig,
 )
+from src_strategy.configs.encounter_exclusions import (
+    EncounterExclusionConfig,
+    encounter_exclusion_config as default_encounter_exclusion_config,
+)
 from src_strategy.configs.outlierdetection.extremeoutliers import (
     BloodPressureBoundsConfig,
     FlowsheetBoundsConfig,
@@ -16,6 +20,7 @@ from src_strategy.configs.outlierdetection.extremeoutliers import (
 from src_strategy.utils.logger import get_logger
 
 from .datainject import DataInjectMonitor, SORT_BY
+from .encounter_exclusions import apply_encounter_exclusions
 from .outlier_monitor import OutlierMonitor
 from .transformers import (
     ApplyBounds,
@@ -51,6 +56,9 @@ class DataLoader:
         physiological_bounds_config: FlowsheetBoundsConfig = None,
         lab_bounds_config: LabBoundsConfig = None,
         bp_bounds_config: BloodPressureBoundsConfig = None,
+        encounter_exclusion_config: EncounterExclusionConfig = (
+            default_encounter_exclusion_config
+        ),
     ) -> None:
         # The optional annotations match V1. The active composition currently
         # supplies every bounds configuration.
@@ -60,6 +68,7 @@ class DataLoader:
         self.physiological_bounds_config = physiological_bounds_config
         self.lab_bounds_config = lab_bounds_config
         self.bp_bounds_config = bp_bounds_config
+        self.encounter_exclusion_config = encounter_exclusion_config
 
     def _read_csv(self, filename: str, headers:List[str]=None) -> pl.DataFrame:
         input_path = Path(self.input_output_dataconfig.data_path) / filename
@@ -193,6 +202,42 @@ class DataLoader:
             bp_bounds_config=self.bp_bounds_config,
             logger=logger,
         )
+
+    def _apply_encounter_exclusions(
+        self,
+        sources: Mapping[str, pl.DataFrame],
+    ) -> tuple[dict[str, pl.DataFrame], pl.DataFrame]:
+        """Apply cohort rules and filter every transactional source."""
+        encounters = sources["encounters"]
+        eligible_encounters, exclusion_audit = apply_encounter_exclusions(
+            encounters,
+            self.encounter_exclusion_config,
+            encounter_col=self.data_config.encounter_col,
+        )
+        eligible_ids = eligible_encounters.select(self.data_config.encounter_col)
+
+        filtered = dict(sources)
+        filtered["encounters"] = eligible_encounters
+        for source_name in self.TRANSACTIONAL_SOURCES:
+            source = sources[source_name]
+            if self.data_config.encounter_col not in source.columns:
+                raise ValueError(
+                    f"Transactional source {source_name!r} is missing "
+                    f"{self.data_config.encounter_col!r}"
+                )
+            filtered[source_name] = source.join(
+                eligible_ids,
+                on=self.data_config.encounter_col,
+                how="semi",
+            )
+
+        logger.info(
+            "Encounter exclusions retained %s of %s encounters; %s excluded",
+            eligible_encounters.height,
+            encounters.height,
+            encounters.height - eligible_encounters.height,
+        )
+        return filtered, exclusion_audit
 
     @staticmethod
     def _outlier_holders(bounds_config) -> set[float]:
@@ -405,14 +450,19 @@ class DataLoader:
                 descending=descending,
             )
 
-    def load_data(self) -> tuple[pl.DataFrame, pl.DataFrame]:
-        """Return the unified event table and the encounter baseline table."""
+    def load_data(
+        self,
+    ) -> tuple[pl.DataFrame, pl.DataFrame, pl.DataFrame]:
+        """Return events, eligible encounters, and the exclusion audit."""
         logger.info(
             f"Loading data from {self.input_output_dataconfig.data_path}"
         )
         sources = self._read_sources()
         sources = self._deduplicate_sources(sources)
         sources = self._transform_sources(sources)
+        sources, encounter_exclusions = self._apply_encounter_exclusions(
+            sources
+        )
 
         if 'flowsheets' not in sources:
             sources['flowsheets'] = pl.concat([
@@ -449,4 +499,4 @@ class DataLoader:
         events = self._combine_event_sources(sources)
         events = self._attach_source_features(events, sources)
         self._summarize_sources(sources)
-        return events, encounters
+        return events, encounters, encounter_exclusions

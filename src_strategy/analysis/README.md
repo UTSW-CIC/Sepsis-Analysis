@@ -44,12 +44,19 @@ point. It does not contain clinical or analytical transformations.
 ## Figures
 
 `main_analysis_figures_phase4.py` reads a completed aggregate analysis bundle;
-it never reads encounter-level clinical tables. It creates 26 figures:
+it never reads encounter-level clinical tables. It creates 32 figures:
 
 - 24 figures corresponding to the legacy `CoreAnalysis` outputs.
 - One mortality-rate heatmap crossing computed Sepsis severity 1/2/3 with
   billed Sepsis severity 1/2/3. Cells and margins show mortality with their
   death-count and encounter-count denominators.
+- Two ICU encounter-count heatmaps crossing the primary Arrival + 48-hour
+  computed classification with billing: one uses all six POA/NPOA categories
+  and one collapses them to Sepsis severity 1/2/3. Cells and margins show ICU
+  encounter counts.
+- Four ICU-status diverging barplots for computed severity, billed severity,
+  computed POA/NPOA category, and billed POA/NPOA category. ICU-positive counts
+  point upward and ICU-negative counts point downward.
 - One aggregate-native replacement for the patient-level arrival-to-sepsis
   strip/box plot. It shows the range as a thin line, IQR as a thick line, and
   median as a point.

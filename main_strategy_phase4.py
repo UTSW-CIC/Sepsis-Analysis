@@ -4,6 +4,7 @@ from pathlib import Path
 
 from src_strategy.data_ingest.dataloader_2 import DataLoader
 from src_strategy.configs.dataconfig import input_output_config_4, bp_config, data_config
+from src_strategy.configs.encounter_exclusions import encounter_exclusion_config
 from src_strategy.configs.outlierdetection.extremeoutliers import flowsheet_bounds_config, lab_bounds_config, bp_bounds_config
 from src_strategy.utils.logger import setup_root_logger, get_logger
 from src_strategy.utils.utils import save_df, load_df
@@ -157,14 +158,17 @@ if run_mode is RunMode.VERSIONED:
 setup_root_logger(log_dir=input_output_config_4.logger_dir)
 logger = get_logger(__name__)
 
-dl = DataLoader(input_output_config_4,
-                data_config,
-                bp_config,
-                flowsheet_bounds_config,
-                lab_bounds_config,
-                bp_bounds_config)
+dl = DataLoader(
+    input_output_config_4,
+    data_config,
+    bp_config,
+    flowsheet_bounds_config,
+    lab_bounds_config,
+    bp_bounds_config,
+    encounter_exclusion_config=encounter_exclusion_config,
+)
 
-df_all, df_encounters = dl.load_data()
+df_all, df_encounters, df_encounter_exclusions = dl.load_data()
 if bp_config.calculate_map:
     df_all_file_name = "df_all.parquet"
     df_all_no_collisions_file_name = "df_all_no_collisions.parquet"
@@ -176,6 +180,13 @@ else:
 
 save_df(df_all, input_output_config_4.output_path, df_all_file_name, logger, message=f"Data injestion & Preprocessing completed, and data is saved to {input_output_config_4.output_path+'/'+df_all_file_name}")
 save_df(df_encounters, input_output_config_4.output_path, "df_encounters.parquet", logger, message=f"Encounters data is saved to {input_output_config_4.output_path+'/df_encounters.parquet'}")
+save_df(
+    df_encounter_exclusions,
+    input_output_config_4.output_path,
+    "df_encounter_exclusions.parquet",
+    logger,
+    message="Encounter exclusion audit is saved",
+)
 
 # df_all = load_df(input_output_config_4.output_path, df_all_file_name)
 # df_encounters = load_df(input_output_config_4.output_path, "df_encounters.parquet")
@@ -379,6 +390,7 @@ df_sepsis_encounters = build_final_sepsis_encounter_summary(
 )
 
 clinical_outputs = {
+    "df_encounter_exclusions.parquet": df_encounter_exclusions,
     "df_suspected_infection.parquet": df_suspected_infection,
     "df_infection_anchors.parquet": df_infection_anchors,
     "df_pf_events.parquet": df_pf_events,

@@ -8,6 +8,9 @@ import polars as pl
 from .category_tables import (
     build_category_counts,
     build_category_crosstabs,
+    build_icu_by_category_crosstab,
+    build_icu_by_severity_crosstab,
+    build_icu_status_counts,
     build_poa_status_counts,
 )
 from .cohort import build_analysis_cohort
@@ -79,6 +82,17 @@ class Phase4CoreAnalysisPipeline(AnalysisPipeline):
             "category_counts": build_category_counts(cohort, self.config),
             "poa_status_counts": build_poa_status_counts(cohort, self.config),
             "category_crosstabs": build_category_crosstabs(
+                cohort,
+                self.config,
+            ),
+            "icu_by_category_crosstab": build_icu_by_category_crosstab(
+                cohort,
+                self.config,
+            ),
+            "icu_by_severity_crosstab": build_icu_by_severity_crosstab(
+                cohort
+            ),
+            "icu_status_counts": build_icu_status_counts(
                 cohort,
                 self.config,
             ),

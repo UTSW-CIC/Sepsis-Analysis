@@ -17,6 +17,7 @@ from .config import (
     INPATIENT_ADMISSION_COL,
     INPATIENT_CATEGORY_COL,
     INPATIENT_POA_STATUS_COL,
+    ICU_COL,
     LOS_COL,
     SEPSIS_ENCOUNTER_FILENAME,
     Phase4AnalysisConfig,
@@ -50,6 +51,7 @@ def build_analysis_cohort(
         INPATIENT_ADMISSION_COL,
         LOS_COL,
         DEATH_COL,
+        ICU_COL,
     }
     require_columns(df_sepsis_encounters, required, SEPSIS_ENCOUNTER_FILENAME)
     if df_sepsis_encounters.select(pl.col(ENCOUNTER_COL).is_null().any()).item():
@@ -110,6 +112,13 @@ def build_analysis_cohort(
     if invalid_death_count:
         raise ValueError(
             f"Analysis cohort has {invalid_death_count} invalid Death_Flag values"
+        )
+    invalid_icu_count = cohort.filter(
+        pl.col(ICU_COL).is_not_null() & ~pl.col(ICU_COL).is_in([0, 1])
+    ).height
+    if invalid_icu_count:
+        raise ValueError(
+            f"Analysis cohort has {invalid_icu_count} invalid ICU_YN values"
         )
 
     return (

@@ -36,17 +36,73 @@
 set -euo pipefail
 # COMMAND GROUP 1
 
-/home2/s223850/.conda/envs/ED/bin/python /work/InternalMedicine/s223850/Sepsis/main_strategy_phase4.py --run-mode versioned
+PIPELINE_PART=${PIPELINE_PART:-all}
 
-MYOUTDIR=`ls -td ../Sepsis-data/data/output/output_data_phase4/clinical_runs/phase4_2026-06-05/first_per_organ_type/* | head -n 1`
+PROJECT_ROOT="/work/InternalMedicine/s223850/Sepsis"
+CLINICAL_RUN_ROOT="/work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase4/clinical_runs/phase4_2026-06-05/first_per_organ_type"
+PYTHON="/home2/s223850/.conda/envs/ED/bin/python"
 
-clinical_run_id=${MYOUTDIR%/}
-clinical_run_id=${clinical_run_id##*/}
+cd "$PROJECT_ROOT"
 
-analysis_dir="output_phase4_${clinical_run_id}"
-figure_dir="output_phase4_figures_${clinical_run_id}"
+RUN_CLINICAL=0
+RUN_ANALYSIS=0
+RUN_FIGURES=0
 
-/home2/s223850/.conda/envs/ED/bin/python /work/InternalMedicine/s223850/Sepsis/main_analysis_phase4.py --clinical-run-dir "$MYOUTDIR" --output-dir "$analysis_dir"
+case "$PIPELINE_PART" in
+    all)
+        RUN_CLINICAL=1
+        RUN_ANALYSIS=1
+        RUN_FIGURES=1
+        ;;
+    clinical)
+        RUN_CLINICAL=1
+        ;;
+    analysis)
+        RUN_ANALYSIS=1
+        ;;
+    figures)
+        RUN_FIGURES=1
+        ;;
+    analysis_figures)
+        RUN_ANALYSIS=1
+        RUN_FIGURES=1
+        ;;
+    *)
+        echo "Invalid PIPELINE_PART: $PIPELINE_PART" >&2
+        exit 1
+        ;;
+esac
 
-/home2/s223850/.conda/envs/ED/bin/python /work/InternalMedicine/s223850/Sepsis/main_analysis_figures_phase4.py --analysis-dir "$analysis_dir" --output-dir "$figure_dir"
+if (( RUN_CLINICAL )); then
+    "$PYTHON" main_strategy_phase4.py --run-mode versioned
+
+    CLINICAL_RUN_DIR=$(ls -td "$CLINICAL_RUN_ROOT"/*/ | head -n 1)
+fi
+
+if (( RUN_ANALYSIS )); then
+    : "${CLINICAL_RUN_DIR:?SET Clinical_RUN_DIR to a completed clinical run}"
+
+    clinical_run_id=${CLINICAL_RUN_DIR%/}
+    clinical_run_id=${clinical_run_id##*/}
+
+    run_tag=${ANALYSIS_RUN_TAG:-$(date -u +%Y%m%dT%H%M%SZ)}
+
+    ANALYSIS_DIR=${ANALYSIS_DIR:-"$PROJECT_ROOT/output_phase4_${clinical_run_id}_${run_tag}"}
+
+    "$PYTHON" main_analysis_phase4.py \
+        --clinical-run-dir "$CLINICAL_RUN_DIR" \
+        --output-dir "$ANALYSIS_DIR"
+fi
+
+if (( RUN_FIGURES )); then
+    : "${ANALYSIS_DIR:?Set ANALYSIS_DIR or run the analysis stage first}"
+
+    analysis_id=${ANALYSIS_DIR%/}
+    analysis_id=${analysis_id##*/}
+    FIGURE_DIR=${FIGURE_DIR:-"$PROJECT_ROOT/${analysis_id/output_phase4_/output_phase4_figures_}"}
+
+    "$PYTHON" main_analysis_figures_phase4.py \
+        --analysis-dir "$ANALYSIS_DIR" \
+        --output-dir "$FIGURE_DIR"
+fi
 # END OF SCRIPT

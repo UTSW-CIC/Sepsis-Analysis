@@ -13,6 +13,7 @@ ARRIVAL_COL = "Arrival_Instant"
 INPATIENT_ADMISSION_COL = "InpatientAdmissionInstant"
 LOS_COL = "LengthOfStayInDays"
 DEATH_COL = "Death_Flag"
+ICU_COL = "ICU_YN"
 
 INPATIENT_CATEGORY_COL = "calculated_inpatient_category"
 INPATIENT_POA_STATUS_COL = "calculated_inpatient_poa_status"
@@ -52,6 +53,9 @@ class Phase4AnalysisConfig:
             "mortality_by_severity_crosstab": (
                 "mortality_by_severity_crosstab.parquet"
             ),
+            "icu_by_category_crosstab": "icu_by_category_crosstab.parquet",
+            "icu_by_severity_crosstab": "icu_by_severity_crosstab.parquet",
+            "icu_status_counts": "icu_status_counts.parquet",
             "arrival_to_sepsis_summary": "arrival_to_sepsis_summary.parquet",
             "length_of_stay_by_category": (
                 "length_of_stay_by_category.parquet"
@@ -90,6 +94,11 @@ class Phase4AnalysisConfig:
                 self.inpatient_vasopressor_window_hours
             ),
             "vasopressor_window_upper_boundary_inclusive": False,
+            "icu_flag_column": ICU_COL,
+            "icu_positive_value": 1,
+            "icu_missing_value_treatment": "not counted as ICU",
+            "icu_computed_category_reference": "arrival_plus_48h",
+            "icu_status_nulls_in_barplots": "omitted",
         }
 
 

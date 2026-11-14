@@ -1,3 +1,4 @@
+from datetime import date
 import json
 
 import pytest
@@ -17,6 +18,7 @@ from src_strategy.run_versioning import (
 
 EXPECTED_ACTIVE_SECTIONS = {
     "blood_pressure_input",
+    "encounter_exclusions",
     "pf_ratio_builder",
     "pulmonary_dysfunction",
     "organ_dysfunction",
@@ -43,6 +45,33 @@ def test_sepsis_composition_does_not_duplicate_nested_configs() -> None:
     assert "organdysfunction_config" not in composition
     assert "pulmonarydysfunction_config" not in composition
     assert "septicshock_config" not in composition
+
+
+def test_encounter_exclusions_are_in_active_run_configuration() -> None:
+    exclusions = active_run_configuration_sections()["encounter_exclusions"]
+
+    assert exclusions.enabled
+    assert [rule.name for rule in exclusions.rules] == [
+        "discharge_after_2026_09_30",
+        "cancer_registry_positive",
+    ]
+
+
+def test_encounter_exclusion_change_changes_configuration_hash() -> None:
+    sections = active_run_configuration_sections()
+    exclusions = sections["encounter_exclusions"]
+    changed_rule = exclusions.rules[0].model_copy(
+        update={"value": date(2026, 9, 29)}
+    )
+    changed_exclusions = exclusions.model_copy(
+        update={"rules": (changed_rule, *exclusions.rules[1:])}
+    )
+    changed_sections = dict(sections)
+    changed_sections["encounter_exclusions"] = changed_exclusions
+
+    assert configuration_sha256(sections) != configuration_sha256(
+        changed_sections
+    )
 
 
 def test_active_snapshot_excludes_operational_run_settings() -> None:

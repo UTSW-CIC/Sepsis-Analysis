@@ -110,9 +110,12 @@ class DataInputOutputConfig(DataConfig):
         "DischargeDateValue": ("date", "%Y-%m-%d"),
         "LengthOfStayInDays": pl.Int64,
         "PatientAgeAtAdmission": pl.Float64,
+        'Cancer_Registry_YN': pl.Int64,
+        'HIV_Registry_YN': pl.Int64,
+        'ICU_YN': pl.Int64,
         "Immunocrompromised_Registry_YN": pl.Int64,
         "CKD_Dialysis_Registry_YN": pl.Int64,
-        "Solid_Organs_Transplant_Registry_YN": pl.Int64,
+        "Solid_Organ_Transplant_Registry_YN": pl.Int64,
         "Pregnancy_Registry_YN": pl.Int64,
 
     }, description="Schema for the data")

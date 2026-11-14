@@ -7,6 +7,9 @@ import polars as pl
 from .category_figures import (
     plot_category_distribution,
     plot_crosstab_heatmap,
+    plot_icu_by_category_heatmap,
+    plot_icu_by_severity_heatmap,
+    plot_icu_status_diverging_bars,
     plot_mortality_by_category,
     plot_mortality_by_severity_heatmap,
     plot_poa_status_comparison,
@@ -92,6 +95,61 @@ class Phase4FigurePipeline:
             output_dir=self.output_dir,
             config=self.figure_config,
         )
+        plot_icu_by_category_heatmap(
+            tables["icu_by_category_crosstab"],
+            output_dir=self.output_dir,
+            config=self.figure_config,
+        )
+        plot_icu_by_severity_heatmap(
+            tables["icu_by_severity_crosstab"],
+            output_dir=self.output_dir,
+            config=self.figure_config,
+        )
+
+        icu_status_counts = tables["icu_status_counts"]
+        severity_order = ["1", "2", "3"]
+        severity_labels = ["Sepsis 1", "Sepsis 2", "Sepsis 3"]
+        category_order = list(self.figure_config.category_order)
+        for source, order, labels, title, filename in [
+            (
+                "computed_severity",
+                severity_order,
+                severity_labels,
+                "ICU Status by Computed Sepsis Severity",
+                "icu_status_computed_severity_diverging_barplot.png",
+            ),
+            (
+                "billed_severity",
+                severity_order,
+                severity_labels,
+                "ICU Status by Billed Sepsis Severity",
+                "icu_status_billed_severity_diverging_barplot.png",
+            ),
+            (
+                "computed_category",
+                category_order,
+                category_order,
+                "ICU Status by Computed Sepsis Category",
+                "icu_status_computed_category_diverging_barplot.png",
+            ),
+            (
+                "billed_category",
+                category_order,
+                category_order,
+                "ICU Status by Billed Sepsis Category",
+                "icu_status_billed_category_diverging_barplot.png",
+            ),
+        ]:
+            plot_icu_status_diverging_bars(
+                icu_status_counts,
+                classification_source=source,
+                classification_order=order,
+                display_labels=labels,
+                title=title,
+                filename=filename,
+                output_dir=self.output_dir,
+                config=self.figure_config,
+            )
 
         crosstabs = tables["category_crosstabs"]
         for reference, title, plain_filename, totals_filename in [

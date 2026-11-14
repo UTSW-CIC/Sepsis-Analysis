@@ -18,6 +18,7 @@ def _encounters() -> pl.DataFrame:
             "InpatientAdmissionInstant": [START + timedelta(hours=2)] * 4,
             "LengthOfStayInDays": [5, 4, 3, 2],
             "Death_Flag": [0, 1, 0, 0],
+            "ICU_YN": [1, 0, None, 1],
             "Sepsis_Category": ["POA-3", "NPOA-3", "NPOA-1", "POA-1"],
         }
     )
@@ -105,12 +106,13 @@ def test_final_summary_uses_maximum_severity_and_first_positive_onset() -> None:
         False,
     ]
     assert result["sepsis_1_association_count"].to_list() == [1, 0, 1, 0]
-    assert result.columns[:6] == [
+    assert result.columns[:7] == [
         "EncounterEpicCsn",
         "Arrival_Instant",
         "InpatientAdmissionInstant",
         "LengthOfStayInDays",
         "Death_Flag",
+        "ICU_YN",
         "Sepsis_Category",
     ]
 

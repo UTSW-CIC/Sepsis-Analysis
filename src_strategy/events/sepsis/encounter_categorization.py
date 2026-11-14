@@ -55,6 +55,7 @@ def build_final_sepsis_encounter_summary(
         config.inpatient_admission_datetime_col,
         config.length_of_stay_col,
         config.death_flag_col,
+        config.icu_flag_col,
         config.billed_sepsis_category_col,
     ]
     missing_encounter_columns = sorted(
