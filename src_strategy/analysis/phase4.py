@@ -21,8 +21,10 @@ from .outcome_tables import (
     build_arrival_to_sepsis_summary,
     build_length_of_stay_agreement,
     build_length_of_stay_by_category,
+    build_length_of_stay_distribution,
     build_mortality_agreement,
     build_mortality_by_category,
+    build_mortality_by_severity_crosstab,
 )
 from .pipeline import AnalysisPipeline
 from .vasopressor_tables import (
@@ -84,6 +86,9 @@ class Phase4CoreAnalysisPipeline(AnalysisPipeline):
                 cohort,
                 self.config,
             ),
+            "mortality_by_severity_crosstab": (
+                build_mortality_by_severity_crosstab(cohort)
+            ),
             "arrival_to_sepsis_summary": build_arrival_to_sepsis_summary(
                 cohort,
                 self.config,
@@ -95,6 +100,9 @@ class Phase4CoreAnalysisPipeline(AnalysisPipeline):
             "length_of_stay_agreement": build_length_of_stay_agreement(
                 cohort,
                 self.config,
+            ),
+            "length_of_stay_distribution": (
+                build_length_of_stay_distribution(cohort, self.config)
             ),
             "mortality_agreement": build_mortality_agreement(cohort),
             "vasopressor_window_category_counts": (

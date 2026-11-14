@@ -8,6 +8,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import polars as pl
 import seaborn as sns
 
@@ -153,6 +154,140 @@ def plot_los_agreement_intervals(
         f"LOS: {display_target} Agreement — Range, IQR, and Median"
     )
     ax.invert_yaxis()
+    sns.despine(ax=ax)
+    _save(fig, output_dir / filename, config.dpi)
+
+
+def plot_los_agreement_distribution(
+    distribution: pl.DataFrame,
+    *,
+    comparison: str,
+    target: str,
+    filename: str,
+    output_dir: Path,
+    config: Phase4FigureConfig,
+) -> None:
+    """Restore the legacy LOS jittered distribution and boxplot."""
+    subset = distribution.filter(
+        (pl.col("comparison") == comparison) & (pl.col("target") == target)
+    )
+    group_order = [
+        "billing_only",
+        "calculated_only",
+        "billing_and_calculated",
+    ]
+    display_target = f"Sepsis {target}" if comparison == "severity" else target
+    group_labels = {
+        "billing_only": (
+            f"Billing={display_target}\nCalculated ≠ {display_target}"
+        ),
+        "calculated_only": (
+            f"Calculated={display_target}\nBilling ≠ {display_target}"
+        ),
+        "billing_and_calculated": (
+            f"Billing={display_target}\nCalculated = {display_target}"
+        ),
+    }
+    colors = {
+        "billing_only": BILLING_COLOR,
+        "calculated_only": CALCULATED_COLOR,
+        "billing_and_calculated": MATCH_COLOR,
+    }
+    present_groups = [
+        group
+        for group in group_order
+        if subset.filter(pl.col("agreement_group") == group).height
+    ]
+
+    frames = []
+    source_order = []
+    palette = {}
+    for group in present_groups:
+        frequencies = subset.filter(pl.col("agreement_group") == group)
+        values = np.repeat(
+            frequencies["LengthOfStayInDays"].to_numpy(),
+            frequencies["encounter_count"].to_numpy(),
+        ).astype(float)
+        label = group_labels[group]
+        frames.append(
+            pd.DataFrame(
+                {"LengthOfStayInDays": values, "source": label}
+            )
+        )
+        source_order.append(label)
+        palette[label] = colors[group]
+
+    if not frames:
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.text(
+            0.5,
+            0.5,
+            "No encounters after LOS filtering",
+            ha="center",
+            va="center",
+            transform=ax.transAxes,
+        )
+        ax.set_title(
+            f"LOS Distribution: {display_target} Agreement vs Disagreement"
+        )
+        ax.set_xlabel("Length of Stay (Days)")
+        ax.set_ylabel("")
+        sns.despine(ax=ax)
+        _save(fig, output_dir / filename, config.dpi)
+        return
+
+    melted = pd.concat(frames, ignore_index=True)
+    fig, ax = plt.subplots(figsize=(12, 6))
+    np.random.seed(0)
+    sns.stripplot(
+        data=melted,
+        y="source",
+        x="LengthOfStayInDays",
+        order=source_order,
+        color="#aaaaaa",
+        alpha=0.3,
+        size=3,
+        jitter=True,
+        ax=ax,
+    )
+    sns.boxplot(
+        data=melted,
+        y="source",
+        x="LengthOfStayInDays",
+        order=source_order,
+        hue="source",
+        hue_order=source_order,
+        palette=palette,
+        dodge=False,
+        width=0.5,
+        flierprops={"marker": ""},
+        ax=ax,
+    )
+    if ax.get_legend() is not None:
+        ax.get_legend().remove()
+    for index, source in enumerate(source_order):
+        values = melted.loc[
+            melted["source"] == source,
+            "LengthOfStayInDays",
+        ]
+        q1 = values.quantile(0.25)
+        median = values.quantile(0.50)
+        q3 = values.quantile(0.75)
+        ax.text(
+            median,
+            index - 0.35,
+            f"  Q1={q1:.1f}  Md={median:.1f}  Q3={q3:.1f}",
+            va="center",
+            ha="left",
+            fontsize=8,
+            color="black",
+        )
+
+    ax.set_title(
+        f"LOS Distribution: {display_target} Agreement vs Disagreement"
+    )
+    ax.set_ylabel("")
+    ax.set_xlabel("Length of Stay (Days)")
     sns.despine(ax=ax)
     _save(fig, output_dir / filename, config.dpi)
 

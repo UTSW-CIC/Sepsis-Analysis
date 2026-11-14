@@ -113,7 +113,7 @@ def write_analysis_bundle(
         )
 
     analysis_manifest = {
-        "analysis_schema_version": "1",
+        "analysis_schema_version": "2",
         "status": "complete",
         "created_at_utc": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
         "source_clinical_run": {

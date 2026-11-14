@@ -49,11 +49,17 @@ class Phase4AnalysisConfig:
             "poa_status_counts": "poa_status_counts.parquet",
             "category_crosstabs": "category_crosstabs.parquet",
             "mortality_by_category": "mortality_by_category.parquet",
+            "mortality_by_severity_crosstab": (
+                "mortality_by_severity_crosstab.parquet"
+            ),
             "arrival_to_sepsis_summary": "arrival_to_sepsis_summary.parquet",
             "length_of_stay_by_category": (
                 "length_of_stay_by_category.parquet"
             ),
             "length_of_stay_agreement": "length_of_stay_agreement.parquet",
+            "length_of_stay_distribution": (
+                "length_of_stay_distribution.parquet"
+            ),
             "mortality_agreement": "mortality_agreement.parquet",
             "vasopressor_window_category_counts": (
                 "vasopressor_window_category_counts.parquet"

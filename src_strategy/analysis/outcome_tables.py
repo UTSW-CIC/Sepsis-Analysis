@@ -88,6 +88,89 @@ def build_mortality_by_category(
     return pl.concat(outputs, how="vertical")
 
 
+def build_mortality_by_severity_crosstab(
+    cohort: pl.DataFrame,
+) -> pl.DataFrame:
+    """Calculate mortality for every calculated/billed severity pairing."""
+    severities = [1, 2, 3]
+    grid = pl.DataFrame(
+        {"calculated_severity": severities},
+        schema={"calculated_severity": pl.Int8},
+    ).join(
+        pl.DataFrame(
+            {"billed_severity": severities},
+            schema={"billed_severity": pl.Int8},
+        ),
+        how="cross",
+    )
+    counts = (
+        cohort.group_by(CALCULATED_SEVERITY_COL, BILLED_SEVERITY_COL)
+        .agg(
+            pl.len().cast(pl.Int64).alias("encounter_count"),
+            (pl.col(DEATH_COL) == 1)
+            .sum()
+            .cast(pl.Int64)
+            .alias("death_count"),
+        )
+        .rename(
+            {
+                CALCULATED_SEVERITY_COL: "calculated_severity",
+                BILLED_SEVERITY_COL: "billed_severity",
+            }
+        )
+    )
+    return (
+        grid.join(
+            counts,
+            on=["calculated_severity", "billed_severity"],
+            how="left",
+        )
+        .with_columns(
+            pl.col("encounter_count").fill_null(0).cast(pl.Int64),
+            pl.col("death_count").fill_null(0).cast(pl.Int64),
+        )
+        .with_columns(
+            pl.when(pl.col("encounter_count") > 0)
+            .then(pl.col("death_count") / pl.col("encounter_count"))
+            .otherwise(pl.lit(None, dtype=pl.Float64))
+            .alias("mortality_rate"),
+            pl.col("encounter_count")
+            .sum()
+            .over("calculated_severity")
+            .alias("calculated_severity_total"),
+            pl.col("death_count")
+            .sum()
+            .over("calculated_severity")
+            .alias("calculated_severity_deaths"),
+            pl.col("encounter_count")
+            .sum()
+            .over("billed_severity")
+            .alias("billed_severity_total"),
+            pl.col("death_count")
+            .sum()
+            .over("billed_severity")
+            .alias("billed_severity_deaths"),
+        )
+        .with_columns(
+            pl.when(pl.col("calculated_severity_total") > 0)
+            .then(
+                pl.col("calculated_severity_deaths")
+                / pl.col("calculated_severity_total")
+            )
+            .otherwise(pl.lit(None, dtype=pl.Float64))
+            .alias("calculated_severity_mortality_rate"),
+            pl.when(pl.col("billed_severity_total") > 0)
+            .then(
+                pl.col("billed_severity_deaths")
+                / pl.col("billed_severity_total")
+            )
+            .otherwise(pl.lit(None, dtype=pl.Float64))
+            .alias("billed_severity_mortality_rate"),
+        )
+        .sort("calculated_severity", "billed_severity")
+    )
+
+
 def build_arrival_to_sepsis_summary(
     cohort: pl.DataFrame,
     config: Phase4AnalysisConfig,
@@ -241,6 +324,34 @@ def build_length_of_stay_agreement(
         ["comparison", "target", "agreement_group"],
     ).with_columns(
         pl.lit(upper_cutoff).alias("global_99th_percentile_days"),
+    )
+
+
+def build_length_of_stay_distribution(
+    cohort: pl.DataFrame,
+    config: Phase4AnalysisConfig,
+) -> pl.DataFrame:
+    """Retain patient-neutral LOS frequencies for legacy-style plots."""
+    filtered, upper_cutoff = _length_of_stay_filtered(cohort, config)
+    rows = _agreement_rows(
+        filtered,
+        LOS_COL,
+        category_targets=["POA-3", "NPOA-3"],
+    )
+    return (
+        rows.group_by(
+            "comparison",
+            "target",
+            "agreement_group",
+            LOS_COL,
+        )
+        .len()
+        .rename({"len": "encounter_count"})
+        .with_columns(
+            pl.col("encounter_count").cast(pl.Int64),
+            pl.lit(upper_cutoff).alias("global_99th_percentile_days"),
+        )
+        .sort("comparison", "target", "agreement_group", LOS_COL)
     )
 
 

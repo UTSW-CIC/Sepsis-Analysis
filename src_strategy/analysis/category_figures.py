@@ -111,6 +111,118 @@ def plot_mortality_by_category(
     _save(fig, output_dir / "dist_mortality_rate_flag.png", config.dpi)
 
 
+def plot_mortality_by_severity_heatmap(
+    mortality: pl.DataFrame,
+    *,
+    output_dir: Path,
+    config: Phase4FigureConfig,
+) -> None:
+    """Plot the 3x3 calculated-versus-billed severity mortality matrix."""
+    def margin_annotation(
+        rate: float | None,
+        deaths: int,
+        encounters: int,
+    ) -> str:
+        if rate is None:
+            return "N/A\n(0/0)"
+        return f"{rate:.1%}\n({deaths:,}/{encounters:,})"
+
+    severities = [1, 2, 3]
+    rate_matrix = np.full((3, 3), np.nan, dtype=float)
+    annotations = np.full((3, 3), "N/A\n(0/0)", dtype=object)
+    row_margins: list[str] = []
+    column_margins: list[str] = []
+
+    for row_index, calculated in enumerate(severities):
+        for column_index, billed in enumerate(severities):
+            row = mortality.filter(
+                (pl.col("calculated_severity") == calculated)
+                & (pl.col("billed_severity") == billed)
+            )
+            encounters = row["encounter_count"].item()
+            deaths = row["death_count"].item()
+            rate = row["mortality_rate"].item()
+            if rate is not None:
+                rate_matrix[row_index, column_index] = rate * 100
+                annotations[row_index, column_index] = (
+                    f"{rate:.1%}\n({deaths:,}/{encounters:,})"
+                )
+
+        row = mortality.filter(
+            pl.col("calculated_severity") == calculated
+        ).row(0, named=True)
+        row_margins.append(
+            margin_annotation(
+                row["calculated_severity_mortality_rate"],
+                row["calculated_severity_deaths"],
+                row["calculated_severity_total"],
+            )
+        )
+
+    for billed in severities:
+        column = mortality.filter(
+            pl.col("billed_severity") == billed
+        ).row(0, named=True)
+        column_margins.append(
+            margin_annotation(
+                column["billed_severity_mortality_rate"],
+                column["billed_severity_deaths"],
+                column["billed_severity_total"],
+            )
+        )
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+    sns.heatmap(
+        rate_matrix,
+        annot=annotations,
+        fmt="",
+        cmap="Reds",
+        vmin=0,
+        vmax=100,
+        linewidths=0.5,
+        linecolor="white",
+        xticklabels=[f"Sepsis {severity}" for severity in severities],
+        yticklabels=[f"Sepsis {severity}" for severity in severities],
+        cbar_kws={"label": "Mortality rate (%)", "pad": 0.14},
+        ax=ax,
+    )
+    for index, margin in enumerate(row_margins):
+        ax.text(
+            len(severities) + 0.08,
+            index + 0.5,
+            margin,
+            ha="left",
+            va="center",
+            fontweight="bold",
+            clip_on=False,
+        )
+    for index, margin in enumerate(column_margins):
+        ax.text(
+            index + 0.5,
+            -0.45,
+            margin,
+            ha="center",
+            va="bottom",
+            fontweight="bold",
+            clip_on=False,
+        )
+
+    ax.xaxis.tick_top()
+    ax.tick_params(axis="x", rotation=0, length=0)
+    ax.tick_params(axis="y", rotation=0, length=0)
+    ax.set_title(
+        "Mortality Rate: Computed vs Billed Sepsis Severity",
+        pad=105,
+    )
+    ax.set_xlabel("Billed Sepsis Severity", labelpad=12)
+    ax.set_ylabel("Computed Sepsis Severity")
+    _save(
+        fig,
+        output_dir / "mortality_rate_computed_vs_billed_severity_heatmap.png",
+        config.dpi,
+    )
+
+
 def plot_category_distribution(
     category_counts: pl.DataFrame,
     *,

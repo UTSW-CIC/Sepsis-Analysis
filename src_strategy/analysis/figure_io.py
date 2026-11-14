@@ -87,7 +87,7 @@ def write_figure_manifest(
         )
 
     figure_manifest = {
-        "figure_schema_version": "1",
+        "figure_schema_version": "2",
         "status": "complete",
         "created_at_utc": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
         "source_analysis": {
@@ -101,14 +101,19 @@ def write_figure_manifest(
             "source_clinical_run": analysis_manifest.get("source_clinical_run"),
         },
         "figure_inventory": {
-            "legacy_equivalent_count": 19,
-            "aggregate_interval_replacement_count": 6,
+            "legacy_equivalent_count": 24,
+            "aggregate_interval_replacement_count": 1,
+            "additional_mortality_heatmap_count": 1,
             "interval_encoding": {
                 "range": (
                     "thin line (minimum to maximum after analysis filtering)"
                 ),
                 "iqr": "thick line",
                 "median": "point",
+            },
+            "los_distribution_encoding": {
+                "points": "deterministically jittered encounter frequencies",
+                "summary": "boxplot with Q1, median, and Q3 annotation",
             },
         },
         "figure_count": len(artifacts),

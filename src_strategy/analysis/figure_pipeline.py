@@ -8,6 +8,7 @@ from .category_figures import (
     plot_category_distribution,
     plot_crosstab_heatmap,
     plot_mortality_by_category,
+    plot_mortality_by_severity_heatmap,
     plot_poa_status_comparison,
     plot_single_category_counts,
 )
@@ -19,7 +20,7 @@ from .figure_io import (
     write_figure_manifest,
 )
 from .outcome_figures import (
-    plot_los_agreement_intervals,
+    plot_los_agreement_distribution,
     plot_los_median_by_category,
     plot_mortality_agreement,
     plot_time_summary_intervals,
@@ -27,7 +28,7 @@ from .outcome_figures import (
 
 
 class Phase4FigurePipeline:
-    """Render the approved 19 legacy and six replacement figures."""
+    """Render the approved Phase 4 aggregate analysis figures."""
 
     def __init__(
         self,
@@ -83,6 +84,11 @@ class Phase4FigurePipeline:
         )
         plot_mortality_by_category(
             tables["mortality_by_category"],
+            output_dir=self.output_dir,
+            config=self.figure_config,
+        )
+        plot_mortality_by_severity_heatmap(
+            tables["mortality_by_severity_crosstab"],
             output_dir=self.output_dir,
             config=self.figure_config,
         )
@@ -174,16 +180,16 @@ class Phase4FigurePipeline:
             config=self.figure_config,
         )
 
-        los_agreement = tables["length_of_stay_agreement"]
+        los_distribution = tables["length_of_stay_distribution"]
         for comparison, target, filename in [
-            ("severity", "1", "los_iqr_median_range_arrival_sepsis1.png"),
-            ("severity", "2", "los_iqr_median_range_arrival_sepsis2.png"),
-            ("severity", "3", "los_iqr_median_range_arrival_sepsis3.png"),
-            ("category", "POA-3", "los_iqr_median_range_arrival_poa3.png"),
-            ("category", "NPOA-3", "los_iqr_median_range_arrival_npoa3.png"),
+            ("severity", "1", "los_distribution_arrival_sepsis1.png"),
+            ("severity", "2", "los_distribution_arrival_sepsis2.png"),
+            ("severity", "3", "los_distribution_arrival_sepsis3.png"),
+            ("category", "POA-3", "los_distribution_arrival_poa3.png"),
+            ("category", "NPOA-3", "los_distribution_arrival_npoa3.png"),
         ]:
-            plot_los_agreement_intervals(
-                los_agreement,
+            plot_los_agreement_distribution(
+                los_distribution,
                 comparison=comparison,
                 target=target,
                 filename=filename,

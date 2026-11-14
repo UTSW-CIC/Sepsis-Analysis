@@ -29,7 +29,7 @@ AnalysisPipeline.run()
 | `config.py` | Categories, windows, filenames, and shared column names |
 | `cohort.py` | Positive-sepsis cohort validation and preparation |
 | `category_tables.py` | Category counts, POA counts, and crosstabs |
-| `outcome_tables.py` | Mortality, time-to-sepsis, and LOS summaries |
+| `outcome_tables.py` | Mortality, time-to-sepsis, LOS summaries, and patient-neutral LOS frequencies |
 | `vasopressor_tables.py` | Qualifying vasopressor-window analyses |
 | `io.py` | Clinical-run validation and analysis-bundle publication |
 | `category_figures.py` | Category, POA, mortality, and heatmap figures |
@@ -44,13 +44,20 @@ point. It does not contain clinical or analytical transformations.
 ## Figures
 
 `main_analysis_figures_phase4.py` reads a completed aggregate analysis bundle;
-it never reads encounter-level clinical tables. It creates 25 figures:
+it never reads encounter-level clinical tables. It creates 26 figures:
 
-- 19 figures corresponding to the legacy `CoreAnalysis` outputs.
-- Six aggregate-native replacements for patient-level strip/box plots. These
-  show the range as a thin line, IQR as a thick line, and median as a point,
-  and use `iqr_median_range` in their filenames to prevent confusion with the
-  legacy plots.
+- 24 figures corresponding to the legacy `CoreAnalysis` outputs.
+- One mortality-rate heatmap crossing computed Sepsis severity 1/2/3 with
+  billed Sepsis severity 1/2/3. Cells and margins show mortality with their
+  death-count and encounter-count denominators.
+- One aggregate-native replacement for the patient-level arrival-to-sepsis
+  strip/box plot. It shows the range as a thin line, IQR as a thick line, and
+  median as a point.
+
+The five legacy LOS stripplot-plus-boxplot figures are reconstructed from a
+patient-neutral frequency table. Persisted analysis artifacts contain no
+encounter identifiers; encounter-frequency rows are expanded only in memory
+while rendering the figures.
 
 The figure directory is published only after all configured PNGs exist. Its
 `figure_manifest.json` records their hashes and `_SUCCESS` marks completion.

@@ -203,6 +203,33 @@ def test_analysis_tables_are_aggregate_and_cover_active_analyses() -> None:
         (pl.col("comparison") == "category") & (pl.col("target") == "POA-2")
     ).height == 1
 
+    mortality_grid = tables["mortality_by_severity_crosstab"]
+    assert mortality_grid.height == 9
+    severity3_match = mortality_grid.filter(
+        (pl.col("calculated_severity") == 3)
+        & (pl.col("billed_severity") == 3)
+    )
+    assert severity3_match.select(
+        "death_count",
+        "encounter_count",
+        "mortality_rate",
+    ).row(0) == (1, 1, 1.0)
+    empty_cell = mortality_grid.filter(
+        (pl.col("calculated_severity") == 1)
+        & (pl.col("billed_severity") == 2)
+    )
+    assert empty_cell["encounter_count"].item() == 0
+    assert empty_cell["mortality_rate"].item() is None
+
+    los_distribution = tables["length_of_stay_distribution"]
+    severity1_match = los_distribution.filter(
+        (pl.col("comparison") == "severity")
+        & (pl.col("target") == "1")
+        & (pl.col("agreement_group") == "billing_and_calculated")
+    )
+    assert severity1_match["encounter_count"].sum() == 2
+    assert severity1_match["LengthOfStayInDays"].sort().to_list() == [4, 5]
+
 
 def test_vasopressor_windows_use_only_qualifying_administrations() -> None:
     tables = _analysis_tables()
@@ -228,5 +255,5 @@ def test_figure_pipeline_renders_complete_configured_inventory(
 
     rendered = {path.name for path in tmp_path.glob("*.png")}
     assert rendered == set(phase4_figure_config.figure_filenames)
-    assert len(rendered) == 25
+    assert len(rendered) == 26
     assert all((tmp_path / filename).stat().st_size > 0 for filename in rendered)
