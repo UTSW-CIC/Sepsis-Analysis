@@ -69,3 +69,23 @@ positive counts. Null ICU flags are omitted from both bars.
 - Final focused render suite after visual refinements: 4 passed.
 - All five new figures were visually inspected. The barplot count axes use
   absolute integer tick labels, and zero-height bars are not annotated.
+
+## ICU bar-label percentage decision
+
+The owner requested percentages next to the counts on all four ICU-status
+diverging barplots. The denominator is the non-null ICU-status total within the
+same sepsis classification, so the ICU and non-ICU percentages for a category
+sum to 100%. Labels use the format `count (percentage)` with one decimal place;
+zero-height bars remain unannotated.
+
+## ICU bar-label percentage implementation
+
+- Updated the shared diverging-bar renderer, so all four ICU barplots now use
+  labels such as `4,694 (81.2%)`.
+- Advanced the figure bundle schema version from 4 to 5.
+- Added a focused regression test covering the within-classification
+  denominator and exact upward/downward label text.
+- Focused analysis/figure suite: 5 passed.
+- Regenerated a complete 32-figure bundle from the latest aggregate analysis;
+  `_SUCCESS` is present and the manifest reports figure schema version 5.
+- Visually inspected representative severity and six-category ICU barplots.

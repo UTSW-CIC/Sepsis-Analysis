@@ -4,6 +4,8 @@ from pathlib import Path
 import polars as pl
 
 from src_strategy.analysis.cohort import build_analysis_cohort
+from src_strategy.analysis import category_figures
+from src_strategy.analysis.category_figures import plot_icu_status_diverging_bars
 from src_strategy.analysis.config import (
     ENCOUNTER_COL,
     phase4_analysis_config,
@@ -312,3 +314,37 @@ def test_figure_pipeline_renders_complete_configured_inventory(
     assert rendered == set(phase4_figure_config.figure_filenames)
     assert len(rendered) == 32
     assert all((tmp_path / filename).stat().st_size > 0 for filename in rendered)
+
+
+def test_icu_diverging_bar_labels_include_within_classification_percentages(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    counts = pl.DataFrame(
+        {
+            "classification_source": ["computed_severity"] * 4,
+            "classification": ["1", "1", "2", "2"],
+            "icu_status": [0, 1, 0, 1],
+            "encounter_count": [1, 3, 0, 0],
+        }
+    )
+    captured_labels: list[str] = []
+
+    def capture_labels(fig, _path, _dpi) -> None:
+        captured_labels.extend(text.get_text() for text in fig.axes[0].texts)
+        category_figures.plt.close(fig)
+
+    monkeypatch.setattr(category_figures, "_save", capture_labels)
+
+    plot_icu_status_diverging_bars(
+        counts,
+        classification_source="computed_severity",
+        classification_order=["1", "2"],
+        display_labels=["Sepsis 1", "Sepsis 2"],
+        title="ICU Status by Computed Sepsis Severity",
+        filename="icu_status.png",
+        output_dir=tmp_path,
+        config=phase4_figure_config,
+    )
+
+    assert captured_labels == ["3 (75.0%)", "1 (25.0%)"]

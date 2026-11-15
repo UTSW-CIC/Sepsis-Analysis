@@ -581,6 +581,7 @@ def plot_icu_status_diverging_bars(
         ],
         dtype=int,
     )
+    category_totals = positive_counts + negative_counts
 
     positions = np.arange(len(classification_order))
     fig, ax = plt.subplots(figsize=(12, 7))
@@ -596,22 +597,30 @@ def plot_icu_status_diverging_bars(
         color=ICU_NO_COLOR,
         label="ICU_YN = 0",
     )
-    for bar, count in zip(positive_bars, positive_counts):
+    for bar, count, total in zip(
+        positive_bars,
+        positive_counts,
+        category_totals,
+    ):
         if count == 0:
             continue
         ax.annotate(
-            f"{count:,}",
+            f"{count:,} ({count / total:.1%})",
             xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
             xytext=(0, 3),
             textcoords="offset points",
             ha="center",
             va="bottom",
         )
-    for bar, count in zip(negative_bars, negative_counts):
+    for bar, count, total in zip(
+        negative_bars,
+        negative_counts,
+        category_totals,
+    ):
         if count == 0:
             continue
         ax.annotate(
-            f"{count:,}",
+            f"{count:,} ({count / total:.1%})",
             xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
             xytext=(0, -3),
             textcoords="offset points",

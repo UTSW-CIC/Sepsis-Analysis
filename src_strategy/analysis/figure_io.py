@@ -87,7 +87,7 @@ def write_figure_manifest(
         )
 
     figure_manifest = {
-        "figure_schema_version": "4",
+        "figure_schema_version": "5",
         "status": "complete",
         "created_at_utc": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
         "source_analysis": {

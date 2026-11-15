@@ -56,7 +56,9 @@ it never reads encounter-level clinical tables. It creates 32 figures:
   encounter counts.
 - Four ICU-status diverging barplots for computed severity, billed severity,
   computed POA/NPOA category, and billed POA/NPOA category. ICU-positive counts
-  point upward and ICU-negative counts point downward.
+  point upward and ICU-negative counts point downward. Each nonzero bar is
+  labeled with its encounter count and its percentage of encounters with a
+  non-null ICU status in that classification.
 - One aggregate-native replacement for the patient-level arrival-to-sepsis
   strip/box plot. It shows the range as a thin line, IQR as a thick line, and
   median as a point.
