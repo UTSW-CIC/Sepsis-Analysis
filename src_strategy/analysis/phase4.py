@@ -10,12 +10,16 @@ from .category_tables import (
     build_category_crosstabs,
     build_icu_by_category_crosstab,
     build_icu_by_severity_crosstab,
+    build_icu_sepsis3_pathway_counts,
     build_icu_status_counts,
     build_poa_status_counts,
 )
 from .cohort import build_analysis_cohort
 from .config import (
+    ENCOUNTER_COL,
     SEPSIS_ENCOUNTER_FILENAME,
+    SEPSIS3_ASSOCIATION_FILENAME,
+    SEPSIS3_PATHWAY_COL,
     VASOPRESSOR_EVIDENCE_FILENAME,
     Phase4AnalysisConfig,
     phase4_analysis_config,
@@ -39,9 +43,10 @@ from .vasopressor_tables import (
 
 @dataclass(frozen=True)
 class Phase4AnalysisInputs:
-    """The two versioned clinical tables required by current analyses."""
+    """The three versioned clinical tables required by current analyses."""
 
     sepsis_encounters: pl.DataFrame
+    sepsis3_associations: pl.DataFrame
     vasopressor_evidence: pl.DataFrame
 
 
@@ -60,6 +65,16 @@ class Phase4CoreAnalysisPipeline(AnalysisPipeline):
         return Phase4AnalysisInputs(
             sepsis_encounters=pl.read_parquet(
                 self.clinical_run_dir / SEPSIS_ENCOUNTER_FILENAME
+            ),
+            # The association artifact is large, but this analysis needs only
+            # one distinct encounter/pathway pair for each pathway met.
+            sepsis3_associations=(
+                pl.scan_parquet(
+                    self.clinical_run_dir / SEPSIS3_ASSOCIATION_FILENAME
+                )
+                .select(ENCOUNTER_COL, SEPSIS3_PATHWAY_COL)
+                .unique()
+                .collect()
             ),
             vasopressor_evidence=pl.read_parquet(
                 self.clinical_run_dir / VASOPRESSOR_EVIDENCE_FILENAME
@@ -95,6 +110,12 @@ class Phase4CoreAnalysisPipeline(AnalysisPipeline):
             "icu_status_counts": build_icu_status_counts(
                 cohort,
                 self.config,
+            ),
+            "icu_sepsis3_pathway_counts": (
+                build_icu_sepsis3_pathway_counts(
+                    cohort,
+                    inputs.sepsis3_associations,
+                )
             ),
             "mortality_by_category": build_mortality_by_category(
                 cohort,

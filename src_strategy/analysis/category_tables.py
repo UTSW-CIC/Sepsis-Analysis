@@ -9,9 +9,14 @@ from .config import (
     CALCULATED_CATEGORY_COL,
     CALCULATED_POA_STATUS_COL,
     CALCULATED_SEVERITY_COL,
+    ENCOUNTER_COL,
     INPATIENT_CATEGORY_COL,
     INPATIENT_POA_STATUS_COL,
     ICU_COL,
+    ORGAN_DYSFUNCTION_PATHWAY_VALUE,
+    SEPSIS3_ASSOCIATION_FILENAME,
+    SEPSIS3_PATHWAY_COL,
+    VASOPRESSORS_PATHWAY_VALUE,
     Phase4AnalysisConfig,
 )
 
@@ -369,4 +374,139 @@ def build_icu_status_counts(
             ),
         ],
         how="vertical",
+    )
+
+
+def build_icu_sepsis3_pathway_counts(
+    cohort: pl.DataFrame,
+    sepsis3_associations: pl.DataFrame,
+) -> pl.DataFrame:
+    """Count ICU status within Sepsis 3 by mutually exclusive pathway group."""
+    required = {ENCOUNTER_COL, SEPSIS3_PATHWAY_COL}
+    missing = sorted(required.difference(sepsis3_associations.columns))
+    if missing:
+        raise ValueError(
+            f"{SEPSIS3_ASSOCIATION_FILENAME} is missing columns: {missing}"
+        )
+    invalid_pathways = sorted(
+        set(sepsis3_associations[SEPSIS3_PATHWAY_COL].drop_nulls().unique())
+        - {
+            ORGAN_DYSFUNCTION_PATHWAY_VALUE,
+            VASOPRESSORS_PATHWAY_VALUE,
+        }
+    )
+    if invalid_pathways:
+        raise ValueError(f"Unexpected Sepsis 3 pathways: {invalid_pathways}")
+
+    pathway_flags = sepsis3_associations.group_by(ENCOUNTER_COL).agg(
+        (pl.col(SEPSIS3_PATHWAY_COL) == ORGAN_DYSFUNCTION_PATHWAY_VALUE)
+        .any()
+        .alias("organ_dysfunction_pathway_met"),
+        (pl.col(SEPSIS3_PATHWAY_COL) == VASOPRESSORS_PATHWAY_VALUE)
+        .any()
+        .alias("vasopressors_pathway_met"),
+    )
+    classified = (
+        cohort.join(pathway_flags, on=ENCOUNTER_COL, how="left", validate="1:1")
+        .with_columns(
+            pl.col(
+                "organ_dysfunction_pathway_met",
+                "vasopressors_pathway_met",
+            ).fill_null(False)
+        )
+        .with_columns(
+            pl.when(
+                pl.col("organ_dysfunction_pathway_met")
+                & pl.col("vasopressors_pathway_met")
+            )
+            .then(pl.lit("both"))
+            .when(pl.col("organ_dysfunction_pathway_met"))
+            .then(pl.lit("organ_dysfunction"))
+            .when(pl.col("vasopressors_pathway_met"))
+            .then(pl.lit("vasopressors"))
+            .otherwise(pl.lit("neither"))
+            .alias("pathway_group")
+        )
+    )
+
+    source_rows = pl.concat(
+        [
+            classified.filter(
+                pl.col(CALCULATED_SEVERITY_COL) == 3
+            ).with_columns(
+                pl.lit("computed_sepsis3").alias("classification_source")
+            ),
+            classified.filter(pl.col(BILLED_SEVERITY_COL) == 3).with_columns(
+                pl.lit("billed_sepsis3").alias("classification_source")
+            ),
+        ],
+        how="vertical",
+    ).filter(pl.col(ICU_COL).is_in([0, 1]))
+
+    pathway_groups = [
+        "organ_dysfunction",
+        "vasopressors",
+        "both",
+        "neither",
+    ]
+    grid = (
+        pl.DataFrame(
+            {"classification_source": ["computed_sepsis3", "billed_sepsis3"]}
+        )
+        .join(pl.DataFrame({"pathway_group": pathway_groups}), how="cross")
+        .join(
+            pl.DataFrame(
+                {"icu_status": [0, 1]},
+                schema={"icu_status": pl.Int64},
+            ),
+            how="cross",
+        )
+    )
+    counts = (
+        source_rows.group_by("classification_source", "pathway_group", ICU_COL)
+        .len()
+        .rename({ICU_COL: "icu_status", "len": "encounter_count"})
+    )
+    return (
+        grid.join(
+            counts,
+            on=["classification_source", "pathway_group", "icu_status"],
+            how="left",
+        )
+        .with_columns(pl.col("encounter_count").fill_null(0).cast(pl.Int64))
+        .with_columns(
+            pl.col("encounter_count")
+            .sum()
+            .over("classification_source")
+            .alias("denominator")
+        )
+        .with_columns(
+            pl.when(pl.col("denominator") > 0)
+            .then(pl.col("encounter_count") / pl.col("denominator"))
+            .otherwise(pl.lit(0.0))
+            .alias("proportion")
+        )
+        .with_columns(
+            pl.col("classification_source")
+            .replace_strict(
+                {"computed_sepsis3": 0, "billed_sepsis3": 1},
+                return_dtype=pl.Int8,
+            )
+            .alias("source_order"),
+            pl.col("pathway_group")
+            .replace_strict(
+                {group: index for index, group in enumerate(pathway_groups)},
+                return_dtype=pl.Int8,
+            )
+            .alias("pathway_order"),
+        )
+        .sort("source_order", "pathway_order", "icu_status")
+        .select(
+            "classification_source",
+            "pathway_group",
+            "icu_status",
+            "encounter_count",
+            "denominator",
+            "proportion",
+        )
     )

@@ -7,8 +7,11 @@ import polars as pl
 from .category_figures import (
     plot_category_distribution,
     plot_crosstab_heatmap,
-    plot_icu_by_category_heatmap,
-    plot_icu_by_severity_heatmap,
+    # plot_icu_by_category_heatmap,
+    # plot_icu_by_severity_heatmap,
+    plot_icu_by_category_heatmap_claude_rate,
+    plot_icu_by_severity_heatmap_claude_rate,
+    plot_icu_sepsis3_pathway_diverging_bars,
     plot_icu_status_diverging_bars,
     plot_mortality_by_category,
     plot_mortality_by_severity_heatmap,
@@ -28,6 +31,27 @@ from .outcome_figures import (
     plot_mortality_agreement,
     plot_time_summary_intervals,
 )
+
+
+def _shared_icu_y_limits(
+    counts: pl.DataFrame,
+    classification_sources: tuple[str, str],
+) -> tuple[float, float]:
+    """Return padded limits shared by a computed/billed ICU plot pair."""
+    pair_counts = counts.filter(
+        pl.col("classification_source").is_in(classification_sources)
+    )
+    positive_max = pair_counts.filter(pl.col("icu_status") == 1)[
+        "encounter_count"
+    ].max()
+    negative_max = pair_counts.filter(pl.col("icu_status") == 0)[
+        "encounter_count"
+    ].max()
+    padding = 1.10
+    return (
+        -max(1.0, float(negative_max or 0) * padding),
+        max(1.0, float(positive_max or 0) * padding),
+    )
 
 
 class Phase4FigurePipeline:
@@ -95,12 +119,23 @@ class Phase4FigurePipeline:
             output_dir=self.output_dir,
             config=self.figure_config,
         )
-        plot_icu_by_category_heatmap(
+        # plot_icu_by_category_heatmap(
+        #     tables["icu_by_category_crosstab"],
+        #     output_dir=self.output_dir,
+        #     config=self.figure_config,
+        # )
+        # plot_icu_by_severity_heatmap(
+        #     tables["icu_by_severity_crosstab"],
+        #     output_dir=self.output_dir,
+        #     config=self.figure_config,
+        # )
+
+        plot_icu_by_category_heatmap_claude_rate(
             tables["icu_by_category_crosstab"],
             output_dir=self.output_dir,
             config=self.figure_config,
         )
-        plot_icu_by_severity_heatmap(
+        plot_icu_by_severity_heatmap_claude_rate(
             tables["icu_by_severity_crosstab"],
             output_dir=self.output_dir,
             config=self.figure_config,
@@ -110,13 +145,22 @@ class Phase4FigurePipeline:
         severity_order = ["1", "2", "3"]
         severity_labels = ["Sepsis 1", "Sepsis 2", "Sepsis 3"]
         category_order = list(self.figure_config.category_order)
-        for source, order, labels, title, filename in [
+        severity_y_limits = _shared_icu_y_limits(
+            icu_status_counts,
+            ("computed_severity", "billed_severity"),
+        )
+        category_y_limits = _shared_icu_y_limits(
+            icu_status_counts,
+            ("computed_category", "billed_category"),
+        )
+        for source, order, labels, title, filename, y_limits in [
             (
                 "computed_severity",
                 severity_order,
                 severity_labels,
                 "ICU Status by Computed Sepsis Severity",
                 "icu_status_computed_severity_diverging_barplot.png",
+                severity_y_limits,
             ),
             (
                 "billed_severity",
@@ -124,6 +168,7 @@ class Phase4FigurePipeline:
                 severity_labels,
                 "ICU Status by Billed Sepsis Severity",
                 "icu_status_billed_severity_diverging_barplot.png",
+                severity_y_limits,
             ),
             (
                 "computed_category",
@@ -131,6 +176,7 @@ class Phase4FigurePipeline:
                 category_order,
                 "ICU Status by Computed Sepsis Category",
                 "icu_status_computed_category_diverging_barplot.png",
+                category_y_limits,
             ),
             (
                 "billed_category",
@@ -138,6 +184,7 @@ class Phase4FigurePipeline:
                 category_order,
                 "ICU Status by Billed Sepsis Category",
                 "icu_status_billed_category_diverging_barplot.png",
+                category_y_limits,
             ),
         ]:
             plot_icu_status_diverging_bars(
@@ -149,7 +196,14 @@ class Phase4FigurePipeline:
                 filename=filename,
                 output_dir=self.output_dir,
                 config=self.figure_config,
+                y_limits=y_limits,
             )
+
+        plot_icu_sepsis3_pathway_diverging_bars(
+            tables["icu_sepsis3_pathway_counts"],
+            output_dir=self.output_dir,
+            config=self.figure_config,
+        )
 
         crosstabs = tables["category_crosstabs"]
         for reference, title, plain_filename, totals_filename in [

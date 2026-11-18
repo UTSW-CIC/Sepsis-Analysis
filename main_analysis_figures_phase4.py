@@ -28,8 +28,14 @@ def parse_arguments() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    arguments = parse_arguments()
+    # TODO: Uncomment when you are running the batch script
+    # arguments = parse_arguments()
+    # Phase4FigurePipeline(
+    #     analysis_dir=arguments.analysis_dir,
+    #     output_dir=arguments.output_dir,
+    # ).run()
+
     Phase4FigurePipeline(
-        analysis_dir=arguments.analysis_dir,
-        output_dir=arguments.output_dir,
+        analysis_dir=Path("./output_phase4_20261114T212724Z__70421eeb2096__cfg-2debc358c056_icu_pathways"),
+        output_dir=Path("./output_phase4_figures_20261114T212724Z__70421eeb2096__cfg-2debc358c056_icu_pathways_latest_icu_rate")
     ).run()

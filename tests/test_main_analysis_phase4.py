@@ -5,13 +5,19 @@ import polars as pl
 
 from src_strategy.analysis.cohort import build_analysis_cohort
 from src_strategy.analysis import category_figures
+from src_strategy.analysis.category_tables import (
+    build_icu_sepsis3_pathway_counts,
+)
 from src_strategy.analysis.category_figures import plot_icu_status_diverging_bars
 from src_strategy.analysis.config import (
     ENCOUNTER_COL,
     phase4_analysis_config,
 )
 from src_strategy.analysis.figure_config import phase4_figure_config
-from src_strategy.analysis.figure_pipeline import Phase4FigurePipeline
+from src_strategy.analysis.figure_pipeline import (
+    Phase4FigurePipeline,
+    _shared_icu_y_limits,
+)
 from src_strategy.analysis.phase4 import (
     Phase4AnalysisInputs,
     Phase4CoreAnalysisPipeline,
@@ -150,6 +156,19 @@ def _vasopressor_evidence() -> pl.DataFrame:
     )
 
 
+def _sepsis3_associations() -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "EncounterEpicCsn": [4, 4],
+            "sepsis_3_pathway": [
+                "hypotension_lactate_sepsis2",
+                "infection_vasopressor",
+            ],
+        },
+        schema_overrides={"EncounterEpicCsn": pl.Int64},
+    )
+
+
 def _analysis_tables() -> dict[str, pl.DataFrame]:
     pipeline = Phase4CoreAnalysisPipeline(
         clinical_run_dir=Path("unused-in-unit-test"),
@@ -157,6 +176,7 @@ def _analysis_tables() -> dict[str, pl.DataFrame]:
     )
     inputs = Phase4AnalysisInputs(
         sepsis_encounters=_sepsis_encounters(),
+        sepsis3_associations=_sepsis3_associations(),
         vasopressor_evidence=_vasopressor_evidence(),
     )
     cohort = pipeline.prepare_cohort(inputs)
@@ -270,6 +290,18 @@ def test_analysis_tables_are_aggregate_and_cover_active_analyses() -> None:
         )["encounter_count"].item()
         == 1
     )
+
+    pathway_counts = tables["icu_sepsis3_pathway_counts"]
+    assert pathway_counts.height == 16
+    assert (
+        pathway_counts.filter(
+            (pl.col("classification_source") == "computed_sepsis3")
+            & (pl.col("pathway_group") == "both")
+            & (pl.col("icu_status") == 1)
+        )["encounter_count"].item()
+        == 1
+    )
+    assert pathway_counts["denominator"].unique().to_list() == [1]
     assert (
         icu_grid.filter(
             (pl.col("calculated_category") == "POA-3")
@@ -312,7 +344,7 @@ def test_figure_pipeline_renders_complete_configured_inventory(
 
     rendered = {path.name for path in tmp_path.glob("*.png")}
     assert rendered == set(phase4_figure_config.figure_filenames)
-    assert len(rendered) == 32
+    assert len(rendered) == 33
     assert all((tmp_path / filename).stat().st_size > 0 for filename in rendered)
 
 
@@ -348,3 +380,78 @@ def test_icu_diverging_bar_labels_include_within_classification_percentages(
     )
 
     assert captured_labels == ["3 (75.0%)", "1 (25.0%)"]
+
+
+def test_computed_and_billed_icu_bars_use_shared_y_limits() -> None:
+    counts = pl.DataFrame(
+        {
+            "classification_source": [
+                "computed_severity",
+                "computed_severity",
+                "billed_severity",
+                "billed_severity",
+            ],
+            "classification": ["1", "1", "1", "1"],
+            "icu_status": [0, 1, 0, 1],
+            "encounter_count": [30, 10, 5, 20],
+        }
+    )
+
+    limits = _shared_icu_y_limits(
+        counts,
+        ("computed_severity", "billed_severity"),
+    )
+
+    assert limits == (-33.0, 22.0)
+
+
+def test_icu_sepsis3_pathways_are_mutually_exclusive() -> None:
+    cohort = pl.DataFrame(
+        {
+            "EncounterEpicCsn": [1, 2, 3, 4],
+            "calculated_sepsis_severity": [3, 3, 3, 2],
+            "billed_sepsis_severity": [1, 3, 3, 3],
+            "ICU_YN": [1, 0, 1, 0],
+        },
+        schema_overrides={
+            "EncounterEpicCsn": pl.Int64,
+            "calculated_sepsis_severity": pl.Int8,
+            "billed_sepsis_severity": pl.Int8,
+            "ICU_YN": pl.Int64,
+        },
+    )
+    associations = pl.DataFrame(
+        {
+            "EncounterEpicCsn": [1, 2, 3, 3],
+            "sepsis_3_pathway": [
+                "hypotension_lactate_sepsis2",
+                "infection_vasopressor",
+                "hypotension_lactate_sepsis2",
+                "infection_vasopressor",
+            ],
+        },
+        schema_overrides={"EncounterEpicCsn": pl.Int64},
+    )
+
+    counts = build_icu_sepsis3_pathway_counts(cohort, associations)
+
+    assert counts.height == 16
+    assert (
+        counts.group_by("classification_source")
+        .agg(pl.col("encounter_count").sum())
+        .sort("classification_source")["encounter_count"]
+        .to_list()
+        == [3, 3]
+    )
+    billed_neither = counts.filter(
+        (pl.col("classification_source") == "billed_sepsis3")
+        & (pl.col("pathway_group") == "neither")
+        & (pl.col("icu_status") == 0)
+    )
+    assert billed_neither["encounter_count"].item() == 1
+    computed_both = counts.filter(
+        (pl.col("classification_source") == "computed_sepsis3")
+        & (pl.col("pathway_group") == "both")
+        & (pl.col("icu_status") == 1)
+    )
+    assert computed_both["encounter_count"].item() == 1

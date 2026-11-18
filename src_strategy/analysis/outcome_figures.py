@@ -179,13 +179,13 @@ def plot_los_agreement_distribution(
     display_target = f"Sepsis {target}" if comparison == "severity" else target
     group_labels = {
         "billing_only": (
-            f"Billing={display_target}\nCalculated ≠ {display_target}"
+            f"Billing={display_target}\nComputed ≠ {display_target}"
         ),
         "calculated_only": (
-            f"Calculated={display_target}\nBilling ≠ {display_target}"
+            f"Computed={display_target}\nBilling ≠ {display_target}"
         ),
         "billing_and_calculated": (
-            f"Billing={display_target}\nCalculated = {display_target}"
+            f"Billing={display_target}\nComputed = {display_target}"
         ),
     }
     colors = {
@@ -355,13 +355,13 @@ def plot_mortality_agreement(
     display_target = f"Sepsis {target}" if comparison == "severity" else target
     group_labels = {
         "billing_only": (
-            f"Billing={display_target}\nCalculated ≠ {display_target}"
+            f"Billing={display_target}\nComputed ≠ {display_target}"
         ),
         "calculated_only": (
-            f"Calculated={display_target}\nBilling ≠ {display_target}"
+            f"Computed={display_target}\nBilling ≠ {display_target}"
         ),
         "billing_and_calculated": (
-            f"Billing and Calculated\n= {display_target}"
+            f"Billing and Computed\n= {display_target}"
         ),
     }
 

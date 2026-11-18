@@ -29,8 +29,17 @@ def parse_arguments() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    arguments = parse_arguments()
+    #TODO: Uncomment when you are running the scripts
+    # arguments = parse_arguments()
+    # Phase4CoreAnalysisPipeline(
+    #     clinical_run_dir=arguments.clinical_run_dir,
+    #     output_dir=arguments.output_dir,
+    # ).run()
+
+    latest_phase4_run = Path("/work/InternalMedicine/s223850/Sepsis-data/data/output/output_data_phase4/clinical_runs/phase4_2026-06-05/first_per_organ_type/20261114T212724Z__70421eeb2096__cfg-2debc358c056")
+    debug_output_dir = Path("./output_phase4_debug_runs")
     Phase4CoreAnalysisPipeline(
-        clinical_run_dir=arguments.clinical_run_dir,
-        output_dir=arguments.output_dir,
+        clinical_run_dir=latest_phase4_run,
+        output_dir=debug_output_dir
     ).run()
+

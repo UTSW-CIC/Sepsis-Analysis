@@ -89,3 +89,19 @@ zero-height bars remain unannotated.
 - Regenerated a complete 32-figure bundle from the latest aggregate analysis;
   `_SUCCESS` is present and the manifest reports figure schema version 5.
 - Visually inspected representative severity and six-category ICU barplots.
+
+## Shared ICU bar scales
+
+The owner requested comparable y-axis scales when placing the computed and
+billed ICU bar figures side by side. The computed/billed severity pair now
+shares limits derived from the largest ICU-positive and ICU-negative severity
+counts. The computed/billed POA/NPOA category pair does the same independently.
+Both ends retain 10% label padding. The figure bundle schema version advanced
+from 5 to 6.
+
+- Focused Phase 4 analysis/figure suite: 6 passed.
+- Regenerated the complete 32-figure bundle from the latest aggregate analysis
+  in a new `shared_y_limits` output directory; its manifest is complete at
+  figure schema version 6.
+- Visually inspected the computed and billed category plots and confirmed
+  matching ticks and plot extents.

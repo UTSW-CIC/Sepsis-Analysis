@@ -44,7 +44,7 @@ point. It does not contain clinical or analytical transformations.
 ## Figures
 
 `main_analysis_figures_phase4.py` reads a completed aggregate analysis bundle;
-it never reads encounter-level clinical tables. It creates 32 figures:
+it never reads encounter-level clinical tables. It creates 33 figures:
 
 - 24 figures corresponding to the legacy `CoreAnalysis` outputs.
 - One mortality-rate heatmap crossing computed Sepsis severity 1/2/3 with
@@ -59,6 +59,10 @@ it never reads encounter-level clinical tables. It creates 32 figures:
   point upward and ICU-negative counts point downward. Each nonzero bar is
   labeled with its encounter count and its percentage of encounters with a
   non-null ICU status in that classification.
+- One Sepsis 3 ICU-status diverging barplot comparing computed and billed
+  Sepsis 3. Each direction is stacked into Organ Dysfunction Pathway,
+  Vasopressors Pathway, Both Pathways, and Neither Pathway using computed
+  clinical evidence.
 - One aggregate-native replacement for the patient-level arrival-to-sepsis
   strip/box plot. It shows the range as a thin line, IQR as a thick line, and
   median as a point.

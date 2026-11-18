@@ -15,6 +15,7 @@ from src_strategy.run_manifest import (
 from .config import (
     ENCOUNTER_COL,
     SEPSIS_ENCOUNTER_FILENAME,
+    SEPSIS3_ASSOCIATION_FILENAME,
     VASOPRESSOR_EVIDENCE_FILENAME,
     Phase4AnalysisConfig,
 )
@@ -23,7 +24,7 @@ from .config import (
 def validate_completed_clinical_run(
     clinical_run_dir: Path,
 ) -> ClinicalRunManifest:
-    """Validate run completion, provenance, and the two required inputs."""
+    """Validate run completion, provenance, and the three required inputs."""
     if not clinical_run_dir.is_dir():
         raise FileNotFoundError(
             f"Clinical-run directory does not exist: {clinical_run_dir}"
@@ -41,7 +42,11 @@ def validate_completed_clinical_run(
     )
     manifest_tables = {table.filename: table for table in manifest.output_tables}
 
-    for filename in [SEPSIS_ENCOUNTER_FILENAME, VASOPRESSOR_EVIDENCE_FILENAME]:
+    for filename in [
+        SEPSIS_ENCOUNTER_FILENAME,
+        SEPSIS3_ASSOCIATION_FILENAME,
+        VASOPRESSOR_EVIDENCE_FILENAME,
+    ]:
         if filename not in manifest_tables:
             raise ValueError(
                 f"Clinical-run manifest does not declare required table {filename!r}"
@@ -113,7 +118,7 @@ def write_analysis_bundle(
         )
 
     analysis_manifest = {
-        "analysis_schema_version": "4",
+        "analysis_schema_version": "5",
         "status": "complete",
         "created_at_utc": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
         "source_clinical_run": {

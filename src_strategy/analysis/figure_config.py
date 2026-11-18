@@ -12,6 +12,10 @@ DEATH_NO_COLOR = "#003d99"
 DEATH_YES_COLOR = "#d62728"
 ICU_NO_COLOR = "#4C72B0"
 ICU_YES_COLOR = "#DD8452"
+PATHWAY_ORGAN_COLOR = "#4C72B0"
+PATHWAY_VASOPRESSOR_COLOR = "#DD8452"
+PATHWAY_BOTH_COLOR = "#55A868"
+PATHWAY_NEITHER_COLOR = "#C7C7C7"
 
 
 @dataclass(frozen=True)
@@ -52,6 +56,7 @@ class Phase4FigureConfig:
         "icu_status_billed_severity_diverging_barplot.png",
         "icu_status_computed_category_diverging_barplot.png",
         "icu_status_billed_category_diverging_barplot.png",
+        "icu_status_sepsis3_by_pathway_diverging_barplot.png",
         "dist_48hrs_arrival.png",
         "dist_24hrs_admission.png",
         "heatmap_48hrs_arrival.png",

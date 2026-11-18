@@ -19,6 +19,10 @@ from .figure_config import (
     ICU_NO_COLOR,
     ICU_YES_COLOR,
     NPOA_COLOR,
+    PATHWAY_BOTH_COLOR,
+    PATHWAY_NEITHER_COLOR,
+    PATHWAY_ORGAN_COLOR,
+    PATHWAY_VASOPRESSOR_COLOR,
     POA_COLOR,
     Phase4FigureConfig,
 )
@@ -383,6 +387,116 @@ def plot_crosstab_heatmap(
     _save(fig, output_dir / filename, config.dpi)
 
 
+def plot_icu_by_category_heatmap_claude_rate(
+    crosstab: pl.DataFrame,
+    *,
+    output_dir: Path,
+    config: Phase4FigureConfig,
+) -> None:
+    """Plot ICU encounter share by computed and billed sepsis category."""
+
+    def share_annotation(count: int, total: int) -> str:
+        if total == 0:
+            return "N/A\n(0/0)"
+        return f"{count / total:.1%}\n({count:,}/{total:,})"
+
+    categories = list(config.category_order)
+    n_categories = len(categories)
+    count_matrix = np.zeros((n_categories, n_categories), dtype=int)
+    row_totals = np.zeros(n_categories, dtype=int)
+    column_totals = np.zeros(n_categories, dtype=int)
+
+    for row_index, calculated in enumerate(categories):
+        for column_index, billed in enumerate(categories):
+            row = crosstab.filter(
+                (pl.col("calculated_category") == calculated)
+                & (pl.col("billed_category") == billed)
+            )
+            if row.height:
+                count_matrix[row_index, column_index] = row[
+                    "encounter_count"
+                ].item()
+                row_totals[row_index] = row[
+                    "calculated_category_total"
+                ].item()
+                column_totals[column_index] = row[
+                    "billed_category_total"
+                ].item()
+
+    # --- New: convert counts to % of all ICU encounters ---------------------
+    grand_total = int(count_matrix.sum())
+    if grand_total:
+        percent_matrix = count_matrix / grand_total * 100
+        vmax = max(float(percent_matrix.max()), 1.0)
+    else:
+        percent_matrix = np.full((n_categories, n_categories), np.nan)
+        vmax = 100.0
+
+    annotations = np.array(
+        [
+            [share_annotation(int(count), grand_total) for count in matrix_row]
+            for matrix_row in count_matrix
+        ],
+        dtype=object,
+    )
+    row_margins = [share_annotation(int(t), grand_total) for t in row_totals]
+    column_margins = [
+        share_annotation(int(t), grand_total) for t in column_totals
+    ]
+    # -------------------------------------------------------------------------
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.heatmap(
+        percent_matrix,
+        annot=annotations,
+        fmt="",
+        cmap="Reds",
+        vmin=0,
+        vmax=vmax,
+        linewidths=0.5,
+        linecolor="white",
+        xticklabels=categories,
+        yticklabels=categories,
+        cbar_kws={"label": "Share of ICU encounters (%)", "pad": 0.14},
+        ax=ax,
+    )
+    for index, margin in enumerate(row_margins):
+        ax.text(
+            n_categories + 0.08,
+            index + 0.5,
+            margin,
+            ha="left",
+            va="center",
+            fontweight="bold",
+            clip_on=False,
+        )
+    for index, margin in enumerate(column_margins):
+        ax.text(
+            index + 0.5,
+            -0.55,
+            margin,
+            ha="center",
+            va="bottom",
+            fontweight="bold",
+            clip_on=False,
+        )
+
+    ax.xaxis.tick_top()
+    ax.tick_params(axis="x", rotation=30, length=0)
+    ax.tick_params(axis="y", rotation=0, length=0)
+    ax.set_title(
+        "ICU Encounters: Computed vs Billed Sepsis Category",
+        pad=115,
+    )
+    ax.set_xlabel("Billing Sepsis Category", labelpad=12)
+    ax.set_ylabel("Computed Sepsis Category")
+    _save(
+        fig,
+        output_dir / "icu_encounter_count_computed_vs_billed_category_heatmap.png",
+        config.dpi,
+    )
+
+
 def plot_icu_by_category_heatmap(
     crosstab: pl.DataFrame,
     *,
@@ -546,6 +660,117 @@ def plot_icu_by_severity_heatmap(
     )
 
 
+def plot_icu_by_severity_heatmap_claude_rate(
+    crosstab: pl.DataFrame,
+    *,
+    output_dir: Path,
+    config: Phase4FigureConfig,
+) -> None:
+    """Plot ICU encounter share by computed and billed sepsis severity."""
+
+    def share_annotation(count: int, total: int) -> str:
+        if total == 0:
+            return "N/A\n(0/0)"
+        return f"{count / total:.1%}\n({count:,}/{total:,})"
+
+    severities = [1, 2, 3]
+    n_severities = len(severities)
+    count_matrix = np.zeros((n_severities, n_severities), dtype=int)
+    row_totals = np.zeros(n_severities, dtype=int)
+    column_totals = np.zeros(n_severities, dtype=int)
+
+    for row_index, calculated in enumerate(severities):
+        for column_index, billed in enumerate(severities):
+            row = crosstab.filter(
+                (pl.col("calculated_severity") == calculated)
+                & (pl.col("billed_severity") == billed)
+            )
+            if row.height:
+                count_matrix[row_index, column_index] = row[
+                    "icu_encounter_count"
+                ].item()
+                row_totals[row_index] = row[
+                    "calculated_severity_total"
+                ].item()
+                column_totals[column_index] = row[
+                    "billed_severity_total"
+                ].item()
+
+    # --- Convert counts to % of all ICU encounters ---------------------------
+    grand_total = int(count_matrix.sum())
+    if grand_total:
+        percent_matrix = count_matrix / grand_total * 100
+        vmax = max(float(percent_matrix.max()), 1.0)
+    else:
+        percent_matrix = np.full((n_severities, n_severities), np.nan)
+        vmax = 100.0
+
+    annotations = np.array(
+        [
+            [share_annotation(int(count), grand_total) for count in matrix_row]
+            for matrix_row in count_matrix
+        ],
+        dtype=object,
+    )
+    row_margins = [share_annotation(int(t), grand_total) for t in row_totals]
+    column_margins = [
+        share_annotation(int(t), grand_total) for t in column_totals
+    ]
+    # -------------------------------------------------------------------------
+
+    labels = [f"Sepsis {severity}" for severity in severities]
+    fig, ax = plt.subplots(figsize=(10, 7))
+    sns.heatmap(
+        percent_matrix,
+        annot=annotations,
+        fmt="",
+        cmap="Reds",
+        vmin=0,
+        vmax=vmax,
+        linewidths=0.5,
+        linecolor="white",
+        xticklabels=labels,
+        yticklabels=labels,
+        cbar_kws={"label": "Share of ICU encounters (%)", "pad": 0.14},
+        ax=ax,
+    )
+    for index, margin in enumerate(row_margins):
+        ax.text(
+            n_severities + 0.08,
+            index + 0.5,
+            margin,
+            ha="left",
+            va="center",
+            fontweight="bold",
+            clip_on=False,
+        )
+    for index, margin in enumerate(column_margins):
+        ax.text(
+            index + 0.5,
+            -0.45,
+            margin,
+            ha="center",
+            va="bottom",
+            fontweight="bold",
+            clip_on=False,
+        )
+
+    ax.xaxis.tick_top()
+    ax.tick_params(axis="x", rotation=0, length=0)
+    ax.tick_params(axis="y", rotation=0, length=0)
+    ax.set_title(
+        "ICU Encounters: Computed vs Billed Sepsis Severity",
+        pad=105,
+    )
+    ax.set_xlabel("Billed Sepsis Severity", labelpad=12)
+    ax.set_ylabel("Computed Sepsis Severity")
+    _save(
+        fig,
+        output_dir / "icu_encounter_count_computed_vs_billed_severity_heatmap.png",
+        config.dpi,
+    )
+
+
 def plot_icu_status_diverging_bars(
     counts: pl.DataFrame,
     *,
@@ -556,6 +781,7 @@ def plot_icu_status_diverging_bars(
     filename: str,
     output_dir: Path,
     config: Phase4FigureConfig,
+    y_limits: tuple[float, float] | None = None,
 ) -> None:
     """Plot ICU=1 upward and ICU=0 downward for one classification source."""
     subset = counts.filter(
@@ -634,12 +860,179 @@ def plot_icu_status_diverging_bars(
     ax.yaxis.set_major_formatter(
         FuncFormatter(lambda value, _: f"{abs(value):,.0f}")
     )
+    if y_limits is not None:
+        ax.set_ylim(y_limits)
     ax.set_xlabel("Sepsis Classification")
     ax.set_ylabel("Encounter Count (ICU_YN=0 shown below zero)")
     ax.set_title(title)
     ax.legend()
     sns.despine(ax=ax)
     _save(fig, output_dir / filename, config.dpi)
+
+
+def plot_icu_sepsis3_pathway_diverging_bars(
+    counts: pl.DataFrame,
+    *,
+    output_dir: Path,
+    config: Phase4FigureConfig,
+) -> None:
+    """Compare ICU status for computed and billed Sepsis 3 by pathway."""
+    # sources = ["computed_sepsis3", "billed_sepsis3"]
+    # source_labels = ["Computed Sepsis 3", "Billed Sepsis 3"]
+    sources = ["billed_sepsis3", "computed_sepsis3"]
+    source_labels = ["Billed Sepsis 3", "Computed Sepsis 3"]
+    pathway_styles = [
+        ("organ_dysfunction", "Organ Dysfunction Pathway", PATHWAY_ORGAN_COLOR),
+        ("vasopressors", "Vasopressors Pathway", PATHWAY_VASOPRESSOR_COLOR),
+        ("both", "Both Pathways", PATHWAY_BOTH_COLOR),
+        ("neither", "Neither Pathway", PATHWAY_NEITHER_COLOR),
+    ]
+    positions = np.arange(len(sources))
+    positive_bottom = np.zeros(len(sources), dtype=float)
+    negative_bottom = np.zeros(len(sources), dtype=float)
+    segment_annotations = []
+    fig, ax = plt.subplots(figsize=(11, 8))
+
+    for pathway_group, display_label, color in pathway_styles:
+        positive_counts = np.array(
+            [
+                counts.filter(
+                    (pl.col("classification_source") == source)
+                    & (pl.col("pathway_group") == pathway_group)
+                    & (pl.col("icu_status") == 1)
+                )["encounter_count"].item()
+                for source in sources
+            ],
+            dtype=int,
+        )
+        negative_counts = np.array(
+            [
+                counts.filter(
+                    (pl.col("classification_source") == source)
+                    & (pl.col("pathway_group") == pathway_group)
+                    & (pl.col("icu_status") == 0)
+                )["encounter_count"].item()
+                for source in sources
+            ],
+            dtype=int,
+        )
+        denominators = np.array(
+            [
+                counts.filter(pl.col("classification_source") == source)[
+                    "denominator"
+                ].item(0)
+                for source in sources
+            ],
+            dtype=int,
+        )
+        positive_bars = ax.bar(
+            positions,
+            positive_counts,
+            bottom=positive_bottom,
+            color=color,
+            label=display_label,
+        )
+        negative_bars = ax.bar(
+            positions,
+            -negative_counts,
+            bottom=-negative_bottom,
+            color=color,
+        )
+        for bars, segment_counts, direction_bottom, direction in [
+            (positive_bars, positive_counts, positive_bottom, 1),
+            (negative_bars, negative_counts, negative_bottom, -1),
+        ]:
+            for source_index, (bar, count, denominator, bottom) in enumerate(zip(
+                bars,
+                segment_counts,
+                denominators,
+                direction_bottom,
+            )):
+                if count == 0:
+                    continue
+                segment_annotations.append(
+                    (
+                        source_index,
+                        direction,
+                        bottom + count / 2,
+                        int(count),
+                        int(denominator),
+                        color,
+                    )
+                )
+        positive_bottom += positive_counts
+        negative_bottom += negative_counts
+
+    positive_max = max(positive_bottom.max(), 1)
+    negative_max = max(negative_bottom.max(), 1)
+    small_annotations = []
+    for annotation in segment_annotations:
+        source_index, direction, center, count, denominator, color = annotation
+        direction_max = positive_max if direction == 1 else negative_max
+        threshold = direction_max * (0.04 if direction == 1 else 0.10)
+        if count < threshold:
+            small_annotations.append(annotation)
+        else:
+            ax.annotate(
+                f"{count:,}\n({count / denominator:.1%})",
+                xy=(positions[source_index], direction * center),
+                ha="center",
+                va="center",
+                fontsize=8,
+            )
+
+    for source_index in range(len(sources)):
+        for direction in [1, -1]:
+            items = sorted(
+                [
+                    annotation
+                    for annotation in small_annotations
+                    if annotation[0] == source_index
+                    and annotation[1] == direction
+                ],
+                key=lambda annotation: annotation[2],
+            )
+            direction_max = positive_max if direction == 1 else negative_max
+            label_gap = direction_max * 0.12
+            previous_position = 0.0
+            for _, _, center, count, denominator, color in items:
+                label_position = max(center, previous_position + label_gap)
+                previous_position = label_position
+                text_x = positions[source_index] + (
+                    -0.42 if source_index == 0 else 0.42
+                )
+                ax.annotate(
+                    f"{count:,} ({count / denominator:.1%})",
+                    xy=(positions[source_index], direction * center),
+                    xytext=(text_x, direction * label_position),
+                    textcoords="data",
+                    arrowprops={
+                        "arrowstyle": "-",
+                        "color": color,
+                        "linewidth": 1,
+                    },
+                    ha="right" if source_index == 0 else "left",
+                    va="center",
+                    fontsize=8,
+                )
+
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.set_ylim(-negative_max * 1.20, positive_max * 1.10)
+    ax.set_xticks(positions, source_labels)
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.yaxis.set_major_formatter(
+        FuncFormatter(lambda value, _: f"{abs(value):,.0f}")
+    )
+    ax.set_xlabel("Sepsis 3 Classification Source")
+    ax.set_ylabel("Encounter Count (ICU_YN=0 shown below zero)")
+    ax.set_title("ICU Status for Sepsis 3 by Computed Clinical Pathway")
+    ax.legend(title="Pathway criterion met")
+    sns.despine(ax=ax)
+    _save(
+        fig,
+        output_dir / "icu_status_sepsis3_by_pathway_diverging_barplot.png",
+        config.dpi,
+    )
 
 
 def plot_poa_status_comparison(

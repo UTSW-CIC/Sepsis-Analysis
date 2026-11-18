@@ -22,7 +22,11 @@ BILLED_POA_STATUS_COL = "billed_poa_status"
 ARRIVAL_TO_SEPSIS_HOURS_COL = "arrival_to_sepsis_hours"
 
 SEPSIS_ENCOUNTER_FILENAME = "df_sepsis_encounters.parquet"
+SEPSIS3_ASSOCIATION_FILENAME = "df_sepsis3_associations.parquet"
 VASOPRESSOR_EVIDENCE_FILENAME = "df_vasopressor_evidence.parquet"
+SEPSIS3_PATHWAY_COL = "sepsis_3_pathway"
+ORGAN_DYSFUNCTION_PATHWAY_VALUE = "hypotension_lactate_sepsis2"
+VASOPRESSORS_PATHWAY_VALUE = "infection_vasopressor"
 
 
 @dataclass(frozen=True)
@@ -56,6 +60,9 @@ class Phase4AnalysisConfig:
             "icu_by_category_crosstab": "icu_by_category_crosstab.parquet",
             "icu_by_severity_crosstab": "icu_by_severity_crosstab.parquet",
             "icu_status_counts": "icu_status_counts.parquet",
+            "icu_sepsis3_pathway_counts": (
+                "icu_sepsis3_pathway_counts.parquet"
+            ),
             "arrival_to_sepsis_summary": "arrival_to_sepsis_summary.parquet",
             "length_of_stay_by_category": (
                 "length_of_stay_by_category.parquet"
@@ -99,6 +106,15 @@ class Phase4AnalysisConfig:
             "icu_missing_value_treatment": "not counted as ICU",
             "icu_computed_category_reference": "arrival_plus_48h",
             "icu_status_nulls_in_barplots": "omitted",
+            "icu_sepsis3_pathway_groups": {
+                "organ_dysfunction": ORGAN_DYSFUNCTION_PATHWAY_VALUE,
+                "vasopressors": VASOPRESSORS_PATHWAY_VALUE,
+                "both": "both computed pathways met",
+                "neither": "neither computed pathway met",
+            },
+            "icu_sepsis3_pathway_percentage_denominator": (
+                "non-null ICU status within computed or billed Sepsis 3"
+            ),
         }
 
 

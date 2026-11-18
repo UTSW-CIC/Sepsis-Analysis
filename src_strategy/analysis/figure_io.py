@@ -87,7 +87,7 @@ def write_figure_manifest(
         )
 
     figure_manifest = {
-        "figure_schema_version": "5",
+        "figure_schema_version": "7",
         "status": "complete",
         "created_at_utc": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
         "source_analysis": {
@@ -105,7 +105,7 @@ def write_figure_manifest(
             "aggregate_interval_replacement_count": 1,
             "additional_mortality_heatmap_count": 1,
             "additional_icu_heatmap_count": 2,
-            "additional_icu_diverging_barplot_count": 4,
+            "additional_icu_diverging_barplot_count": 5,
             "interval_encoding": {
                 "range": (
                     "thin line (minimum to maximum after analysis filtering)"
